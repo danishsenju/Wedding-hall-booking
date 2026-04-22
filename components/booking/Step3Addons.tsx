@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { Check, ChevronDown, Tag } from "lucide-react"
@@ -28,7 +28,7 @@ function AddonCardDesktop({
       whileTap={{ scale: 0.98 }}
       className="relative w-full rounded-sm p-4 text-left transition-colors"
       style={{
-        background: selected ? "rgba(201,168,76,0.06)" : "var(--surface-1)",
+        background: selected ? "rgba(109,40,217,0.06)" : "var(--surface-1)",
         border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
         transition: "border-color 0.2s ease, background 0.2s ease",
       }}
@@ -40,7 +40,7 @@ function AddonCardDesktop({
           className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm transition-colors"
           style={{
             background: selected ? "var(--gold)" : "transparent",
-            border: `1.5px solid ${selected ? "var(--gold)" : "rgba(201,168,76,0.4)"}`,
+            border: `1.5px solid ${selected ? "var(--gold)" : "rgba(109,40,217,0.4)"}`,
           }}
         >
           <AnimatePresence initial={false}>
@@ -125,7 +125,7 @@ function AddonCardMobile({
       className="overflow-hidden rounded-sm"
       style={{
         border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
-        background: selected ? "rgba(201,168,76,0.04)" : "var(--surface-1)",
+        background: selected ? "rgba(109,40,217,0.04)" : "var(--surface-1)",
         transition: "border-color 0.2s ease, background 0.2s ease",
       }}
     >
@@ -142,7 +142,7 @@ function AddonCardMobile({
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm transition-colors"
             style={{
               background: selected ? "var(--gold)" : "transparent",
-              border: `1.5px solid ${selected ? "var(--gold)" : "rgba(201,168,76,0.4)"}`,
+              border: `1.5px solid ${selected ? "var(--gold)" : "rgba(109,40,217,0.4)"}`,
             }}
             onClick={(e) => {
               e.stopPropagation()
@@ -234,7 +234,7 @@ function AddonCardMobile({
                 className="mt-3 w-full rounded-sm py-2 text-xs font-medium"
                 style={{
                   background: selected ? "var(--gold)" : "transparent",
-                  border: `1px solid ${selected ? "var(--gold)" : "rgba(201,168,76,0.4)"}`,
+                  border: `1px solid ${selected ? "var(--gold)" : "rgba(109,40,217,0.4)"}`,
                   color: selected ? "#06141B" : "var(--gold)",
                   fontFamily: "var(--font-body)",
                 }}
@@ -336,7 +336,7 @@ export default function Step3Addons({ form, addons }: Step3Props) {
             <div
               className="rounded-sm px-4 py-3"
               style={{
-                background: "rgba(201,168,76,0.05)",
+                background: "rgba(109,40,217,0.05)",
                 border: "1px solid var(--border)",
               }}
             >

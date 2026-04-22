@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import {
   createContext,
@@ -49,7 +49,7 @@ const VARIANT_STYLES: Record<
   },
   info: {
     border: "var(--border-hover)",
-    bg: "rgba(201,168,76,0.07)",
+    bg: "rgba(109,40,217,0.07)",
     icon: <Info size={15} strokeWidth={2} style={{ color: "var(--gold)" }} />,
   },
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Building2, CalendarHeart, Home, Settings2, type LucideIcon } from "lucide-react";
@@ -35,7 +35,7 @@ export default function FloatingDock() {
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid var(--border)",
           boxShadow:
-            "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.08)",
+            "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(109,40,217,0.08)",
         }}
       >
         {DOCK_ITEMS.map(({ icon: Icon, label, href }) => {
@@ -52,11 +52,11 @@ export default function FloatingDock() {
                 transition={{ type: "spring", stiffness: 500, damping: 25 }}
                 style={{
                   background: isActive
-                    ? "rgba(201,168,76,0.12)"
+                    ? "rgba(109,40,217,0.12)"
                     : "transparent",
                   color: isActive ? "var(--gold)" : "var(--text-muted)",
                   boxShadow: isActive
-                    ? "0 0 16px rgba(201,168,76,0.15)"
+                    ? "0 0 16px rgba(109,40,217,0.15)"
                     : "none",
                 }}
               >

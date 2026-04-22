@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
@@ -71,7 +71,7 @@ export default function InclusionsChecklist() {
           >
             <span
               className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
-              style={{ background: "rgba(201,168,76,0.12)" }}
+              style={{ background: "rgba(109,40,217,0.12)" }}
             >
               <Check size={11} strokeWidth={2.5} style={{ color: "var(--gold)" }} />
             </span>

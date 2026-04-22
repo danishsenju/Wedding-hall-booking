@@ -12,7 +12,11 @@
       "Bash(npm run *)",
       "Bash(mkdir -p C:/Users/danis/MyProject/lumieres/components/confirmation)",
       "Bash(mkdir -p C:/Users/danis/MyProject/lumieres/app/\\\\\\(public\\\\\\)/confirmation)",
-      "Bash(dir \"C:\\\\Users\\\\danis\\\\MyProject\\\\lumieres\\\\app\")"
+      "Bash(dir \"C:\\\\Users\\\\danis\\\\MyProject\\\\lumieres\\\\app\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('peer zod:', d.get\\('peerDependencies',{}\\).get\\('zod','none'\\)\\)\")",
+      "Bash(node -e \"const z = require\\('zod'\\); console.log\\('version:', z.ZodObject ? 'v3-style' : 'v4-style', typeof z._zod\\)\")",
+      "Bash(node *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('RHF version:', d['version']\\)\")"
     ]
   }
 }

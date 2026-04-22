@@ -1,16 +1,13 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { LogOut, Download, Bell } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { Download, Bell } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 
 import type { BookingWithDetails, BookingStatus } from "@/types"
 import type { AdminStats } from "@/app/actions/admin"
 import { updateBookingStatus } from "@/app/actions/booking"
-import { adminLogout } from "@/app/actions/auth"
-
 import { ToastProvider, useToast } from "@/components/admin/ToastProvider"
 import StatsRow from "@/components/admin/StatsRow"
 import FilterBar from "@/components/admin/FilterBar"
@@ -27,7 +24,7 @@ function DotGrid() {
       className="pointer-events-none fixed inset-0 z-0"
       style={{
         backgroundImage:
-          "radial-gradient(circle, rgba(201,168,76,0.07) 1px, transparent 1px)",
+          "radial-gradient(circle, rgba(109,40,217,0.07) 1px, transparent 1px)",
         backgroundSize: "28px 28px",
       }}
     >
@@ -103,7 +100,6 @@ function Dashboard({
   initialBookings: BookingWithDetails[]
   initialStats: AdminStats
 }) {
-  const router = useRouter()
   const { toast } = useToast()
 
   const [bookings, setBookings] = useState(initialBookings)
@@ -251,12 +247,6 @@ function Dashboard({
     [handleAction]
   )
 
-  /* ── Logout ── */
-  async function handleLogout() {
-    await adminLogout()
-    router.push("/admin/login")
-  }
-
   return (
     <div className="relative min-h-screen" style={{ background: "var(--base)" }}>
       <DotGrid />
@@ -297,7 +287,7 @@ function Dashboard({
                 animate={{ scale: 1 }}
                 className="flex items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-xs"
                 style={{
-                  background: "rgba(201,168,76,0.12)",
+                  background: "rgba(109,40,217,0.12)",
                   border: "1px solid var(--border-hover)",
                   color: "var(--gold)",
                   fontFamily: "var(--font-body)",
@@ -322,22 +312,6 @@ function Dashboard({
             >
               <Download size={13} strokeWidth={1.5} />
               Export CSV
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 rounded-sm px-3 py-2 text-xs tracking-wide transition-all"
-              style={{
-                border: "1px solid var(--border)",
-                background: "var(--surface-1)",
-                color: "var(--text-muted)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              <LogOut size={13} strokeWidth={1.5} />
-              Sign out
             </motion.button>
           </div>
         </motion.div>

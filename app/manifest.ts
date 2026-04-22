@@ -1,4 +1,4 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Kuala Lumpur's most refined wedding hall. Book your perfect celebration.",
     start_url: "/",
     display: "standalone",
-    background_color: "#06141B",
-    theme_color: "#C9A84C",
+    background_color: "#EDE9FE",
+    theme_color: "#6D28D9",
     orientation: "portrait-primary",
     categories: ["lifestyle", "wedding", "events"],
     lang: "en-MY",

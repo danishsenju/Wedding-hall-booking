@@ -1,15 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import type { Theme as DbTheme } from "@/types";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
+import Carousel from "@/components/ui/carousel";
 
 interface Theme {
   id: string;
@@ -73,11 +70,23 @@ const THEMES: Theme[] = [
     description:
       "Inspired by regal ceremonies of the past — deep jewel tones, gilded accents, and ceremonial grandeur that echoes through generations.",
     imageUrl:
-      "https://images.unsplash.com/photo-1526824267900-c8f39bd01e74?w=800&q=80",
+      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80",
     priceFrom: "RM 45,000",
     mood: "Regal · Majestic · Heritage",
   },
 ];
+
+function dbThemesToLocal(items: DbTheme[]): Theme[] {
+  return items.map((t) => ({
+    id: t.id,
+    name: t.name,
+    tagline: t.tagline ?? "",
+    description: t.description ?? "",
+    imageUrl: t.image_url ?? "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80",
+    priceFrom: t.price_from_rm ? `RM ${t.price_from_rm.toLocaleString()}` : "Contact us",
+    mood: t.mood ?? "",
+  }));
+}
 
 /* ─── Expanded modal card ──────────────────────────── */
 function ExpandedCard({
@@ -111,7 +120,7 @@ function ExpandedCard({
       transition={{ duration: 0.25 }}
       className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
       style={{
-        background: "rgba(6,20,27,0.85)",
+        background: "rgba(10,11,16,0.85)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
       }}
@@ -151,7 +160,7 @@ function ExpandedCard({
           <button
             className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-white/10"
             style={{
-              background: "rgba(6,20,27,0.65)",
+              background: "rgba(10,11,16,0.65)",
               color: "var(--text)",
               backdropFilter: "blur(8px)",
             }}
@@ -231,7 +240,7 @@ function ExpandedCard({
             style={{
               background:
                 "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-              color: "#06141B",
+              color: "#EDE9FE",
               fontFamily: "var(--font-body)",
             }}
             onClick={handleBook}
@@ -244,162 +253,25 @@ function ExpandedCard({
   );
 }
 
-/* ─── Individual card ──────────────────────────────── */
-function ThemeCard({
-  theme,
-  index,
-  onSelect,
-}: {
-  theme: Theme;
-  index: number;
-  onSelect: (t: Theme) => void;
-}) {
-  return (
-    <motion.button
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.09, duration: 0.5 }}
-      whileHover={{ y: -5 }}
-      onClick={() => onSelect(theme)}
-      className="relative cursor-pointer overflow-hidden rounded-sm text-left"
-      aria-label={`Explore ${theme.name} theme`}
-      style={{
-        width: "min(80vw, 320px)",
-        flexShrink: 0,
-        height: "460px",
-        border: "1px solid var(--border)",
-        scrollSnapAlign: "start",
-      }}
-    >
-      <Image
-        src={theme.imageUrl}
-        alt={theme.name}
-        fill
-        className="object-cover transition-transform duration-700 hover:scale-[1.04]"
-        sizes="320px"
-      />
-
-      {/* Gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(0deg, rgba(6,20,27,0.92) 0%, rgba(6,20,27,0.25) 50%, transparent 100%)",
-        }}
-      />
-
-      {/* Text overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <p
-          className="mb-1.5 text-[10px] uppercase tracking-[0.22em]"
-          style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
-        >
-          {theme.mood}
-        </p>
-        <h3
-          className="mb-1 font-light"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: "var(--text)",
-            fontSize: "1.4rem",
-          }}
-        >
-          {theme.name}
-        </h3>
-        <p
-          className="mb-4 text-xs leading-snug"
-          style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-        >
-          {theme.tagline}
-        </p>
-        <div className="flex items-center justify-between">
-          <span
-            className="text-sm"
-            style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-          >
-            From{" "}
-            <span style={{ color: "var(--gold)" }}>{theme.priceFrom}</span>
-          </span>
-          <span
-            className="rounded-sm px-2.5 py-1 text-[11px]"
-            style={{
-              border: "1px solid var(--border-hover)",
-              color: "var(--gold)",
-              fontFamily: "var(--font-body)",
-            }}
-          >
-            Explore →
-          </span>
-        </div>
-      </div>
-    </motion.button>
-  );
-}
 
 /* ─── Main carousel component ─────────────────────── */
-export default function ThemeCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
+export default function ThemeCarousel({
+  initialThemes,
+}: {
+  initialThemes?: DbTheme[];
+} = {}) {
+  const themes =
+    initialThemes && initialThemes.length > 0
+      ? dbThemesToLocal(initialThemes)
+      : THEMES;
+
+  const slideData = themes.map((theme) => ({
+    title: theme.name,
+    button: "Explore Theme",
+    src: theme.imageUrl,
+  }));
+
   const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  // Drag state
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const startScrollLeft = useRef(0);
-
-  const checkBounds = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 10);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", checkBounds, { passive: true });
-    checkBounds();
-    return () => el.removeEventListener("scroll", checkBounds);
-  }, [checkBounds]);
-
-  const scroll = useCallback((direction: "left" | "right") => {
-    scrollRef.current?.scrollBy({
-      left: direction === "right" ? 350 : -350,
-      behavior: "smooth",
-    });
-  }, []);
-
-  // Keyboard navigation (arrow keys)
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") scroll("right");
-      if (e.key === "ArrowLeft") scroll("left");
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [scroll]);
-
-  // Mouse drag handlers
-  const onMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.pageX - (scrollRef.current?.offsetLeft ?? 0);
-    startScrollLeft.current = scrollRef.current?.scrollLeft ?? 0;
-    if (scrollRef.current) scrollRef.current.style.cursor = "grabbing";
-  };
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    scrollRef.current.scrollLeft = startScrollLeft.current - (x - startX.current) * 1.4;
-  };
-
-  const onMouseUp = () => {
-    isDragging.current = false;
-    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
-  };
 
   return (
     <section
@@ -408,103 +280,55 @@ export default function ThemeCarousel() {
       style={{ background: "var(--surface-1)" }}
     >
       <div className="mx-auto max-w-6xl px-6">
-        {/* Header row */}
-        <div className="mb-12 flex items-end justify-between">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mb-3 flex items-center gap-3">
-              <span
-                className="h-px w-10 opacity-40"
-                style={{ background: "var(--gold)" }}
-              />
-              <span
-                className="text-xs uppercase tracking-[0.3em]"
-                style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
-              >
-                Wedding Themes
-              </span>
-            </div>
-            <h2
-              className="font-light"
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "var(--text)",
-                fontSize: "clamp(1.8rem, 4vw, 3.25rem)",
-              }}
-            >
-              Find Your Perfect Style
-            </h2>
-          </motion.div>
-
-          {/* Arrow controls — desktop only */}
-          <div className="hidden items-center gap-3 lg:flex" aria-label="Carousel navigation">
-            <motion.button
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-              onClick={() => scroll("left")}
-              disabled={!canScrollLeft}
-              aria-label="Scroll left"
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-opacity disabled:pointer-events-none disabled:opacity-30"
-              style={{
-                border: "1px solid var(--border-hover)",
-                color: "var(--text-muted)",
-              }}
-            >
-              <ArrowLeft size={16} strokeWidth={1.5} />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.94 }}
-              onClick={() => scroll("right")}
-              disabled={!canScrollRight}
-              aria-label="Scroll right"
-              className="flex h-10 w-10 items-center justify-center rounded-full transition-opacity disabled:pointer-events-none disabled:opacity-30"
-              style={{
-                border: "1px solid var(--border-hover)",
-                color: "var(--text-muted)",
-              }}
-            >
-              <ArrowRight size={16} strokeWidth={1.5} />
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Scroll container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto pb-2"
-          style={{
-            scrollSnapType: "x mandatory",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            cursor: "grab",
-          }}
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseUp={onMouseUp}
-          onMouseLeave={onMouseUp}
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-16 text-center"
         >
-          {THEMES.map((theme, i) => (
-            <ThemeCard
-              key={theme.id}
-              theme={theme}
-              index={i}
-              onSelect={setSelectedTheme}
+          <div className="mb-3 flex items-center justify-center gap-3">
+            <span
+              className="h-px w-10 opacity-40"
+              style={{ background: "var(--gold)" }}
             />
-          ))}
-          {/* Right padding buffer */}
-          <div className="w-6 shrink-0" aria-hidden="true" />
+            <span
+              className="text-xs uppercase tracking-[0.3em]"
+              style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
+            >
+              Wedding Themes
+            </span>
+            <span
+              className="h-px w-10 opacity-40"
+              style={{ background: "var(--gold)" }}
+            />
+          </div>
+          <h2
+            className="font-light"
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--text)",
+              fontSize: "clamp(1.8rem, 4vw, 3.25rem)",
+            }}
+          >
+            Find Your Perfect Style
+          </h2>
+        </motion.div>
+
+        {/* 3D Carousel */}
+        <div className="relative overflow-hidden w-full pb-20">
+          <Carousel
+            slides={slideData}
+            onSlideSelect={(index) => setSelectedTheme(themes[index])}
+          />
         </div>
 
         <p
-          className="mt-4 text-center text-xs"
+          className="mt-6 text-center text-xs"
           style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
         >
-          Click any theme to explore · Use ← → keys to navigate
+          Click a slide to focus · Press the button to explore details
         </p>
       </div>
 

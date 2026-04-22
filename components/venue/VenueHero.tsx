@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Clock, MapPin, Star, Users } from "lucide-react";
@@ -59,7 +59,7 @@ export default function VenueHero() {
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 20% 80%, rgba(201,168,76,0.12) 0%, transparent 65%)",
+            "radial-gradient(ellipse 60% 40% at 20% 80%, rgba(109,40,217,0.12) 0%, transparent 65%)",
         }}
       />
 

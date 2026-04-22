@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import { CheckCircle2, Clock, CreditCard, Star } from "lucide-react"
@@ -85,7 +85,7 @@ export default function NextStepsTimeline() {
                     ? "none"
                     : "1px solid var(--border)",
                   boxShadow: step.active
-                    ? "0 0 20px rgba(201,168,76,0.25)"
+                    ? "0 0 20px rgba(109,40,217,0.25)"
                     : "none",
                 }}
               >

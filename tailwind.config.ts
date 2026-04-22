@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+﻿import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
@@ -46,12 +46,12 @@ const config: Config = {
         "gradient-surface":
           "linear-gradient(180deg, var(--surface-1) 0%, var(--base) 100%)",
         "gradient-radial-gold":
-          "radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)",
+          "radial-gradient(ellipse at center, rgba(109,40,217,0.08) 0%, transparent 70%)",
       },
       boxShadow: {
-        gold: "0 0 20px rgba(201,168,76,0.15), 0 4px 16px rgba(0,0,0,0.4)",
-        "gold-lg": "0 0 40px rgba(201,168,76,0.2), 0 8px 32px rgba(0,0,0,0.5)",
-        card: "0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(201,168,76,0.08)",
+        gold: "0 0 20px rgba(109,40,217,0.15), 0 4px 16px rgba(0,0,0,0.4)",
+        "gold-lg": "0 0 40px rgba(109,40,217,0.2), 0 8px 32px rgba(0,0,0,0.5)",
+        card: "0 2px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(109,40,217,0.08)",
       },
       animation: {
         "fade-up": "fadeUp 0.6s ease forwards",

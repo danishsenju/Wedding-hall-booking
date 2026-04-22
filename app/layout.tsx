@@ -3,11 +3,13 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import PageTransition from "@/components/PageTransition";
 import RouteProgress from "@/components/RouteProgress";
+import SilkBackground from "@/components/SilkBackground";
+import SmartSplashCursor from "@/components/SmartSplashCursor";
 
 /* ─── Fonts ─────────────────────────────────────── */
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-cormorant",
   display: "swap",
@@ -15,7 +17,7 @@ const cormorant = Cormorant_Garamond({
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-dm-sans",
   display: "swap",
 });
@@ -82,7 +84,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#06141B",
+  themeColor: "#0A0B10",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -101,8 +103,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased noise-overlay">
+        <SilkBackground />
+        <SmartSplashCursor />
         <RouteProgress />
-        <PageTransition>{children}</PageTransition>
+        <div className="relative z-10">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </body>
     </html>
   );

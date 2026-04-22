@@ -211,10 +211,49 @@ export type Database = {
           }
         ]
       }
+      themes: {
+        Row: {
+          id: string
+          name: string
+          tagline: string | null
+          description: string | null
+          image_url: string | null
+          price_from_rm: number | null
+          mood: string | null
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          tagline?: string | null
+          description?: string | null
+          image_url?: string | null
+          price_from_rm?: number | null
+          mood?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          tagline?: string | null
+          description?: string | null
+          image_url?: string | null
+          price_from_rm?: number | null
+          mood?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       venues: {
         Row: {
           id: string
           name: string
+          subtitle: string | null
+          tag: string | null
+          href: string | null
           description: string | null
           capacity_min: number | null
           capacity_max: number | null
@@ -222,12 +261,17 @@ export type Database = {
           ceiling_height_m: number | null
           parking_bays: number | null
           location: string | null
+          latitude: number | null
+          longitude: number | null
           hero_image_url: string | null
           created_at: string
         }
         Insert: {
           id?: string
           name: string
+          subtitle?: string | null
+          tag?: string | null
+          href?: string | null
           description?: string | null
           capacity_min?: number | null
           capacity_max?: number | null
@@ -235,12 +279,17 @@ export type Database = {
           ceiling_height_m?: number | null
           parking_bays?: number | null
           location?: string | null
+          latitude?: number | null
+          longitude?: number | null
           hero_image_url?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           name?: string
+          subtitle?: string | null
+          tag?: string | null
+          href?: string | null
           description?: string | null
           capacity_min?: number | null
           capacity_max?: number | null
@@ -248,6 +297,8 @@ export type Database = {
           ceiling_height_m?: number | null
           parking_bays?: number | null
           location?: string | null
+          latitude?: number | null
+          longitude?: number | null
           hero_image_url?: string | null
           created_at?: string
         }

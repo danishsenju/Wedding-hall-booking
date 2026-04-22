@@ -2,9 +2,13 @@
 
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Maximize2, ParkingCircle, Users, type LucideIcon } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import type { VenueShowcaseItem } from "@/types";
+
+const SoftAurora = dynamic(() => import("@/components/SoftAurora"), { ssr: false });
 
 interface VenueSpec {
   icon: LucideIcon;
@@ -23,7 +27,7 @@ interface VenueData {
   tag: string;
 }
 
-const VENUES: VenueData[] = [
+const FALLBACK_VENUES: VenueData[] = [
   {
     name: "Grand Ballroom",
     subtitle: "The Jewel of Lumières",
@@ -57,6 +61,23 @@ const VENUES: VenueData[] = [
     ],
   },
 ];
+
+function dbVenuesToVenueData(items: VenueShowcaseItem[]): VenueData[] {
+  return items.map((v) => ({
+    name: v.name,
+    subtitle: v.subtitle ?? "",
+    description: v.description ?? "",
+    imageUrl: v.hero_image_url ?? "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80",
+    imageAlt: v.name,
+    tag: v.tag ?? "",
+    href: v.href ?? "#",
+    specs: [
+      { icon: Users, label: "Capacity", value: v.capacity_min && v.capacity_max ? `${v.capacity_min} – ${v.capacity_max}` : "—" },
+      { icon: Maximize2, label: "Floor Area", value: v.size_sqft ? `${v.size_sqft.toLocaleString()} sq ft` : "—" },
+      { icon: ParkingCircle, label: "Parking", value: v.parking_bays ? `${v.parking_bays} bays` : "—" },
+    ],
+  }));
+}
 
 function VenueCard({ venue, index }: { venue: VenueData; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -210,9 +231,57 @@ function VenueCard({ venue, index }: { venue: VenueData; index: number }) {
   );
 }
 
-export default function VenueShowcase() {
+function AuroraBg() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.02 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    // pointer-events intentionally kept — aurora canvas handles mouse for interactivity
+    <div ref={ref} className="absolute inset-0 overflow-hidden">
+      {visible && (
+        <SoftAurora
+          speed={0.4}
+          scale={1.8}
+          brightness={1.3}
+          color1="#7C3AED"
+          color2="#C4B5FD"
+          noiseFrequency={2}
+          noiseAmplitude={8}
+          bandHeight={0.5}
+          bandSpread={1.0}
+          octaveDecay={0.03}
+          layerOffset={0.4}
+          colorSpeed={1.2}
+          enableMouseInteraction={true}
+          mouseInfluence={0.4}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function VenueShowcase({
+  initialVenues,
+}: {
+  initialVenues?: VenueShowcaseItem[];
+} = {}) {
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInView = useInView(headerRef, { once: true });
+  const venues =
+    initialVenues && initialVenues.length > 0
+      ? dbVenuesToVenueData(initialVenues)
+      : FALLBACK_VENUES;
 
   return (
     <section
@@ -220,7 +289,9 @@ export default function VenueShowcase() {
       className="relative py-24 lg:py-32"
       style={{ background: "var(--base)" }}
     >
-      <div className="mx-auto max-w-6xl px-6">
+      <AuroraBg />
+      {/* Content lifted above the aurora canvas */}
+      <div className="relative z-10 mx-auto max-w-6xl px-6">
         {/* Section header */}
         <motion.div
           ref={headerRef}
@@ -270,7 +341,7 @@ export default function VenueShowcase() {
 
         {/* Cards grid */}
         <div className="grid gap-8 lg:grid-cols-2">
-          {VENUES.map((venue, i) => (
+          {venues.map((venue, i) => (
             <VenueCard key={venue.name} venue={venue} index={i} />
           ))}
         </div>

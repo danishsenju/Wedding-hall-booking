@@ -7,7 +7,6 @@ import {
   useSpring,
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 
@@ -105,7 +104,7 @@ function Typewriter({
   );
 }
 
-/* ─── Magnet Button ──────────────────────────────── */
+/* ─── Glass Button ───────────────────────────────── */
 interface MagnetButtonProps {
   href: string;
   children: React.ReactNode;
@@ -114,10 +113,13 @@ interface MagnetButtonProps {
 
 function MagnetButton({ href, children, variant = "primary" }: MagnetButtonProps) {
   const ref = useRef<HTMLAnchorElement>(null);
+  const specularRef = useRef<HTMLDivElement>(null);
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const x = useSpring(rawX, { stiffness: 180, damping: 18 });
   const y = useSpring(rawY, { stiffness: 180, damping: 18 });
+
+  const isPrimary = variant === "primary";
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const el = ref.current;
@@ -125,43 +127,48 @@ function MagnetButton({ href, children, variant = "primary" }: MagnetButtonProps
     const rect = el.getBoundingClientRect();
     rawX.set((e.clientX - (rect.left + rect.width / 2)) * 0.35);
     rawY.set((e.clientY - (rect.top + rect.height / 2)) * 0.35);
+    if (specularRef.current) {
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+      specularRef.current.style.background = `radial-gradient(circle at ${sx}px ${sy}px, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0) 60%)`;
+    }
   };
 
   const handleMouseLeave = () => {
     rawX.set(0);
     rawY.set(0);
+    if (specularRef.current) specularRef.current.style.background = "none";
   };
 
   return (
     <motion.a
       ref={ref}
       href={href}
-      style={
-        variant === "primary"
-          ? {
-              x,
-              y,
-              background:
-                "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-              color: "#06141B",
-              fontFamily: "var(--font-body)",
-              boxShadow: "0 4px 24px rgba(201,168,76,0.3)",
-            }
-          : {
-              x,
-              y,
-              border: "1px solid var(--border-hover)",
-              color: "var(--text)",
-              fontFamily: "var(--font-body)",
-            }
-      }
+      style={{
+        x,
+        y,
+        ["--glass-bg" as string]: isPrimary
+          ? "rgba(109,40,217,0.22)"
+          : "rgba(255,255,255,0.07)",
+        ["--glass-highlight" as string]: isPrimary
+          ? "rgba(109,40,217,0.55)"
+          : "rgba(255,255,255,0.18)",
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.96 }}
-      className="relative inline-flex items-center gap-2 rounded-sm px-7 py-3.5 text-sm font-medium tracking-wide"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="glass-button"
     >
-      {children}
+      <div className="glass-filter" />
+      <div className="glass-overlay" />
+      <div ref={specularRef} className="glass-specular" />
+      <div
+        className="glass-content"
+        style={{ color: isPrimary ? "var(--gold)" : "var(--text)" }}
+      >
+        {children}
+      </div>
     </motion.a>
   );
 }
@@ -219,27 +226,16 @@ export default function Hero() {
     <section
       id="hero"
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
-      style={{ background: "var(--base)" }}
     >
-      {/* ── Background image ── */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80"
-          alt="Lumières Grand Hall — elegant wedding ceremony"
-          fill
-          priority
-          className="object-cover"
-          style={{ opacity: 0.22 }}
-          sizes="100vw"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(6,20,27,0.65) 0%, rgba(6,20,27,0.45) 40%, rgba(6,20,27,0.9) 100%)",
-          }}
-        />
-      </div>
+      {/* ── SVG Glass Distortion Filter ── */}
+      <svg style={{ display: "none" }} aria-hidden="true">
+        <defs>
+          <filter id="glass-distortion">
+            <feTurbulence type="turbulence" baseFrequency="0.008" numOctaves="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="55" />
+          </filter>
+        </defs>
+      </svg>
 
       {/* ── Aurora layer 1 ── */}
       <motion.div
@@ -248,7 +244,7 @@ export default function Hero() {
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(ellipse 70% 50% at 15% 20%, rgba(201,168,76,0.11) 0%, transparent 65%)",
+            "radial-gradient(ellipse 70% 50% at 15% 20%, rgba(109,40,217,0.11) 0%, transparent 65%)",
         }}
       />
 
@@ -264,7 +260,7 @@ export default function Hero() {
         }}
         style={{
           background:
-            "radial-gradient(ellipse 60% 45% at 85% 80%, rgba(197,186,196,0.06) 0%, transparent 65%)",
+            "radial-gradient(ellipse 60% 45% at 85% 80%, rgba(109,40,217,0.06) 0%, transparent 65%)",
         }}
       />
 
@@ -284,7 +280,7 @@ export default function Hero() {
         }}
         style={{
           background:
-            "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(201,168,76,0.07) 0%, transparent 60%)",
+            "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(109,40,217,0.07) 0%, transparent 60%)",
         }}
       />
 
@@ -302,7 +298,7 @@ export default function Hero() {
       <div
         className="pointer-events-none absolute inset-0 z-[2] hidden lg:block"
         style={{
-          background: `radial-gradient(550px circle at ${mousePos.x}px ${mousePos.y}px, rgba(201,168,76,0.055) 0%, transparent 60%)`,
+          background: `radial-gradient(550px circle at ${mousePos.x}px ${mousePos.y}px, rgba(109,40,217,0.055) 0%, transparent 60%)`,
           transition: "background 0.08s ease",
         }}
       />

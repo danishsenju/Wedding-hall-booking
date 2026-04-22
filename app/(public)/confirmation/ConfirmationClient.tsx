@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
@@ -72,7 +72,7 @@ export default function ConfirmationClient({ ref_code }: Props) {
           [style*="--base"] { background: white !important; }
           [style*="--surface"] { background: #f8f8f8 !important; }
           [style*="--text"] { color: black !important; }
-          [style*="--gold"] { color: #8A6F32 !important; }
+          [style*="--gold"] { color: #4C1D95 !important; }
         }
       `}</style>
 
@@ -90,7 +90,7 @@ export default function ConfirmationClient({ ref_code }: Props) {
             style={{
               background: "var(--surface-1)",
               border: "1px solid var(--border)",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.08)",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(109,40,217,0.08)",
             }}
           >
             <CheckmarkAnimation />

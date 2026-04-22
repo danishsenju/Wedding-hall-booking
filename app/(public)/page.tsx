@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getAllHalls } from "@/app/actions/hall";
+import { getAllThemes } from "@/app/actions/theme";
 import BentoFeatures from "@/components/landing/BentoFeatures";
 import CTABand from "@/components/landing/CTABand";
 import Footer from "@/components/landing/Footer";
@@ -6,6 +8,8 @@ import Hero from "@/components/landing/Hero";
 import StatsStrip from "@/components/landing/StatsStrip";
 import ThemeCarousel from "@/components/landing/ThemeCarousel";
 import VenueShowcase from "@/components/landing/VenueShowcase";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Lumières Grand Hall — Premium Wedding Venue, Kuala Lumpur",
@@ -21,13 +25,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const [hallsResult, themesResult] = await Promise.all([
+    getAllHalls(),
+    getAllThemes(),
+  ]);
+
   return (
     <main>
       <Hero />
       <StatsStrip />
-      <VenueShowcase />
-      <ThemeCarousel />
+      <VenueShowcase initialVenues={hallsResult.data ?? []} />
+      <ThemeCarousel initialThemes={themesResult.data ?? []} />
       <BentoFeatures />
       <CTABand />
       <Footer />

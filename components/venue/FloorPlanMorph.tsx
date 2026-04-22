@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
@@ -307,7 +307,7 @@ export default function FloorPlanMorph() {
               whileTap={{ scale: 0.97 }}
               className="relative rounded-sm px-4 py-4 text-left transition-colors"
               style={{
-                background: isActive ? "rgba(201,168,76,0.08)" : "var(--surface-1)",
+                background: isActive ? "rgba(109,40,217,0.08)" : "var(--surface-1)",
                 border: `1px solid ${isActive ? "var(--gold)" : "var(--border)"}`,
               }}
             >
@@ -315,7 +315,7 @@ export default function FloorPlanMorph() {
                 <motion.div
                   layoutId="floor-active-bg"
                   className="absolute inset-0 rounded-sm"
-                  style={{ background: "rgba(201,168,76,0.06)" }}
+                  style={{ background: "rgba(109,40,217,0.06)" }}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.45 }}
                 />
               )}
@@ -352,7 +352,7 @@ export default function FloorPlanMorph() {
           <span
             className="flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium"
             style={{
-              background: "rgba(201,168,76,0.12)",
+              background: "rgba(109,40,217,0.12)",
               color: "var(--gold)",
             }}
           >
@@ -396,7 +396,7 @@ export default function FloorPlanMorph() {
                 key={`v-${n}`}
                 x1={10 + n * 108} y1={10}
                 x2={10 + n * 108} y2={350}
-                stroke="rgba(201,168,76,0.06)"
+                stroke="rgba(109,40,217,0.06)"
                 strokeWidth={1}
               />
             ))}
@@ -405,7 +405,7 @@ export default function FloorPlanMorph() {
                 key={`h-${n}`}
                 x1={10} y1={10 + n * 113}
                 x2={550} y2={10 + n * 113}
-                stroke="rgba(201,168,76,0.06)"
+                stroke="rgba(109,40,217,0.06)"
                 strokeWidth={1}
               />
             ))}

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
@@ -68,7 +68,7 @@ function SpotlightCard({
         <div
           className="pointer-events-none absolute inset-0 z-0 transition-opacity"
           style={{
-            background: `radial-gradient(180px circle at ${pos.x}px ${pos.y}px, rgba(201,168,76,0.07) 0%, transparent 70%)`,
+            background: `radial-gradient(180px circle at ${pos.x}px ${pos.y}px, rgba(109,40,217,0.07) 0%, transparent 70%)`,
           }}
         />
       )}
@@ -89,7 +89,7 @@ export default function StatsRow({ stats }: StatsRowProps) {
       value: stats.total,
       icon: <CalendarCheck size={18} strokeWidth={1.5} />,
       color: "var(--gold)",
-      bg: "rgba(201,168,76,0.08)",
+      bg: "rgba(109,40,217,0.08)",
     },
     {
       label: "Pending Review",

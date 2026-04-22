@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { useRef } from "react";
@@ -38,9 +38,9 @@ function MagnetCTA({
         y,
         background:
           "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-        color: "#06141B",
+        color: "#EDE9FE",
         fontFamily: "var(--font-body)",
-        boxShadow: "0 4px 32px rgba(201,168,76,0.28)",
+        boxShadow: "0 4px 32px rgba(109,40,217,0.28)",
         cursor: "pointer",
       }}
       onMouseMove={onMouseMove}
@@ -73,7 +73,7 @@ export default function CTABand() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 70% at 50% 50%, rgba(109,40,217,0.05) 0%, transparent 70%)",
         }}
       />
 

@@ -1,106 +1,110 @@
 "use client";
-
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useState } from "react";
 import Link from "next/link";
-import { useSectionSpy } from "@/hooks/use-section-spy";
+import {
+  Navbar,
+  NavBody,
+  NavItems,
+  NavbarLogo,
+  MobileNav,
+  MobileNavHeader,
+  MobileNavToggle,
+  MobileNavMenu,
+} from "@/components/ui/resizable-navbar";
+import { NoiseBackground } from "@/components/ui/noise-background";
 
-const NAV_LINKS = [
-  { label: "Venues", href: "#venues" },
-  { label: "Themes", href: "#themes" },
-  { label: "Features", href: "#features" },
-  { label: "Contact", href: "#footer" },
+const RESERVE_GRADIENT = [
+  "rgb(255, 100, 150)",
+  "rgb(100, 150, 255)",
+  "rgb(255, 200, 100)",
+];
+
+const NAV_ITEMS = [
+  { name: "Venues", link: "/#venues" },
+  { name: "Themes", link: "/#themes" },
+  { name: "Features", link: "/#features" },
+  { name: "Gallery", link: "/gallery" },
+  { name: "Map", link: "/map" },
+  { name: "Contact", link: "/#footer" },
 ] as const;
 
-const SECTION_IDS = ["hero", "venues", "themes", "features", "footer"] as const;
+const innerButtonClass =
+  "h-full w-full cursor-pointer rounded-full bg-gradient-to-r from-black via-black to-neutral-900 px-4 py-2 text-white transition-all duration-100 active:scale-[0.98]";
 
-export default function Navbar() {
-  const { scrollY } = useScroll();
-  const bgOpacity = useTransform(scrollY, [0, 80], [0, 1]);
-  const activeSection = useSectionSpy(SECTION_IDS);
+const innerButtonStyle: React.CSSProperties = {
+  fontFamily: "var(--font-body)",
+  boxShadow:
+    "0px 1px 0px 0px rgba(10,10,10,0.8) inset, 0px 1px 0px 0px rgba(38,38,38,0.8)",
+};
+
+export default function NavbarWrapper() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50">
-      {/* Scrolled backdrop */}
-      <motion.div
-        className="absolute inset-0"
-        style={{
-          opacity: bgOpacity,
-          background: "rgba(6, 20, 27, 0.85)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          borderBottom: "1px solid var(--border)",
-        }}
-      />
-
-      <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Logo */}
-        <Link href="/" className="group flex items-baseline gap-2">
-          <span
-            className="text-2xl font-light tracking-wide transition-opacity duration-200 group-hover:opacity-80"
-            style={{ fontFamily: "var(--font-display)", color: "var(--gold)" }}
-          >
-            Lumières
-          </span>
-          <span
-            className="hidden text-xs uppercase tracking-[0.22em] sm:block"
-            style={{
-              color: "var(--text-muted)",
-              fontFamily: "var(--font-body)",
-            }}
-          >
-            Grand Hall
-          </span>
-        </Link>
-
-        {/* Desktop links */}
-        <ul className="hidden items-center gap-8 lg:flex" role="menubar">
-          {NAV_LINKS.map(({ label, href }) => {
-            const sectionId = href.replace("#", "");
-            const isActive = activeSection === sectionId;
-
-            return (
-              <li key={label} role="none">
-                <Link
-                  href={href}
-                  role="menuitem"
-                  className="relative py-1 text-sm tracking-wide transition-colors duration-200"
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    color: isActive ? "var(--gold)" : "var(--text-muted)",
-                  }}
-                >
-                  {label}
-                  {isActive && (
-                    <motion.span
-                      layoutId="nav-underline"
-                      className="absolute bottom-0 left-0 right-0 h-px"
-                      style={{ background: "var(--gold)" }}
-                    />
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* CTA */}
-        <Link href="/book" className="hidden lg:block">
-          <motion.div
-            className="rounded-sm px-5 py-2.5 text-sm font-medium tracking-wide"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              background:
-                "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-              color: "#06141B",
-              fontFamily: "var(--font-body)",
-              cursor: "pointer",
-            }}
+    <Navbar>
+      {/* Desktop */}
+      <NavBody>
+        <NavbarLogo />
+        <NavItems items={[...NAV_ITEMS]} />
+        <NoiseBackground
+          containerClassName="!rounded-full p-2 w-fit"
+          gradientColors={RESERVE_GRADIENT}
+          speed={0.08}
+        >
+          <a
+            href="/book"
+            className={`${innerButtonClass} block whitespace-nowrap text-sm font-medium tracking-wide text-center`}
+            style={innerButtonStyle}
           >
             Reserve Now
-          </motion.div>
-        </Link>
-      </nav>
-    </header>
+          </a>
+        </NoiseBackground>
+      </NavBody>
+
+      {/* Mobile */}
+      <MobileNav>
+        <MobileNavHeader>
+          <NavbarLogo />
+          <MobileNavToggle
+            isOpen={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          />
+        </MobileNavHeader>
+
+        <MobileNavMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        >
+          {NAV_ITEMS.map((item, idx) => (
+            <a
+              key={`mobile-link-${idx}`}
+              href={item.link}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full py-1 text-sm tracking-wide transition-colors duration-200"
+              style={{
+                color: "var(--text-muted)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              {item.name}
+            </a>
+          ))}
+          <NoiseBackground
+            containerClassName="!rounded-full p-2 w-full"
+            gradientColors={RESERVE_GRADIENT}
+            speed={0.08}
+          >
+            <Link
+              href="/book"
+              className={`${innerButtonClass} block text-sm font-medium tracking-wide text-center`}
+              style={innerButtonStyle}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Reserve Now
+            </Link>
+          </NoiseBackground>
+        </MobileNavMenu>
+      </MobileNav>
+    </Navbar>
   );
 }

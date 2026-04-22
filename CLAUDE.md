@@ -5,25 +5,25 @@ Premium wedding hall booking SPA. Kuala Lumpur.
 Stack: Next.js 14 App Router + Supabase + TypeScript + Tailwind + Framer Motion
 
 ## Design System
-Base: #06141B | Surface: #11212D / #253745
-Gold: #C9A84C → #E8C97A hover | Rose hint: #C5BAC4
-Text: #CCD0CF | Muted: #9BA8AB
+Base: #0A0B10 | Surface: #141226 / #2B1B52
+Accent: #6D28D9 → #7C3AED hover | Lavender hint: #C4B5FD
+Text: #EDE9FE | Muted: #A78BFA
 Font display: Cormorant Garamond | Font body: DM Sans
-Rule: NO white bg, NO purple, NO Inter. Gold = only accent.
+Rule: NO white bg, NO Inter. Purple = only accent.
 
 ## CSS Variables (globals.css)
---gold: #C9A84C
---gold-hover: #E8C97A  
---gold-dim: #8A6F32
---base: #06141B
---surface-1: #11212D
---surface-2: #253745
---surface-3: #191D23
---text: #CCD0CF
---text-muted: #9BA8AB
---rose: #C5BAC4
---border: rgba(201,168,76,0.15)
---border-hover: rgba(201,168,76,0.35)
+--gold: #6D28D9
+--gold-hover: #7C3AED
+--gold-dim: #4C1D95
+--base: #0A0B10
+--surface-1: #141226
+--surface-2: #2B1B52
+--surface-3: #0D0C1A
+--text: #EDE9FE
+--text-muted: #A78BFA
+--rose: #C4B5FD
+--border: rgba(109,40,217,0.15)
+--border-hover: rgba(109,40,217,0.35)
 
 ## Coding Rules
 - TypeScript strict mode always

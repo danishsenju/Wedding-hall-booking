@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
@@ -166,10 +166,10 @@ export default function BookingsTable({
                 className="cursor-pointer transition-colors"
                 style={{
                   background: isFocused
-                    ? "rgba(201,168,76,0.04)"
+                    ? "rgba(109,40,217,0.04)"
                     : "var(--surface-1)",
                   borderBottom: "1px solid var(--border)",
-                  outline: isFocused ? "1px solid rgba(201,168,76,0.2)" : "none",
+                  outline: isFocused ? "1px solid rgba(109,40,217,0.2)" : "none",
                   outlineOffset: "-1px",
                 }}
                 onMouseEnter={(e) =>

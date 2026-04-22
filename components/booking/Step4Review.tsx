@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, Loader2 } from "lucide-react"
@@ -119,12 +119,12 @@ function SubmitButton({
       className="relative w-full overflow-hidden rounded-sm py-4 text-sm font-semibold tracking-wide"
       style={{
         background: loading
-          ? "rgba(201,168,76,0.5)"
+          ? "rgba(109,40,217,0.5)"
           : "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-        color: "#06141B",
+        color: "#EDE9FE",
         fontFamily: "var(--font-body)",
         cursor: loading ? "not-allowed" : "pointer",
-        boxShadow: loading ? "none" : "0 4px 24px rgba(201,168,76,0.28)",
+        boxShadow: loading ? "none" : "0 4px 24px rgba(109,40,217,0.28)",
       }}
       aria-busy={loading}
     >
@@ -206,7 +206,7 @@ export default function Step4Review({ form, venue, packages, addons }: Step4Prop
             particleCount: 60,
             spread: 80,
             origin: { y: 0.6 },
-            colors: ["#C9A84C", "#E8C97A", "#8A6F32", "#CCD0CF"],
+            colors: ["#6D28D9", "#7C3AED", "#4C1D95", "#EDE9FE"],
             ...opts,
           })
 
@@ -324,7 +324,7 @@ export default function Step4Review({ form, venue, packages, addons }: Step4Prop
         <div
           className="mt-2 rounded-sm px-3 py-2"
           style={{
-            background: "rgba(201,168,76,0.05)",
+            background: "rgba(109,40,217,0.05)",
             border: "1px solid var(--border)",
           }}
         >

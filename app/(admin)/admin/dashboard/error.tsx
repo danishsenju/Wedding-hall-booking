@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { ShieldAlert } from "lucide-react";
@@ -22,7 +22,7 @@ export default function DashboardError({
       >
         <div
           className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full"
-          style={{ background: "rgba(201,168,76,0.08)", border: "1px solid var(--border-hover)" }}
+          style={{ background: "rgba(109,40,217,0.08)", border: "1px solid var(--border-hover)" }}
         >
           <ShieldAlert size={28} style={{ color: "var(--gold)" }} strokeWidth={1.5} />
         </div>
@@ -43,7 +43,7 @@ export default function DashboardError({
             className="rounded-sm px-6 py-2.5 text-sm font-medium"
             style={{
               background: "linear-gradient(135deg, var(--gold), var(--gold-hover))",
-              color: "#06141B",
+              color: "#EDE9FE",
               fontFamily: "var(--font-body)",
             }}
           >

@@ -8,6 +8,9 @@ export type AddonId = string;
 export interface Venue {
   id: VenueId;
   name: string;
+  subtitle: string | null;
+  tag: string | null;
+  href: string | null;
   description: string | null;
   capacity_min: number | null;
   capacity_max: number | null;
@@ -15,6 +18,8 @@ export interface Venue {
   ceiling_height_m: number | null;
   parking_bays: number | null;
   location: string | null;
+  latitude: number | null;
+  longitude: number | null;
   hero_image_url: string | null;
   created_at: string;
 }
@@ -145,6 +150,16 @@ export interface FeatureItem {
   description: string;
 }
 
+/* ─── Gallery Types ──────────────────────────────── */
+
+export interface GalleryImage {
+  id: string;
+  title: string;
+  image_url: string;
+  sort_order: number;
+  created_at: string;
+}
+
 /* ─── API Response Types ─────────────────────────── */
 
 export interface ActionResult<T = void> {
@@ -157,3 +172,32 @@ export type SupabaseError = {
   message: string;
   code?: string;
 };
+
+/* ─── Content / CMS Types ────────────────────────── */
+
+export interface Theme {
+  id: string;
+  name: string;
+  tagline: string | null;
+  description: string | null;
+  image_url: string | null;
+  price_from_rm: number | null;
+  mood: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+/** Venue row extended with fields used by VenueShowcase on the landing page */
+export interface VenueShowcaseItem {
+  id: string;
+  name: string;
+  subtitle: string | null;
+  description: string | null;
+  tag: string | null;
+  href: string | null;
+  hero_image_url: string | null;
+  capacity_min: number | null;
+  capacity_max: number | null;
+  size_sqft: number | null;
+  parking_bays: number | null;
+}

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown, Gem, MapPin } from "lucide-react"
@@ -178,7 +178,7 @@ function SummaryContent({
       <div
         className="mt-3 rounded-sm px-3 py-2 text-center text-[11px] leading-relaxed"
         style={{
-          background: "rgba(201,168,76,0.06)",
+          background: "rgba(109,40,217,0.06)",
           border: "1px solid var(--border)",
           color: "var(--text-muted)",
           fontFamily: "var(--font-body)",

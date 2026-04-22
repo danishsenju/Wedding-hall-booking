@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle } from "lucide-react"
@@ -16,7 +16,9 @@ interface TrueFocusInputProps extends React.InputHTMLAttributes<HTMLInputElement
 
 function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
   const [focused, setFocused] = useState(false)
-  const hasValue = Boolean(rest.value)
+  // register() doesn't return a value prop (uncontrolled), so track locally
+  const [filled, setFilled] = useState(false)
+  const hasValue = filled
 
   return (
     <div className="group relative w-full">
@@ -26,10 +28,17 @@ function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
           {...rest}
           onFocus={(e) => {
             setFocused(true)
+            // Detect pre-existing value (e.g. from sessionStorage hydration)
+            if (e.target.value) setFilled(true)
             rest.onFocus?.(e)
+          }}
+          onChange={(e) => {
+            setFilled(Boolean(e.target.value))
+            rest.onChange?.(e)
           }}
           onBlur={(e) => {
             setFocused(false)
+            setFilled(Boolean(e.target.value))
             rest.onBlur?.(e)
           }}
           placeholder=" "
@@ -76,7 +85,7 @@ function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               style={{
-                boxShadow: "0 0 0 3px rgba(201,168,76,0.1)",
+                boxShadow: "0 0 0 3px rgba(109,40,217,0.1)",
               }}
             />
           )}
@@ -114,7 +123,8 @@ interface TrueFocusTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAr
 
 function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps) {
   const [focused, setFocused] = useState(false)
-  const hasValue = Boolean(rest.value)
+  const [filled, setFilled] = useState(false)
+  const hasValue = filled
 
   return (
     <div className="group relative w-full">
@@ -124,10 +134,16 @@ function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps
           {...rest}
           onFocus={(e) => {
             setFocused(true)
+            if (e.target.value) setFilled(true)
             rest.onFocus?.(e)
+          }}
+          onChange={(e) => {
+            setFilled(Boolean(e.target.value))
+            rest.onChange?.(e)
           }}
           onBlur={(e) => {
             setFocused(false)
+            setFilled(Boolean(e.target.value))
             rest.onBlur?.(e)
           }}
           placeholder=" "
@@ -173,7 +189,7 @@ function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              style={{ boxShadow: "0 0 0 3px rgba(201,168,76,0.1)" }}
+              style={{ boxShadow: "0 0 0 3px rgba(109,40,217,0.1)" }}
             />
           )}
         </AnimatePresence>
@@ -218,7 +234,7 @@ function PackageCard({
       whileTap={{ scale: 0.98 }}
       className="relative w-full rounded-sm p-4 text-left"
       style={{
-        background: selected ? "rgba(201,168,76,0.06)" : "var(--surface-1)",
+        background: selected ? "rgba(109,40,217,0.06)" : "var(--surface-1)",
         border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
         transition: "border-color 0.2s ease, background 0.2s ease",
       }}
@@ -235,7 +251,7 @@ function PackageCard({
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
             <path
               d="M1 4L3.5 6.5L9 1"
-              stroke="#06141B"
+              stroke="#EDE9FE"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -310,6 +326,9 @@ export default function Step1Details({ form, packages }: Step1Props) {
 
   return (
     <div className="space-y-5">
+      {/* Hidden registered input ensures package_id is in RHF resolver values */}
+      <input type="hidden" {...register("package_id")} />
+
       {/* ── Couple names ── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <motion.div
@@ -429,14 +448,19 @@ export default function Step1Details({ form, packages }: Step1Props) {
 
         {packages.length === 0 ? (
           <div
-            className="rounded-sm px-4 py-6 text-center text-sm"
+            className="rounded-sm px-4 py-8 text-center"
             style={{
-              border: "1px solid var(--border)",
-              color: "var(--text-muted)",
+              border: "1px dashed var(--border-hover)",
+              background: "rgba(109,40,217,0.03)",
               fontFamily: "var(--font-body)",
             }}
           >
-            Loading packages…
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              No packages available yet.
+            </p>
+            <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7 }}>
+              Please contact us to enquire about our packages.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

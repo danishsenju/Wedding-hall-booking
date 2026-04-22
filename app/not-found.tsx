@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function NotFound() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(109,40,217,0.04) 0%, transparent 70%)",
         }}
       />
 
@@ -62,7 +62,7 @@ export default function NotFound() {
             className="inline-flex items-center gap-2 rounded-sm px-6 py-2.5 text-sm font-medium transition-all hover:opacity-90"
             style={{
               background: "linear-gradient(135deg, var(--gold), var(--gold-hover))",
-              color: "#06141B",
+              color: "#EDE9FE",
               fontFamily: "var(--font-body)",
             }}
           >

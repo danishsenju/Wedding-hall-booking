@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import {
@@ -107,7 +107,7 @@ export default function SpecsGrid() {
               className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               style={{
                 background:
-                  "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(201,168,76,0.07) 0%, transparent 70%)",
+                  "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(109,40,217,0.07) 0%, transparent 70%)",
               }}
             />
 

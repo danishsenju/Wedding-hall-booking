@@ -14,9 +14,46 @@ create table if not exists venues (
   ceiling_height_m numeric,
   parking_bays    int,
   location        text,
+  latitude        numeric,
+  longitude       numeric,
   hero_image_url  text,
   created_at      timestamptz default now()
 );
+
+-- Add coordinate columns to existing venues table (safe to run on existing DBs)
+alter table venues add column if not exists latitude  numeric;
+alter table venues add column if not exists longitude numeric;
+
+-- Add landing-page display columns to venues (safe to run on existing DBs)
+alter table venues add column if not exists subtitle text;
+alter table venues add column if not exists tag      text;
+alter table venues add column if not exists href     text;
+
+-- ─── THEMES (for ThemeCarousel on landing page) ───────────────
+create table if not exists themes (
+  id            uuid primary key default gen_random_uuid(),
+  name          text not null,
+  tagline       text,
+  description   text,
+  image_url     text,
+  price_from_rm int,
+  mood          text,
+  sort_order    int default 0,
+  created_at    timestamptz default now()
+);
+
+alter table themes enable row level security;
+
+drop policy if exists "public read themes"  on themes;
+drop policy if exists "admin all themes"    on themes;
+
+create policy "public read themes"
+  on themes for select using (true);
+create policy "admin all themes"
+  on themes for all using (auth.role() = 'authenticated');
+
+grant select on table themes to anon;
+grant all    on table themes to authenticated;
 
 -- ─── PACKAGES ─────────────────────────────────────────────────
 create table if not exists packages (
@@ -136,6 +173,25 @@ create index if not exists idx_bookings_email      on bookings (email);
 create index if not exists idx_blocked_dates_date  on blocked_dates (blocked_date);
 
 -- ═══════════════════════════════════════════════════════════════
+-- GRANTS — explicit table access for anon + authenticated roles
+-- (required in newer Supabase projects where auto-grants are off)
+-- ═══════════════════════════════════════════════════════════════
+
+grant usage on schema public to anon, authenticated;
+
+-- Public catalog reads
+grant select on table venues, packages, addons, blocked_dates to anon;
+
+-- Public booking submission
+grant insert on table bookings, booking_addons to anon;
+
+-- Public booking read (confirmation page)
+grant select on table bookings, booking_addons to anon;
+
+-- Admin full access
+grant all on table bookings, booking_addons, blocked_dates, venues, packages, addons to authenticated;
+
+-- ═══════════════════════════════════════════════════════════════
 -- ROW LEVEL SECURITY
 -- ═══════════════════════════════════════════════════════════════
 
@@ -176,3 +232,28 @@ create policy "admin all booking_addons"
   on booking_addons for all using (auth.role() = 'authenticated');
 create policy "admin all blocked"
   on blocked_dates for all using (auth.role() = 'authenticated');
+
+-- ─── GALLERY ──────────────────────────────────────────────────
+create table if not exists gallery (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  image_url   text not null,
+  sort_order  int default 0,
+  created_at  timestamptz default now()
+);
+
+alter table gallery enable row level security;
+
+drop policy if exists "public read gallery"  on gallery;
+drop policy if exists "admin all gallery"    on gallery;
+
+create policy "public read gallery"
+  on gallery for select using (true);
+create policy "admin all gallery"
+  on gallery for all using (auth.role() = 'authenticated');
+
+grant select, insert, update, delete on table gallery to anon;
+grant all on table gallery to authenticated;
+grant all on table gallery to service_role;
+
+create index if not exists idx_gallery_sort on gallery (sort_order);

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
@@ -295,7 +295,7 @@ function TimeSlotGrid({
             className="relative flex flex-col items-center justify-center rounded-sm p-3 text-center transition-colors"
             style={{
               background: isSelected
-                ? "rgba(201,168,76,0.08)"
+                ? "rgba(109,40,217,0.08)"
                 : "var(--surface-1)",
               border: `1px solid ${
                 isSelected
@@ -350,7 +350,7 @@ function TimeSlotGrid({
                 layoutId="slot-indicator"
                 className="absolute inset-0 rounded-sm"
                 style={{
-                  background: "rgba(201,168,76,0.04)",
+                  background: "rgba(109,40,217,0.04)",
                   boxShadow: "0 0 0 1px var(--gold)",
                 }}
                 initial={false}
@@ -427,8 +427,8 @@ export default function Step2DateTime({ form, blockedDates }: Step2Props) {
               onClick={jumpToNext}
               className="group flex items-center gap-2 rounded-sm px-3 py-2 text-xs transition-colors"
               style={{
-                border: "1px solid rgba(201,168,76,0.25)",
-                background: "rgba(201,168,76,0.04)",
+                border: "1px solid rgba(109,40,217,0.25)",
+                background: "rgba(109,40,217,0.04)",
                 color: "var(--text-muted)",
                 fontFamily: "var(--font-body)",
               }}

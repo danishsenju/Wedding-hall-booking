@@ -4,21 +4,21 @@
 
 /* ─── Design Tokens ─────────────────────────────── */
 :root {
-  --gold: #C9A84C;
-  --gold-hover: #E8C97A;
-  --gold-dim: #8A6F32;
-  --base: #06141B;
-  --surface-1: #11212D;
-  --surface-2: #253745;
-  --surface-3: #191D23;
-  --text: #CCD0CF;
-  --text-muted: #9BA8AB;
-  --rose: #C5BAC4;
-  --border: rgba(201, 168, 76, 0.15);
-  --border-hover: rgba(201, 168, 76, 0.35);
+  --gold: #6D28D9;
+  --gold-hover: #7C3AED;
+  --gold-dim: #4C1D95;
+  --base: #0A0B10;
+  --surface-1: #141226;
+  --surface-2: #2B1B52;
+  --surface-3: #0D0C1A;
+  --text: #EDE9FE;
+  --text-muted: #A78BFA;
+  --rose: #C4B5FD;
+  --border: rgba(109, 40, 217, 0.15);
+  --border-hover: rgba(109, 40, 217, 0.35);
 
   /* Font stacks */
-  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", "Garamond", Georgia, serif;
   --font-body: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
 }
 
@@ -100,7 +100,7 @@ a {
 
 /* ─── Selection ─────────────────────────────────── */
 ::selection {
-  background: rgba(201, 168, 76, 0.25);
+  background: rgba(109, 40, 217, 0.25);
   color: var(--gold-hover);
 }
 
@@ -189,4 +189,55 @@ a {
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
     opacity: 0.4;
   }
+}
+
+/* ─── Glass Button ───────────────────────────────── */
+.glass-button {
+  position: relative;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.glass-filter,
+.glass-overlay,
+.glass-specular {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.glass-filter {
+  z-index: 1;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  filter: url(#glass-distortion) saturate(120%) brightness(1.1);
+}
+
+.glass-overlay {
+  z-index: 2;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+}
+
+.glass-specular {
+  z-index: 3;
+  box-shadow: inset 1px 1px 1px var(--glass-highlight, rgba(255, 255, 255, 0.2));
+  transition: background 0.1s ease;
+}
+
+.glass-content {
+  position: relative;
+  z-index: 4;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

@@ -37,13 +37,15 @@ export const Step2Schema = z.object({
 })
 
 /* ─── Step 3 — Add-ons ───────────────────────────── */
+// optional() lets the field be absent from the resolver values when step 3
+// hasn't been visited yet (unregistered fields can be undefined in the resolver)
 export const Step3Schema = z.object({
-  selected_addons: z.array(z.string()),
+  selected_addons: z.array(z.string()).optional(),
 })
 
 /* ─── Full Booking Schema (combined) ─────────────── */
 export const BookingSchema = z.object({
-  venue_id: z.string().min(1, "Venue is required"),
+  venue_id: z.string().optional(),
   ...Step1Schema.shape,
   ...Step2Schema.shape,
   ...Step3Schema.shape,

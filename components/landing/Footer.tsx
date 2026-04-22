@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 const FOOTER_LINKS = {
   Venues: [
@@ -37,7 +37,7 @@ export default function Footer() {
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent)",
+            "linear-gradient(90deg, transparent, rgba(109,40,217,0.3), transparent)",
         }}
         aria-hidden="true"
       />
@@ -90,7 +90,7 @@ export default function Footer() {
                   href="tel:+60312345678"
                   className="transition-colors duration-200 hover:text-[var(--gold)]"
                 >
-                  +603 1234 5678
+                  +6019 2774203
                 </a>
               </p>
               <p>
@@ -98,7 +98,7 @@ export default function Footer() {
                   href="mailto:hello@lumieres.com"
                   className="transition-colors duration-200 hover:text-[var(--gold)]"
                 >
-                  hello@lumieres.com
+                  danishfarhanzailan392@gmail.com
                 </a>
               </p>
             </address>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
 import { Check, Lock, Sparkles } from "lucide-react";
@@ -34,7 +34,7 @@ const TIERS: Tier[] = [
     name: "Gold",
     price: 42000,
     popular: true,
-    color: "#C9A84C",
+    color: "#6D28D9",
     perks: [
       "Up to 750 guests",
       "8-hour venue access",
@@ -96,7 +96,7 @@ function SpotlightCard({
       className="relative overflow-hidden rounded-sm"
       style={{
         border: `1px solid ${active ? color : "var(--border)"}`,
-        background: active ? "rgba(201,168,76,0.06)" : "var(--surface-1)",
+        background: active ? "rgba(109,40,217,0.06)" : "var(--surface-1)",
         transition: "border-color 0.25s, background 0.25s",
       }}
     >
@@ -186,7 +186,7 @@ export default function PricingCard() {
                   <span
                     className="absolute right-3 top-3 flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium"
                     style={{
-                      background: "rgba(201,168,76,0.18)",
+                      background: "rgba(109,40,217,0.18)",
                       color: "var(--gold)",
                     }}
                   >
@@ -338,7 +338,7 @@ export default function PricingCard() {
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
                 color: "var(--base)",
-                boxShadow: "0 4px 20px rgba(201,168,76,0.25)",
+                boxShadow: "0 4px 20px rgba(109,40,217,0.25)",
               }}
             >
               Reserve This Date

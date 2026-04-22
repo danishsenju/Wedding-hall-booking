@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { Check } from "lucide-react"
@@ -65,7 +65,7 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
                     ? "var(--gold)"
                     : active
                       ? "var(--gold)"
-                      : "rgba(201,168,76,0.22)",
+                      : "rgba(109,40,217,0.22)",
                   color: done
                     ? "#06141B"
                     : active
@@ -73,8 +73,8 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
                       : "var(--text-muted)",
                   scale: active ? 1.12 : 1,
                   boxShadow: active
-                    ? "0 0 0 4px rgba(201,168,76,0.12)"
-                    : "0 0 0 0px rgba(201,168,76,0)",
+                    ? "0 0 0 4px rgba(109,40,217,0.12)"
+                    : "0 0 0 0px rgba(109,40,217,0)",
                 }}
                 style={{ border: "1px solid", fontFamily: "var(--font-body)" }}
                 transition={{ duration: 0.3, ease: "easeOut" }}

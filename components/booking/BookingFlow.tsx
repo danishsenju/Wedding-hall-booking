@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AnimatePresence, motion } from "framer-motion"
@@ -132,7 +132,10 @@ export default function BookingFlow({
   const meta = STEP_META[step - 1]
 
   return (
-    <div className="min-h-screen pb-20 pt-8" style={{ background: "var(--base)" }}>
+    <div className="min-h-screen pb-20 pt-28" style={{ background: "var(--base)" }}>
+      {/* Hidden registered input so venue_id is included in RHF resolver values */}
+      <input type="hidden" {...form.register("venue_id")} />
+
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ── Page header ── */}
@@ -294,9 +297,9 @@ export default function BookingFlow({
                     style={{
                       background:
                         "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-                      color: "#06141B",
+                      color: "#EDE9FE",
                       fontFamily: "var(--font-body)",
-                      boxShadow: "0 2px 16px rgba(201,168,76,0.25)",
+                      boxShadow: "0 2px 16px rgba(109,40,217,0.25)",
                     }}
                   >
                     {/* Shimmer */}

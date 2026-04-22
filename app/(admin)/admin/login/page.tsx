@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -23,7 +23,7 @@ function AuroraBackground() {
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.08) 0%, transparent 70%)",
+            "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(109,40,217,0.08) 0%, transparent 70%)",
         }}
       />
       {/* Aurora 2 — rose, ultra-dim */}
@@ -53,7 +53,7 @@ function AuroraBackground() {
         }}
         style={{
           background:
-            "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 65%)",
+            "radial-gradient(ellipse 50% 40% at 50% 50%, rgba(109,40,217,0.05) 0%, transparent 65%)",
         }}
       />
       {/* Noise grain */}
@@ -101,7 +101,7 @@ function TrueFocusInput({
         animate={{
           opacity: focused ? 1 : 0,
           boxShadow: focused
-            ? "0 0 0 1.5px var(--gold), 0 0 16px rgba(201,168,76,0.15)"
+            ? "0 0 0 1.5px var(--gold), 0 0 16px rgba(109,40,217,0.15)"
             : "0 0 0 0px transparent",
         }}
         transition={{ duration: 0.2 }}
@@ -201,7 +201,7 @@ export default function AdminLoginPage() {
         className="pointer-events-none absolute z-10 h-[420px] w-[420px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(109,40,217,0.12) 0%, transparent 70%)",
           filter: "blur(40px)",
         }}
       />
@@ -230,7 +230,7 @@ export default function AdminLoginPage() {
           background: "var(--surface-1)",
           border: "1px solid var(--border)",
           boxShadow:
-            "0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.06)",
+            "0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(109,40,217,0.06)",
         }}
       >
         {/* Brand */}
@@ -331,9 +331,9 @@ export default function AdminLoginPage() {
               background: loading
                 ? "var(--surface-2)"
                 : "linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)",
-              color: loading ? "var(--text-muted)" : "#06141B",
+              color: loading ? "var(--text-muted)" : "#EDE9FE",
               fontFamily: "var(--font-body)",
-              boxShadow: loading ? "none" : "0 4px 20px rgba(201,168,76,0.25)",
+              boxShadow: loading ? "none" : "0 4px 20px rgba(109,40,217,0.25)",
             }}
           >
             {loading ? (
