@@ -86,10 +86,10 @@ export async function createBooking(
     return { success: false, error: "This date is already booked. Please choose another date." }
   }
 
-  // Resolve package price
+  // Resolve package price + duration
   const { data: pkg, error: pkgError } = await supabase
     .from("packages")
-    .select("price_rm")
+    .select("price_rm, duration_hours")
     .eq("id", data.package_id)
     .single()
 
@@ -97,19 +97,26 @@ export async function createBooking(
     return { success: false, error: "Invalid package selected." }
   }
 
-  // Resolve addon prices
+  const guestCount = parseInt(data.guest_count, 10) || 0
+  const durationHours = pkg.duration_hours ?? 0
+
+  // Resolve vendor prices (selected_addons holds vendor IDs)
   let addonsTotal = 0
-  const addonRows: { id: string; price_rm: number }[] = []
+  const vendorRows: { id: string; price_rm: number }[] = []
 
   if (data.selected_addons.length > 0) {
-    const { data: addons } = await supabase
-      .from("addons")
-      .select("id, price_rm")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: vendors } = await (supabase as any)
+      .from("vendors")
+      .select("id, category, price_rm")
       .in("id", data.selected_addons)
 
-    for (const a of addons ?? []) {
-      addonRows.push({ id: a.id, price_rm: a.price_rm })
-      addonsTotal += a.price_rm
+    for (const v of (vendors ?? []) as { id: string; category: string; price_rm: number }[]) {
+      let lineTotal = v.price_rm
+      if (v.category === "catering") lineTotal = v.price_rm * Math.max(guestCount, 1)
+      else if (v.category === "photography") lineTotal = v.price_rm * Math.max(durationHours, 1)
+      vendorRows.push({ id: v.id, price_rm: lineTotal })
+      addonsTotal += lineTotal
     }
   }
 
@@ -149,13 +156,14 @@ export async function createBooking(
     }
   }
 
-  // Insert booking addons
-  if (addonRows.length > 0) {
-    await supabase.from("booking_addons").insert(
-      addonRows.map((a) => ({
+  // Insert booking vendors
+  if (vendorRows.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from("booking_vendors").insert(
+      vendorRows.map((v) => ({
         booking_id: booking.id,
-        addon_id: a.id,
-        price_rm: a.price_rm,
+        vendor_id: v.id,
+        price_rm: v.price_rm,
       }))
     )
   }

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { Package } from "@/types"
 import type { BookingFormValues } from "@/lib/validations"
@@ -14,7 +14,8 @@ interface TrueFocusInputProps extends React.InputHTMLAttributes<HTMLInputElement
   id: string
 }
 
-function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
+const TrueFocusInput = React.forwardRef<HTMLInputElement, TrueFocusInputProps>(
+  function TrueFocusInput({ label, error, id, ...rest }, ref) {
   const [focused, setFocused] = useState(false)
   // register() doesn't return a value prop (uncontrolled), so track locally
   const [filled, setFilled] = useState(false)
@@ -25,6 +26,7 @@ function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
       <div className="relative">
         <input
           id={id}
+          ref={ref}
           {...rest}
           onFocus={(e) => {
             setFocused(true)
@@ -112,7 +114,7 @@ function TrueFocusInput({ label, error, id, ...rest }: TrueFocusInputProps) {
       </AnimatePresence>
     </div>
   )
-}
+})
 
 /* ─── TrueFocus Textarea ─────────────────────────── */
 interface TrueFocusTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -121,7 +123,8 @@ interface TrueFocusTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAr
   id: string
 }
 
-function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps) {
+const TrueFocusTextarea = React.forwardRef<HTMLTextAreaElement, TrueFocusTextareaProps>(
+  function TrueFocusTextarea({ label, error, id, ...rest }, ref) {
   const [focused, setFocused] = useState(false)
   const [filled, setFilled] = useState(false)
   const hasValue = filled
@@ -131,6 +134,7 @@ function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps
       <div className="relative">
         <textarea
           id={id}
+          ref={ref}
           {...rest}
           onFocus={(e) => {
             setFocused(true)
@@ -214,7 +218,7 @@ function TrueFocusTextarea({ label, error, id, ...rest }: TrueFocusTextareaProps
       </AnimatePresence>
     </div>
   )
-}
+})
 
 /* ─── Package Card ───────────────────────────────── */
 function PackageCard({

@@ -63,6 +63,37 @@ export function isDateWithinMonths(dateStr: string, months: number): boolean {
   return date <= limit;
 }
 
+/* ─── Vendor Price Calculator ───────────────────── */
+export function calculateVendorPrice(
+  category: string,
+  priceRm: number,
+  guestCount: number,
+  durationHours: number
+): number {
+  if (category === "catering") return priceRm * Math.max(guestCount, 1)
+  if (category === "photography") return priceRm * Math.max(durationHours, 1)
+  return priceRm
+}
+
+export function vendorUnitLabel(category: string, priceRm: number): string {
+  if (category === "catering") return `${formatRM(priceRm)} / pax`
+  if (category === "photography") return `${formatRM(priceRm)} / hr`
+  return formatRM(priceRm)
+}
+
+export function vendorPriceBreakdown(
+  category: string,
+  priceRm: number,
+  guestCount: number,
+  durationHours: number
+): string {
+  if (category === "catering" && guestCount > 0)
+    return `${formatRM(priceRm)}/pax × ${guestCount} guests`
+  if (category === "photography" && durationHours > 0)
+    return `${formatRM(priceRm)}/hr × ${durationHours}h`
+  return ""
+}
+
 /* ─── Deposit Calculator ─────────────────────────── */
 export function calculateDeposit(totalRm: number, rate = 0.3): number {
   return Math.ceil(totalRm * rate);

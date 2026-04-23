@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { getAddons, getBlockedDates, getPackages, getVenue } from "@/lib/queries"
+import { getBlockedDates, getPackages, getVenue } from "@/lib/queries"
+import { getAllVendors } from "@/app/actions/vendor"
 import BookingFlow from "@/components/booking/BookingFlow"
 
 export const metadata: Metadata = {
@@ -11,10 +12,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic"
 
 export default async function BookPage() {
-  const [venue, packages, addons, blockedDates] = await Promise.all([
+  const [venue, packages, vendorResult, blockedDates] = await Promise.all([
     getVenue(),
     getPackages(),
-    getAddons(),
+    getAllVendors(),
     getBlockedDates(),
   ])
 
@@ -22,7 +23,7 @@ export default async function BookPage() {
     <BookingFlow
       venue={venue}
       packages={packages}
-      addons={addons}
+      vendors={vendorResult.data ?? []}
       blockedDates={blockedDates}
     />
   )

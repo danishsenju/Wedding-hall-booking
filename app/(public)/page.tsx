@@ -3,7 +3,6 @@ import { getAllHalls } from "@/app/actions/hall";
 import { getAllThemes } from "@/app/actions/theme";
 import BentoFeatures from "@/components/landing/BentoFeatures";
 import CTABand from "@/components/landing/CTABand";
-import Footer from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import StatsStrip from "@/components/landing/StatsStrip";
 import ThemeCarousel from "@/components/landing/ThemeCarousel";
@@ -39,7 +38,6 @@ export default async function LandingPage() {
       <ThemeCarousel initialThemes={themesResult.data ?? []} />
       <BentoFeatures />
       <CTABand />
-      <Footer />
     </main>
   );
 }

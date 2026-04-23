@@ -5,9 +5,9 @@ import { AlertCircle, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
-import type { Addon, Package, Venue } from "@/types"
+import type { Package, Vendor, Venue } from "@/types"
 import { createBooking } from "@/app/actions/booking"
-import { calculateDeposit, formatEventDate, formatRM } from "@/lib/utils"
+import { calculateDeposit, calculateVendorPrice, formatEventDate, formatRM, vendorPriceBreakdown, vendorUnitLabel } from "@/lib/utils"
 import type { BookingFormValues } from "@/lib/validations"
 
 const TIME_SLOT_LABELS: Record<string, string> = {
@@ -161,10 +161,10 @@ interface Step4Props {
   form: UseFormReturn<BookingFormValues>
   venue: Venue | null
   packages: Package[]
-  addons: Addon[]
+  vendors: Vendor[]
 }
 
-export default function Step4Review({ form, venue, packages, addons }: Step4Props) {
+export default function Step4Review({ form, venue, packages, vendors }: Step4Props) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -173,11 +173,17 @@ export default function Step4Review({ form, venue, packages, addons }: Step4Prop
 
   const pkg = packages.find((p) => p.id === values.package_id)
   const selectedAddons = (values.selected_addons ?? [])
-    .map((id) => addons.find((a) => a.id === id))
-    .filter(Boolean) as Addon[]
+    .map((id) => vendors.find((v) => v.id === id))
+    .filter(Boolean) as Vendor[]
+
+  const guestCount = parseInt(values.guest_count ?? "0", 10) || 0
+  const durationHours = pkg?.duration_hours ?? 0
 
   const packagePrice = pkg?.price_rm ?? 0
-  const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price_rm, 0)
+  const addonsTotal = selectedAddons.reduce(
+    (sum, v) => sum + calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours),
+    0
+  )
   const totalPrice = packagePrice + addonsTotal
   const deposit = calculateDeposit(totalPrice)
 
@@ -278,14 +284,30 @@ export default function Step4Review({ form, venue, packages, addons }: Step4Prop
 
       {/* ── Add-ons ── */}
       {selectedAddons.length > 0 && (
-        <ReviewSection title="Add-ons">
-          {selectedAddons.map((addon) => (
-            <ReviewRow
-              key={addon.id}
-              label={addon.name}
-              value={formatRM(addon.price_rm)}
-            />
-          ))}
+        <ReviewSection title="Services">
+          {selectedAddons.map((addon) => {
+            const total = calculateVendorPrice(addon.category, addon.price_rm, guestCount, durationHours)
+            const breakdown = vendorPriceBreakdown(addon.category, addon.price_rm, guestCount, durationHours)
+            const isEstimate =
+              (addon.category === "catering" && guestCount === 0) ||
+              (addon.category === "photography" && durationHours === 0)
+            return (
+              <div key={addon.id}>
+                <ReviewRow
+                  label={addon.name}
+                  value={isEstimate ? vendorUnitLabel(addon.category, addon.price_rm) : formatRM(total)}
+                />
+                {breakdown && (
+                  <div
+                    className="text-right text-[10px] -mt-1 mb-1"
+                    style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+                  >
+                    {breakdown}
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </ReviewSection>
       )}
 
@@ -301,13 +323,19 @@ export default function Step4Review({ form, venue, packages, addons }: Step4Prop
           label={`${pkg?.name ?? "Package"} Package`}
           value={formatRM(packagePrice)}
         />
-        {selectedAddons.map((addon) => (
-          <PricingRow
-            key={addon.id}
-            label={`+ ${addon.name}`}
-            value={formatRM(addon.price_rm)}
-          />
-        ))}
+        {selectedAddons.map((addon) => {
+          const total = calculateVendorPrice(addon.category, addon.price_rm, guestCount, durationHours)
+          const isEstimate =
+            (addon.category === "catering" && guestCount === 0) ||
+            (addon.category === "photography" && durationHours === 0)
+          return (
+            <PricingRow
+              key={addon.id}
+              label={`+ ${addon.name}`}
+              value={isEstimate ? vendorUnitLabel(addon.category, addon.price_rm) : formatRM(total)}
+            />
+          )
+        })}
 
         <div
           className="my-2 h-px"

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import type { Addon, Package, Venue } from "@/types"
+import type { Package, Vendor, Venue } from "@/types"
 import { BookingSchema, STEP_FIELDS, type BookingFormValues } from "@/lib/validations"
 import BookingSummary from "./BookingSummary"
 import Step1Details from "./Step1Details"
@@ -47,7 +47,7 @@ const slideVariants = {
 const STEP_META = [
   { title: "Your Details", subtitle: "Tell us about the happy couple" },
   { title: "Date & Time", subtitle: "Choose your perfect day" },
-  { title: "Enhancements", subtitle: "Elevate your celebration" },
+  { title: "Services", subtitle: "Optional — enhance your celebration" },
   { title: "Review & Confirm", subtitle: "One last look before we proceed" },
 ] as const
 
@@ -55,14 +55,14 @@ const STEP_META = [
 interface BookingFlowProps {
   venue: Venue | null
   packages: Package[]
-  addons: Addon[]
+  vendors: Vendor[]
   blockedDates: string[]
 }
 
 export default function BookingFlow({
   venue,
   packages,
-  addons,
+  vendors,
   blockedDates,
 }: BookingFlowProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
@@ -189,7 +189,7 @@ export default function BookingFlow({
               <BookingSummary
                 venue={venue}
                 packages={packages}
-                addons={addons}
+                vendors={vendors}
                 values={formValues}
               />
             </div>
@@ -253,13 +253,13 @@ export default function BookingFlow({
                   >
                     {step === 1 && <Step1Details form={form} packages={packages} />}
                     {step === 2 && <Step2DateTime form={form} blockedDates={blockedDates} />}
-                    {step === 3 && <Step3Addons form={form} addons={addons} />}
+                    {step === 3 && <Step3Addons form={form} vendors={vendors} packages={packages} />}
                     {step === 4 && (
                       <Step4Review
                         form={form}
                         venue={venue}
                         packages={packages}
-                        addons={addons}
+                        vendors={vendors}
                       />
                     )}
                   </motion.div>
@@ -318,7 +318,11 @@ export default function BookingFlow({
                       }}
                     />
                     <span className="relative">
-                      {step === 3 ? "Review Booking" : "Continue"}
+                      {step === 3
+                        ? (watch("selected_addons")?.length ?? 0) > 0
+                          ? "Continue to Review"
+                          : "Skip & Review"
+                        : "Continue"}
                     </span>
                   </motion.button>
                 )}
@@ -331,7 +335,7 @@ export default function BookingFlow({
             <BookingSummary
               venue={venue}
               packages={packages}
-              addons={addons}
+              vendors={vendors}
               values={formValues}
             />
           </div>

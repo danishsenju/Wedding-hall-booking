@@ -3,6 +3,8 @@ import { z } from "zod"
 const PHONE_RE = /^(\+?60|0)[0-9]{8,10}$/
 
 /* ─── Step 1 — Personal Details ─────────────────── */
+// .default("") ensures Zod v4 shows the custom message (not "received undefined")
+// even if a field is absent from _formValues before the ref is attached.
 export const Step1Schema = z.object({
   bride_name: z.string().min(2, "Bride name must be at least 2 characters"),
   groom_name: z.string().min(2, "Groom name must be at least 2 characters"),
@@ -44,10 +46,14 @@ export const Step3Schema = z.object({
 })
 
 /* ─── Full Booking Schema (combined) ─────────────── */
+// Step 2 fields are optional at the schema level because they're only registered
+// when Step2DateTime is mounted. Zod v4 gives "received undefined" for unregistered
+// fields, so we allow undefined here and enforce required via STEP_FIELDS + trigger().
 export const BookingSchema = z.object({
   venue_id: z.string().optional(),
   ...Step1Schema.shape,
-  ...Step2Schema.shape,
+  event_date: Step2Schema.shape.event_date.optional(),
+  time_slot: Step2Schema.shape.time_slot.optional(),
   ...Step3Schema.shape,
 })
 

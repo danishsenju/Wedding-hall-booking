@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { name: "Features", link: "/#features" },
   { name: "Gallery", link: "/gallery" },
   { name: "Map", link: "/map" },
-  { name: "Contact", link: "/#footer" },
+  { name: "Services", link: "/services" },
 ] as const;
 
 const innerButtonClass =

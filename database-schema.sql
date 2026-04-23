@@ -116,6 +116,14 @@ create table if not exists booking_addons (
   price_rm    int not null
 );
 
+-- ─── BOOKING VENDORS ──────────────────────────────────────────
+create table if not exists booking_vendors (
+  id          uuid primary key default gen_random_uuid(),
+  booking_id  uuid references bookings(id) on delete cascade,
+  vendor_id   uuid references vendors(id),
+  price_rm    int not null
+);
+
 -- ═══════════════════════════════════════════════════════════════
 -- TRIGGERS
 -- ═══════════════════════════════════════════════════════════════
@@ -177,13 +185,13 @@ create index if not exists idx_blocked_dates_date  on blocked_dates (blocked_dat
 -- (required in newer Supabase projects where auto-grants are off)
 -- ═══════════════════════════════════════════════════════════════
 
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
 -- Public catalog reads
 grant select on table venues, packages, addons, blocked_dates to anon;
 
 -- Admin write via anon key + auth session (anon key is the fallback when no service role key is set)
-grant insert, update, delete on table packages,     venues, addons, blocked_dates to anon;
+grant insert, update, delete on table packages, venues, addons, blocked_dates to anon;
 
 -- Public booking submission
 grant insert on table bookings, booking_addons to anon;
@@ -193,6 +201,9 @@ grant select on table bookings, booking_addons to anon;
 
 -- Admin full access
 grant all on table bookings, booking_addons, blocked_dates, venues, packages, addons to authenticated;
+
+-- Service role full access (bypasses RLS but still needs PostgreSQL-level grants in Supabase)
+grant all on table venues, packages, addons, blocked_dates, bookings, booking_addons to service_role;
 
 -- ═══════════════════════════════════════════════════════════════
 -- ROW LEVEL SECURITY
@@ -215,6 +226,11 @@ drop policy if exists "public insert booking_addons" on booking_addons;
 drop policy if exists "admin all bookings"         on bookings;
 drop policy if exists "admin all booking_addons"   on booking_addons;
 drop policy if exists "admin all blocked"          on blocked_dates;
+drop policy if exists "admin insert packages"      on packages;
+drop policy if exists "admin update packages"      on packages;
+drop policy if exists "admin delete packages"      on packages;
+drop policy if exists "admin all venues"           on venues;
+drop policy if exists "admin all addons"           on addons;
 
 -- Public read (catalog data)
 create policy "public read venues"    on venues        for select using (true);
@@ -235,6 +251,16 @@ create policy "admin all booking_addons"
   on booking_addons for all using (auth.role() = 'authenticated');
 create policy "admin all blocked"
   on blocked_dates for all using (auth.role() = 'authenticated');
+create policy "admin all venues"
+  on venues for all using (auth.role() = 'authenticated');
+create policy "admin all addons"
+  on addons for all using (auth.role() = 'authenticated');
+create policy "admin insert packages"
+  on packages for insert to authenticated with check (true);
+create policy "admin update packages"
+  on packages for update to authenticated using (true) with check (true);
+create policy "admin delete packages"
+  on packages for delete to authenticated using (true);
 
 -- ─── GALLERY ──────────────────────────────────────────────────
 create table if not exists gallery (

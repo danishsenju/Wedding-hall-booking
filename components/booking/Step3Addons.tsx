@@ -1,25 +1,80 @@
-﻿"use client"
+"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
-import { Check, ChevronDown, Tag } from "lucide-react"
+import { Camera, Check, ChevronDown, Flower2, Info, Sparkles, Star, UtensilsCrossed } from "lucide-react"
 import { useState } from "react"
+import type { LucideIcon } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
-import type { Addon } from "@/types"
-import { formatRM } from "@/lib/utils"
+import type { Package, Vendor, VendorCategory } from "@/types"
+import { calculateVendorPrice, formatRM, vendorUnitLabel } from "@/lib/utils"
 import type { BookingFormValues } from "@/lib/validations"
 
-/* ─── Addon Card — Desktop toggle ────────────────── */
+/* ─── Category icon mapping ──────────────────────── */
+function getIcon(category: VendorCategory): LucideIcon {
+  if (category === "photography") return Camera
+  if (category === "decor") return Flower2
+  if (category === "catering") return UtensilsCrossed
+  return Star
+}
+
+function getCategoryLabel(category: VendorCategory): string {
+  if (category === "photography") return "Photography"
+  if (category === "decor") return "Décor & Florals"
+  if (category === "catering") return "Catering"
+  return "Service"
+}
+
+/* ─── Multiplier hint ────────────────────────────── */
+function MultiplierHint({
+  category,
+  guestCount,
+  durationHours,
+}: {
+  category: VendorCategory
+  guestCount: number
+  durationHours: number
+}) {
+  if (category === "catering" && guestCount > 0)
+    return (
+      <div
+        className="mt-1 flex items-center gap-1 text-[10px]"
+        style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+      >
+        <Info size={8} />
+        × {guestCount} guests
+      </div>
+    )
+  if (category === "photography" && durationHours > 0)
+    return (
+      <div
+        className="mt-1 flex items-center gap-1 text-[10px]"
+        style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+      >
+        <Info size={8} />
+        × {durationHours} hrs (package)
+      </div>
+    )
+  return null
+}
+
+/* ─── Addon Card — Desktop ───────────────────────── */
 function AddonCardDesktop({
   addon,
   selected,
   onToggle,
-  savings,
+  guestCount,
+  durationHours,
 }: {
-  addon: Addon
+  addon: Vendor
   selected: boolean
   onToggle: () => void
-  savings: number
+  guestCount: number
+  durationHours: number
 }) {
+  const Icon = getIcon(addon.category)
+  const unitLabel = vendorUnitLabel(addon.category, addon.price_rm)
+  const totalPrice = calculateVendorPrice(addon.category, addon.price_rm, guestCount, durationHours)
+
   return (
     <motion.button
       type="button"
@@ -34,27 +89,36 @@ function AddonCardDesktop({
       }}
       aria-pressed={selected}
     >
-      {/* Checkbox */}
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="pointer-events-none absolute inset-x-0 top-0 h-px"
+            style={{
+              background: "linear-gradient(90deg, transparent, rgba(109,40,217,0.5), transparent)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="flex items-start gap-3">
+        {/* Icon */}
         <div
-          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm transition-colors"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm"
           style={{
-            background: selected ? "var(--gold)" : "transparent",
-            border: `1.5px solid ${selected ? "var(--gold)" : "rgba(109,40,217,0.4)"}`,
+            background: selected ? "rgba(109,40,217,0.18)" : "rgba(109,40,217,0.07)",
+            transition: "background 0.2s ease",
           }}
         >
-          <AnimatePresence initial={false}>
-            {selected && (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.15, ease: "backOut" }}
-              >
-                <Check size={11} color="#06141B" strokeWidth={2.5} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <Icon
+            size={16}
+            style={{
+              color: selected ? "var(--gold)" : "var(--text-muted)",
+              transition: "color 0.2s ease",
+            }}
+          />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -67,86 +131,46 @@ function AddonCardDesktop({
           >
             {addon.name}
           </div>
-          {addon.description && (
+          <div
+            className="mt-0.5 text-xs"
+            style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+          >
+            {getCategoryLabel(addon.category)}
+          </div>
+        </div>
+
+        {/* Price column */}
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          {/* Unit rate */}
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              color: selected ? "var(--gold)" : "var(--text)",
+              fontSize: "1rem",
+              fontWeight: 300,
+              letterSpacing: "0.02em",
+            }}
+          >
+            {unitLabel}
+          </div>
+
+          {/* Calculated total (if multiplier applies) */}
+          {(addon.category === "catering" && guestCount > 0) ||
+          (addon.category === "photography" && durationHours > 0) ? (
             <div
-              className="mt-1 text-xs leading-relaxed"
+              className="text-[10px]"
               style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
             >
-              {addon.description}
+              = {formatRM(totalPrice)}
             </div>
-          )}
+          ) : null}
 
-          {savings > 0 && (
-            <div
-              className="mt-1.5 flex items-center gap-1 text-[10px]"
-              style={{ color: "rgba(74,222,128,0.8)", fontFamily: "var(--font-body)" }}
-            >
-              <Tag size={9} />
-              Save {formatRM(savings)} vs. booking separately
-            </div>
-          )}
-        </div>
-
-        <div
-          className="shrink-0 text-right"
-          style={{
-            fontFamily: "var(--font-display)",
-            color: selected ? "var(--gold)" : "var(--text)",
-            fontSize: "1.1rem",
-            fontWeight: 300,
-            letterSpacing: "0.02em",
-          }}
-        >
-          {formatRM(addon.price_rm)}
-        </div>
-      </div>
-    </motion.button>
-  )
-}
-
-/* ─── Addon Card — Mobile expandable ─────────────── */
-function AddonCardMobile({
-  addon,
-  selected,
-  onToggle,
-  open,
-  onOpenToggle,
-  savings,
-}: {
-  addon: Addon
-  selected: boolean
-  onToggle: () => void
-  open: boolean
-  onOpenToggle: () => void
-  savings: number
-}) {
-  return (
-    <div
-      className="overflow-hidden rounded-sm"
-      style={{
-        border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
-        background: selected ? "rgba(109,40,217,0.04)" : "var(--surface-1)",
-        transition: "border-color 0.2s ease, background 0.2s ease",
-      }}
-    >
-      {/* Header row */}
-      <button
-        type="button"
-        onClick={onOpenToggle}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3"
-        aria-expanded={open}
-      >
-        <div className="flex items-center gap-3 min-w-0">
           {/* Checkbox */}
           <div
-            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm transition-colors"
+            className="flex h-5 w-5 items-center justify-center rounded-sm transition-colors"
             style={{
               background: selected ? "var(--gold)" : "transparent",
               border: `1.5px solid ${selected ? "var(--gold)" : "rgba(109,40,217,0.4)"}`,
-            }}
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggle()
             }}
           >
             <AnimatePresence initial={false}>
@@ -162,39 +186,86 @@ function AddonCardMobile({
               )}
             </AnimatePresence>
           </div>
+        </div>
+      </div>
+    </motion.button>
+  )
+}
+
+/* ─── Addon Card — Mobile ────────────────────────── */
+function AddonCardMobile({
+  addon,
+  selected,
+  onToggle,
+  open,
+  onOpenToggle,
+  guestCount,
+  durationHours,
+}: {
+  addon: Vendor
+  selected: boolean
+  onToggle: () => void
+  open: boolean
+  onOpenToggle: () => void
+  guestCount: number
+  durationHours: number
+}) {
+  const Icon = getIcon(addon.category)
+  const unitLabel = vendorUnitLabel(addon.category, addon.price_rm)
+  const totalPrice = calculateVendorPrice(addon.category, addon.price_rm, guestCount, durationHours)
+
+  return (
+    <div
+      className="overflow-hidden rounded-sm"
+      style={{
+        border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
+        background: selected ? "rgba(109,40,217,0.04)" : "var(--surface-1)",
+        transition: "border-color 0.2s ease, background 0.2s ease",
+      }}
+    >
+      <button
+        type="button"
+        onClick={onOpenToggle}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3"
+        aria-expanded={open}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm"
+            style={{ background: selected ? "rgba(109,40,217,0.18)" : "rgba(109,40,217,0.07)" }}
+            onClick={(e) => { e.stopPropagation(); onToggle() }}
+          >
+            <AnimatePresence initial={false} mode="wait">
+              {selected ? (
+                <motion.div key="check" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }} transition={{ duration: 0.15 }}>
+                  <Check size={13} style={{ color: "var(--gold)" }} strokeWidth={2.5} />
+                </motion.div>
+              ) : (
+                <motion.div key="icon" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                  <Icon size={14} style={{ color: "var(--text-muted)" }} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           <span
             className="truncate text-sm font-medium"
-            style={{
-              color: selected ? "var(--gold)" : "var(--text)",
-              fontFamily: "var(--font-body)",
-            }}
+            style={{ color: selected ? "var(--gold)" : "var(--text)", fontFamily: "var(--font-body)" }}
           >
             {addon.name}
           </span>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <span
-            style={{
-              fontFamily: "var(--font-display)",
-              color: selected ? "var(--gold)" : "var(--text)",
-              fontSize: "1rem",
-              fontWeight: 300,
-            }}
-          >
-            {formatRM(addon.price_rm)}
+          <span style={{ fontFamily: "var(--font-display)", color: selected ? "var(--gold)" : "var(--text)", fontSize: "0.95rem", fontWeight: 300 }}>
+            {unitLabel}
           </span>
-          <motion.div
-            animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: 0.22 }}
-          >
+          <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.22 }}>
             <ChevronDown size={14} style={{ color: "var(--text-muted)" }} />
           </motion.div>
         </div>
       </button>
 
-      {/* Expanded body */}
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
@@ -204,26 +275,27 @@ function AddonCardMobile({
             transition={{ duration: 0.25, ease: [0.33, 1, 0.68, 1] }}
             style={{ overflow: "hidden" }}
           >
-            <div
-              className="px-4 pb-4"
-              style={{ borderTop: "1px solid var(--border)" }}
-            >
-              {addon.description && (
-                <p
-                  className="mt-3 text-xs leading-relaxed"
-                  style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-                >
-                  {addon.description}
-                </p>
-              )}
+            <div className="px-4 pb-4" style={{ borderTop: "1px solid var(--border)" }}>
+              <p
+                className="mt-3 text-xs capitalize"
+                style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+              >
+                {getCategoryLabel(addon.category)}
+              </p>
 
-              {savings > 0 && (
+              <MultiplierHint
+                category={addon.category}
+                guestCount={guestCount}
+                durationHours={durationHours}
+              />
+
+              {((addon.category === "catering" && guestCount > 0) ||
+                (addon.category === "photography" && durationHours > 0)) && (
                 <div
-                  className="mt-2 flex items-center gap-1 text-[10px]"
-                  style={{ color: "rgba(74,222,128,0.8)", fontFamily: "var(--font-body)" }}
+                  className="mt-1 text-xs font-medium"
+                  style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
                 >
-                  <Tag size={9} />
-                  Save {formatRM(savings)} vs. booking separately
+                  Total: {formatRM(totalPrice)}
                 </div>
               )}
 
@@ -239,7 +311,7 @@ function AddonCardMobile({
                   fontFamily: "var(--font-body)",
                 }}
               >
-                {selected ? "Remove Add-on" : "Add to Booking"}
+                {selected ? "Remove Service" : "Add Service"}
               </motion.button>
             </div>
           </motion.div>
@@ -249,83 +321,134 @@ function AddonCardMobile({
   )
 }
 
+/* ─── Pricing hint banner ────────────────────────── */
+function PricingHintBanner({ hasGuests, hasDuration }: { hasGuests: boolean; hasDuration: boolean }) {
+  const needsGuests = !hasGuests
+  const needsDuration = !hasDuration
+
+  if (!needsGuests && !needsDuration) return null
+
+  const hints = []
+  if (needsGuests) hints.push("guest count (for catering)")
+  if (needsDuration) hints.push("a package with hours (for photography)")
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-sm px-4 py-2.5 flex items-start gap-2.5"
+      style={{ background: "rgba(109,40,217,0.04)", border: "1px solid rgba(109,40,217,0.1)" }}
+    >
+      <Info size={13} className="mt-0.5 shrink-0" style={{ color: "var(--gold)" }} />
+      <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+        Totals for some services will be calculated once you&apos;ve entered your{" "}
+        {hints.join(" and ")}.
+      </p>
+    </motion.div>
+  )
+}
+
 /* ─── Step 3 ─────────────────────────────────────── */
 interface Step3Props {
   form: UseFormReturn<BookingFormValues>
-  addons: Addon[]
+  vendors: Vendor[]
+  packages: Package[]
 }
 
-/* Hypothetical "separate" price markup for savings calc */
-const SAVINGS_MARKUP = 1.25
-
-export default function Step3Addons({ form, addons }: Step3Props) {
+export default function Step3Addons({ form, vendors, packages }: Step3Props) {
   const { watch, setValue } = form
-  const selectedAddons = watch("selected_addons") ?? []
+  const selectedIds = watch("selected_addons") ?? []
+  const guestCountRaw = watch("guest_count")
+  const packageId = watch("package_id")
   const [openMobileId, setOpenMobileId] = useState<string | null>(null)
 
+  const guestCount = parseInt(guestCountRaw ?? "0", 10) || 0
+  const selectedPackage = packages.find((p) => p.id === packageId)
+  const durationHours = selectedPackage?.duration_hours ?? 0
+
   const toggleAddon = (id: string) => {
-    const next = selectedAddons.includes(id)
-      ? selectedAddons.filter((a) => a !== id)
-      : [...selectedAddons, id]
+    const next = selectedIds.includes(id)
+      ? selectedIds.filter((a) => a !== id)
+      : [...selectedIds, id]
     setValue("selected_addons", next, { shouldValidate: false })
   }
 
-  const addonsTotal = addons
-    .filter((a) => selectedAddons.includes(a.id))
-    .reduce((sum, a) => sum + a.price_rm, 0)
+  const selectedVendors = vendors.filter((v) => selectedIds.includes(v.id))
 
-  const totalSavings = addons
-    .filter((a) => selectedAddons.includes(a.id))
-    .reduce((sum, a) => sum + Math.round(a.price_rm * (SAVINGS_MARKUP - 1)), 0)
+  const vendorsTotal = selectedVendors.reduce(
+    (sum, v) => sum + calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours),
+    0
+  )
 
-  if (addons.length === 0) {
-    return (
-      <div
-        className="rounded-sm px-6 py-12 text-center"
-        style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
-      >
-        <p style={{ fontFamily: "var(--font-body)" }}>
-          No add-ons available at this time.
-        </p>
-      </div>
-    )
-  }
+  const hasCatering = vendors.some((v) => v.category === "catering")
+  const hasPhotography = vendors.some((v) => v.category === "photography")
 
   return (
     <div className="space-y-4">
-      {/* ── Desktop 2-col grid ── */}
-      <div className="hidden sm:grid sm:grid-cols-2 sm:gap-3">
-        {addons.map((addon) => (
-          <AddonCardDesktop
-            key={addon.id}
-            addon={addon}
-            selected={selectedAddons.includes(addon.id)}
-            onToggle={() => toggleAddon(addon.id)}
-            savings={Math.round(addon.price_rm * (SAVINGS_MARKUP - 1))}
-          />
-        ))}
+      {/* ── Optional notice ── */}
+      <div
+        className="rounded-sm px-4 py-3 flex items-center gap-3"
+        style={{ background: "rgba(109,40,217,0.04)", border: "1px solid rgba(109,40,217,0.12)" }}
+      >
+        <div className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: "var(--gold)" }} />
+        <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+          All services are <span style={{ color: "var(--text)" }}>optional</span> — select what
+          you&apos;d like or skip to review your booking.
+        </p>
       </div>
 
-      {/* ── Mobile expandable stack ── */}
-      <div className="flex flex-col gap-2 sm:hidden">
-        {addons.map((addon) => (
-          <AddonCardMobile
-            key={addon.id}
-            addon={addon}
-            selected={selectedAddons.includes(addon.id)}
-            onToggle={() => toggleAddon(addon.id)}
-            open={openMobileId === addon.id}
-            onOpenToggle={() =>
-              setOpenMobileId((prev) => (prev === addon.id ? null : addon.id))
-            }
-            savings={Math.round(addon.price_rm * (SAVINGS_MARKUP - 1))}
-          />
-        ))}
-      </div>
+      {/* ── Pricing hint ── */}
+      <PricingHintBanner
+        hasGuests={guestCount > 0 || !hasCatering}
+        hasDuration={durationHours > 0 || !hasPhotography}
+      />
+
+      {vendors.length === 0 ? (
+        <div
+          className="rounded-sm px-6 py-12 text-center"
+          style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
+        >
+          <p style={{ fontFamily: "var(--font-body)" }}>No services available at this time.</p>
+        </div>
+      ) : (
+        <>
+          {/* ── Desktop grid ── */}
+          <div className="hidden sm:grid sm:grid-cols-2 sm:gap-3">
+            {vendors.map((vendor) => (
+              <AddonCardDesktop
+                key={vendor.id}
+                addon={vendor}
+                selected={selectedIds.includes(vendor.id)}
+                onToggle={() => toggleAddon(vendor.id)}
+                guestCount={guestCount}
+                durationHours={durationHours}
+              />
+            ))}
+          </div>
+
+          {/* ── Mobile stack ── */}
+          <div className="flex flex-col gap-2 sm:hidden">
+            {vendors.map((vendor) => (
+              <AddonCardMobile
+                key={vendor.id}
+                addon={vendor}
+                selected={selectedIds.includes(vendor.id)}
+                onToggle={() => toggleAddon(vendor.id)}
+                open={openMobileId === vendor.id}
+                onOpenToggle={() =>
+                  setOpenMobileId((prev) => (prev === vendor.id ? null : vendor.id))
+                }
+                guestCount={guestCount}
+                durationHours={durationHours}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* ── Running total ── */}
       <AnimatePresence>
-        {selectedAddons.length > 0 && (
+        {selectedIds.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 8, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
@@ -334,21 +457,38 @@ export default function Step3Addons({ form, addons }: Step3Props) {
             className="overflow-hidden"
           >
             <div
-              className="rounded-sm px-4 py-3"
-              style={{
-                background: "rgba(109,40,217,0.05)",
-                border: "1px solid var(--border)",
-              }}
+              className="rounded-sm px-4 py-3 space-y-1.5"
+              style={{ background: "rgba(109,40,217,0.05)", border: "1px solid var(--border)" }}
             >
+              {/* Per-service breakdown */}
+              {selectedVendors.map((v) => {
+                const total = calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours)
+                const unit = vendorUnitLabel(v.category, v.price_rm)
+                const isEstimate =
+                  (v.category === "catering" && guestCount === 0) ||
+                  (v.category === "photography" && durationHours === 0)
+                return (
+                  <div key={v.id} className="flex items-center justify-between text-xs" style={{ fontFamily: "var(--font-body)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>{v.name}</span>
+                    <span style={{ color: isEstimate ? "var(--text-muted)" : "var(--text)" }}>
+                      {isEstimate ? unit : formatRM(total)}
+                    </span>
+                  </div>
+                )
+              })}
+
+              <div className="h-px" style={{ background: "var(--border)" }} />
+
+              {/* Total */}
               <div className="flex items-center justify-between">
                 <span
                   className="text-xs uppercase tracking-wider"
                   style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
                 >
-                  Add-ons subtotal ({selectedAddons.length})
+                  Services subtotal ({selectedIds.length})
                 </span>
                 <motion.span
-                  key={addonsTotal}
+                  key={vendorsTotal}
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
@@ -360,21 +500,9 @@ export default function Step3Addons({ form, addons }: Step3Props) {
                     letterSpacing: "0.02em",
                   }}
                 >
-                  {formatRM(addonsTotal)}
+                  {formatRM(vendorsTotal)}
                 </motion.span>
               </div>
-
-              {totalSavings > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="mt-1 flex items-center gap-1.5 text-xs"
-                  style={{ color: "rgba(74,222,128,0.8)", fontFamily: "var(--font-body)" }}
-                >
-                  <Tag size={10} />
-                  Saving {formatRM(totalSavings)} compared to booking separately
-                </motion.div>
-              )}
             </div>
           </motion.div>
         )}

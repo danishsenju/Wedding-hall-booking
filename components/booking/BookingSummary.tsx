@@ -3,8 +3,8 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown, Gem, MapPin } from "lucide-react"
 import { useState } from "react"
-import type { Addon, Package, Venue } from "@/types"
-import { calculateDeposit, formatEventDate, formatRM } from "@/lib/utils"
+import type { Package, Vendor, Venue } from "@/types"
+import { calculateDeposit, calculateVendorPrice, formatEventDate, formatRM, vendorUnitLabel } from "@/lib/utils"
 import type { BookingFormValues } from "@/lib/validations"
 
 const TIME_SLOT_LABELS: Record<string, string> = {
@@ -19,7 +19,7 @@ const TIME_SLOT_LABELS: Record<string, string> = {
 interface BookingSummaryProps {
   venue: Venue | null
   packages: Package[]
-  addons: Addon[]
+  vendors: Vendor[]
   values: Partial<BookingFormValues>
 }
 
@@ -61,16 +61,22 @@ function Divider() {
 function SummaryContent({
   venue,
   packages,
-  addons,
+  vendors,
   values,
 }: BookingSummaryProps) {
   const pkg = packages.find((p) => p.id === values.package_id)
   const selectedAddons = (values.selected_addons ?? [])
-    .map((id) => addons.find((a) => a.id === id))
-    .filter(Boolean) as Addon[]
+    .map((id) => vendors.find((v) => v.id === id))
+    .filter(Boolean) as Vendor[]
+
+  const guestCount = parseInt(values.guest_count ?? "0", 10) || 0
+  const durationHours = pkg?.duration_hours ?? 0
 
   const packagePrice = pkg?.price_rm ?? 0
-  const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price_rm, 0)
+  const addonsTotal = selectedAddons.reduce(
+    (sum, v) => sum + calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours),
+    0
+  )
   const totalPrice = packagePrice + addonsTotal
   const deposit = calculateDeposit(totalPrice)
 
@@ -124,13 +130,19 @@ function SummaryContent({
       {/* Addons */}
       {selectedAddons.length > 0 && (
         <>
-          {selectedAddons.map((addon) => (
-            <Row
-              key={addon.id}
-              label="+ Add-on"
-              value={`${addon.name} · ${formatRM(addon.price_rm)}`}
-            />
-          ))}
+          {selectedAddons.map((addon) => {
+            const total = calculateVendorPrice(addon.category, addon.price_rm, guestCount, durationHours)
+            const needsMultiplier =
+              (addon.category === "catering" && guestCount === 0) ||
+              (addon.category === "photography" && durationHours === 0)
+            return (
+              <Row
+                key={addon.id}
+                label="+ Service"
+                value={`${addon.name} · ${needsMultiplier ? vendorUnitLabel(addon.category, addon.price_rm) : formatRM(total)}`}
+              />
+            )
+          })}
         </>
       )}
 
@@ -200,10 +212,12 @@ function MobileAccordion(props: BookingSummaryProps) {
   const [open, setOpen] = useState(false)
 
   const pkg = props.packages.find((p) => p.id === props.values.package_id)
+  const guestCount = parseInt(props.values.guest_count ?? "0", 10) || 0
+  const durationHours = pkg?.duration_hours ?? 0
   const addonsTotal = (props.values.selected_addons ?? [])
-    .map((id) => props.addons.find((a) => a.id === id))
+    .map((id) => props.vendors.find((v) => v.id === id))
     .filter(Boolean)
-    .reduce((sum, a) => sum + (a?.price_rm ?? 0), 0)
+    .reduce((sum, v) => sum + calculateVendorPrice(v!.category, v!.price_rm, guestCount, durationHours), 0)
   const total = (pkg?.price_rm ?? 0) + addonsTotal
 
   return (
