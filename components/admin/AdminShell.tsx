@@ -11,6 +11,8 @@ import {
   Images,
   LogOut,
   Sparkles,
+  Package,
+  Briefcase,
 } from "lucide-react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { adminLogout } from "@/app/actions/auth";
@@ -40,6 +42,16 @@ const NAV_LINKS = [
     label: "Gallery",
     href: "/admin/gallery",
     icon: <Images size={18} strokeWidth={1.5} />,
+  },
+  {
+    label: "Vendors",
+    href: "/admin/vendors",
+    icon: <Briefcase size={18} strokeWidth={1.5} />,
+  },
+  {
+    label: "Packages",
+    href: "/admin/packages",
+    icon: <Package size={18} strokeWidth={1.5} />,
   },
 ];
 

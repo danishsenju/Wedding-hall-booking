@@ -42,6 +42,17 @@ export interface Addon {
   created_at: string;
 }
 
+export type VendorCategory = 'catering' | 'photography' | 'decor';
+
+export interface Vendor {
+  id: string;
+  category: VendorCategory;
+  name: string;
+  instagram: string | null;
+  price_rm: number;
+  created_at: string;
+}
+
 export interface BlockedDate {
   id: string;
   venue_id: VenueId;

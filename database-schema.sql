@@ -182,6 +182,9 @@ grant usage on schema public to anon, authenticated;
 -- Public catalog reads
 grant select on table venues, packages, addons, blocked_dates to anon;
 
+-- Admin write via anon key + auth session (anon key is the fallback when no service role key is set)
+grant insert, update, delete on table packages,     venues, addons, blocked_dates to anon;
+
 -- Public booking submission
 grant insert on table bookings, booking_addons to anon;
 
@@ -255,5 +258,29 @@ create policy "admin all gallery"
 grant select, insert, update, delete on table gallery to anon;
 grant all on table gallery to authenticated;
 grant all on table gallery to service_role;
+
+-- ─── VENDORS ──────────────────────────────────────────────────
+create table if not exists vendors (
+  id          uuid primary key default gen_random_uuid(),
+  category    text not null check (category in ('catering', 'photography', 'decor')),
+  name        text not null,
+  instagram   text,
+  price_rm    int not null default 0,
+  created_at  timestamptz default now()
+);
+
+alter table vendors enable row level security;
+
+drop policy if exists "public read vendors" on vendors;
+drop policy if exists "admin all vendors"   on vendors;
+
+create policy "public read vendors"
+  on vendors for select using (true);
+create policy "admin all vendors"
+  on vendors for all using (auth.role() = 'authenticated');
+
+grant select, insert, update, delete on table vendors to anon;
+grant all on table vendors to authenticated;
+grant all on table vendors to service_role;
 
 create index if not exists idx_gallery_sort on gallery (sort_order);
