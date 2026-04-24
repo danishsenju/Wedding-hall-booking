@@ -1,8 +1,8 @@
 ﻿"use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { motion } from "framer-motion"
-import { Download, Bell } from "lucide-react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
+import { Download, Bell, Zap } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 
 import type { BookingWithDetails, BookingStatus } from "@/types"
@@ -24,20 +24,118 @@ function DotGrid() {
       className="pointer-events-none fixed inset-0 z-0"
       style={{
         backgroundImage:
-          "radial-gradient(circle, rgba(109,40,217,0.07) 1px, transparent 1px)",
+          "radial-gradient(circle, rgba(109,40,217,0.08) 1px, transparent 1px)",
         backgroundSize: "28px 28px",
       }}
     >
       <motion.div
         className="absolute inset-0"
-        animate={{ opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ opacity: [0.5, 0.85, 0.5] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(6,20,27,0) 0%, var(--base) 70%)",
+            "radial-gradient(ellipse 90% 55% at 50% 0%, rgba(109,40,217,0.06) 0%, transparent 60%)",
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse 80% 80% at 50% 100%, rgba(10,11,16,0.95) 0%, transparent 60%)",
         }}
       />
     </div>
+  )
+}
+
+/* ─── Revenue Card ─────────────────────────────────── */
+function RevenueCard({ revenue, thisMonth }: { revenue: number; thisMonth: number }) {
+  const [hovered, setHovered] = useState(false)
+  const raw = useMotionValue(0)
+  const spring = useSpring(raw, { stiffness: 55, damping: 18 })
+  const [display, setDisplay] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true })
+
+  useEffect(() => { if (inView) raw.set(revenue) }, [inView, revenue, raw])
+  useEffect(() => spring.on("change", (v) => setDisplay(Math.round(v))), [spring])
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35, duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative overflow-hidden rounded-sm p-5"
+      style={{
+        background: "var(--surface-1)",
+        border: `1px solid ${hovered ? "rgba(109,40,217,0.45)" : "var(--border)"}`,
+        transition: "border-color 0.3s",
+      }}
+    >
+      {/* Glow orb */}
+      <motion.div
+        className="pointer-events-none absolute -top-8 -right-8 h-28 w-28 rounded-full"
+        animate={{ opacity: hovered ? 0.5 : 0.15, scale: hovered ? 1.2 : 1 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          background: "radial-gradient(circle, rgba(109,40,217,0.6) 0%, transparent 70%)",
+          filter: "blur(16px)",
+        }}
+      />
+
+      {/* Top shimmer line */}
+      <motion.div
+        className="absolute inset-x-0 top-0 h-px"
+        animate={{ scaleX: hovered ? 1 : 0 }}
+        initial={{ scaleX: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(109,40,217,0.8), transparent)",
+          transformOrigin: "center",
+        }}
+      />
+
+      <div className="relative z-10">
+        <div className="mb-1 flex items-center gap-2">
+          <span
+            className="text-[10px] uppercase tracking-[0.22em]"
+            style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+          >
+            Approved Revenue
+          </span>
+        </div>
+
+        <motion.div
+          className="font-light"
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "var(--gold)",
+            fontSize: "clamp(1.5rem, 3vw, 2rem)",
+            letterSpacing: "0.02em",
+            lineHeight: 1.1,
+          }}
+        >
+          RM {display.toLocaleString()}
+        </motion.div>
+
+        <div className="mt-3 h-px" style={{ background: "var(--border)" }} />
+
+        <div
+          className="mt-2 flex items-center gap-1.5 text-[11px]"
+          style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+        >
+          <motion.div
+            className="h-1.5 w-1.5 rounded-full"
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity }}
+            style={{ background: "#2DD4BF" }}
+          />
+          {thisMonth} booking{thisMonth !== 1 ? "s" : ""} this month
+        </div>
+      </div>
+    </motion.div>
   )
 }
 
@@ -85,7 +183,7 @@ function exportCSV(bookings: BookingWithDetails[]) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `lumieres-bookings-${new Date().toISOString().split("T")[0]}.csv`
+  a.download = `lamantroka-bookings-${new Date().toISOString().split("T")[0]}.csv`
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -186,9 +284,9 @@ function Dashboard({
   /* ── Tab title notification ── */
   useEffect(() => {
     if (newBadge > 0) {
-      document.title = `(${newBadge}) New — Lumières Admin`
+      document.title = `(${newBadge}) New — Laman Troka Admin`
     } else {
-      document.title = "Lumières Admin"
+      document.title = "Laman Troka Admin"
     }
   }, [newBadge])
 
@@ -257,52 +355,74 @@ function Dashboard({
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8 flex items-center justify-between gap-4"
+          className="mb-8 flex items-end justify-between gap-4"
         >
           <div>
-            <div
-              className="text-xs uppercase tracking-[0.28em]"
-              style={{
-                color: "var(--gold)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              Lumières Grand Hall
+            <div className="mb-1.5 flex items-center gap-2">
+              <motion.div
+                className="h-1.5 w-1.5 rounded-full"
+                animate={{ opacity: [1, 0.2, 1], scale: [1, 1.4, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                style={{ background: "#2DD4BF" }}
+              />
+              <span
+                className="text-[10px] uppercase tracking-[0.3em]"
+                style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+              >
+                Laman Troka · Live
+              </span>
             </div>
             <h1
-              className="mt-0.5 text-3xl font-light"
+              className="font-light leading-none"
               style={{
                 fontFamily: "var(--font-display)",
                 color: "var(--text)",
+                fontSize: "clamp(1.8rem, 3vw, 2.8rem)",
+                letterSpacing: "0.04em",
               }}
             >
               Admin Dashboard
             </h1>
+            <p
+              className="mt-1 text-[11px]"
+              style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+            >
+              {liveStats.pending > 0
+                ? `${liveStats.pending} booking${liveStats.pending !== 1 ? "s" : ""} awaiting review`
+                : "All bookings up to date"}
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
             {newBadge > 0 && (
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
                 className="flex items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-xs"
                 style={{
-                  background: "rgba(109,40,217,0.12)",
-                  border: "1px solid var(--border-hover)",
+                  background: "rgba(109,40,217,0.15)",
+                  border: "1px solid rgba(109,40,217,0.45)",
                   color: "var(--gold)",
                   fontFamily: "var(--font-body)",
+                  boxShadow: "0 0 12px rgba(109,40,217,0.2)",
                 }}
               >
-                <Bell size={12} strokeWidth={2} />
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 0.6, repeat: 3 }}
+                >
+                  <Bell size={12} strokeWidth={2} />
+                </motion.div>
                 {newBadge} new
               </motion.div>
             )}
 
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.03, borderColor: "rgba(109,40,217,0.45)" }}
               whileTap={{ scale: 0.97 }}
               onClick={() => exportCSV(filtered)}
-              className="flex items-center gap-1.5 rounded-sm px-3 py-2 text-xs tracking-wide transition-all"
+              className="flex items-center gap-1.5 rounded-sm px-3 py-2 text-xs tracking-wide"
               style={{
                 border: "1px solid var(--border)",
                 background: "var(--surface-1)",
@@ -313,6 +433,23 @@ function Dashboard({
               <Download size={13} strokeWidth={1.5} />
               Export CSV
             </motion.button>
+
+            {liveStats.pending > 0 && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-1.5 rounded-sm px-3 py-2 text-xs"
+                style={{
+                  background: "rgba(245,158,11,0.08)",
+                  border: "1px solid rgba(245,158,11,0.25)",
+                  color: "#F59E0B",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                <Zap size={12} strokeWidth={2} />
+                {liveStats.pending} pending
+              </motion.div>
+            )}
           </div>
         </motion.div>
 
@@ -357,42 +494,7 @@ function Dashboard({
             <TrendChart bookings={bookings} />
             <ActivityLog refreshToken={activityRefresh} />
 
-            {/* Revenue card */}
-            <div
-              className="rounded-sm p-5"
-              style={{
-                background: "var(--surface-1)",
-                border: "1px solid var(--border)",
-              }}
-            >
-              <div
-                className="mb-1 text-[10px] uppercase tracking-[0.2em]"
-                style={{
-                  color: "var(--text-muted)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Approved Revenue
-              </div>
-              <div
-                className="text-2xl font-light"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  color: "var(--gold)",
-                }}
-              >
-                RM {liveStats.totalRevenue.toLocaleString()}
-              </div>
-              <div
-                className="mt-1 text-xs"
-                style={{
-                  color: "var(--text-muted)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                {liveStats.thisMonthBookings} bookings this month
-              </div>
-            </div>
+            <RevenueCard revenue={liveStats.totalRevenue} thisMonth={liveStats.thisMonthBookings} />
           </div>
         </div>
       </div>

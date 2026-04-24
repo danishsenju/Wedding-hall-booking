@@ -365,7 +365,7 @@ export default function PricingCard() {
           <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
             Questions?{" "}
             <a
-              href="mailto:hello@lumieres.my"
+              href="mailto:hello@lamantroka.my"
               className="underline underline-offset-2 transition-colors hover:text-[var(--gold)]"
             >
               Contact our team

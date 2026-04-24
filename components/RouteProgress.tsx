@@ -27,8 +27,8 @@ export default function RouteProgress() {
         className="h-full w-full"
         style={{
           background:
-            "linear-gradient(90deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-hover) 100%)",
-          boxShadow: "0 0 8px var(--gold)",
+            "linear-gradient(90deg, #4C1D95 0%, #6D28D9 50%, #7C3AED 100%)",
+          boxShadow: "0 0 8px #6D28D9",
         }}
         initial={{ scaleX: 0, transformOrigin: "0% 50%", opacity: 1 }}
         animate={{ scaleX: 1, opacity: 0 }}

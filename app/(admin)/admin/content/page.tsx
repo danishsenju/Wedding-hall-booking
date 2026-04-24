@@ -4,7 +4,7 @@ import { getAllHalls } from "@/app/actions/hall";
 import { getAllThemes } from "@/app/actions/theme";
 import ContentClient from "./ContentClient";
 
-export const metadata = { title: "Content Editor | Lumières Admin" };
+export const metadata = { title: "Content Editor | Laman Troka Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminContentPage() {

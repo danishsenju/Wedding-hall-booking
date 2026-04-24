@@ -24,7 +24,7 @@ function buildWhatsAppMessage(booking: BookingWithDetails | null, ref: string): 
   })
 
   return [
-    `Hello, I'm reaching out regarding my booking at Lumières Grand Hall.`,
+    `Hello, I'm reaching out regarding my booking at Laman Troka.`,
     ``,
     `📋 *Booking Reference:* ${ref}`,
     `💑 *Couple:* ${booking.bride_name} & ${booking.groom_name}`,

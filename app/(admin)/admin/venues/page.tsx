@@ -6,7 +6,7 @@ import { getAllVenues } from "@/app/actions/venue";
 import VenueLocationManager from "@/components/admin/VenueLocationManager";
 
 export const metadata = {
-  title: "Venue Locations | Lumières Admin",
+  title: "Venue Locations | Laman Troka Admin",
 };
 
 export const dynamic = "force-dynamic";
@@ -50,7 +50,7 @@ export default async function AdminVenuesPage() {
             className="text-xs uppercase tracking-[0.28em]"
             style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
           >
-            Lumières Grand Hall
+            Laman Troka
           </div>
           <h1
             className="mt-0.5 flex items-center gap-3 text-3xl font-light"

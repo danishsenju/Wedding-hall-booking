@@ -2,8 +2,8 @@
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Lumières Grand Hall",
-    short_name: "Lumières",
+    name: "Laman Troka",
+    short_name: "Laman Troka",
     description:
       "Kuala Lumpur's most refined wedding hall. Book your perfect celebration.",
     start_url: "/",

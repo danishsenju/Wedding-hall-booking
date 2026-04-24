@@ -266,7 +266,7 @@ function HallFormModal({
             <div><label className="label-text">Badge / Tag</label><input type="text" placeholder="Most Popular" value={form.tag} onChange={set("tag")} className="field" /></div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="label-text">Subtitle</label><input type="text" placeholder="The Jewel of Lumières" value={form.subtitle} onChange={set("subtitle")} className="field" /></div>
+            <div><label className="label-text">Subtitle</label><input type="text" placeholder="The Jewel of Laman Troka" value={form.subtitle} onChange={set("subtitle")} className="field" /></div>
             <div><label className="label-text">Detail Page URL</label><input type="text" placeholder="/venues/grand-ballroom" value={form.href} onChange={set("href")} className="field" /></div>
           </div>
           <div><label className="label-text">Description</label><textarea rows={3} placeholder="Describe the venue..." value={form.description} onChange={set("description")} className="field resize-none" /></div>
@@ -297,13 +297,21 @@ function HallFormModal({
 
 function HallCard({ hall, onEdit, onDelete }: { hall: VenueExtended; onEdit: (h: VenueExtended) => void; onDelete: (id: string) => void }) {
   const [confirming, setConfirming] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="overflow-hidden rounded-sm"
-      style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}
+      style={{
+        background: "var(--surface-1)",
+        border: `1px solid ${hovered ? "rgba(109,40,217,0.4)" : "var(--border)"}`,
+        boxShadow: hovered ? "0 8px 32px rgba(109,40,217,0.12)" : "none",
+        transition: "border-color 0.25s, box-shadow 0.25s",
+      }}
     >
       <div className="relative h-48 overflow-hidden">
         {hall.hero_image_url ? (
@@ -487,13 +495,21 @@ function ThemeFormModal({
 
 function ThemeCard({ theme, onEdit, onDelete }: { theme: Theme; onEdit: (t: Theme) => void; onDelete: (id: string) => void }) {
   const [confirming, setConfirming] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="overflow-hidden rounded-sm"
-      style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}
+      style={{
+        background: "var(--surface-1)",
+        border: `1px solid ${hovered ? "rgba(109,40,217,0.4)" : "var(--border)"}`,
+        boxShadow: hovered ? "0 8px 32px rgba(109,40,217,0.12)" : "none",
+        transition: "border-color 0.25s, box-shadow 0.25s",
+      }}
     >
       <div className="relative h-48 overflow-hidden">
         {theme.image_url ? (
@@ -610,55 +626,91 @@ export default function HallsClient({
   return (
     <>
       {/* Page header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+        className="mb-8 flex items-end justify-between gap-4"
+      >
         <div>
-          <div className="text-xs uppercase tracking-[0.28em]" style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}>
-            Lumières Grand Hall
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-px w-6" style={{ background: "linear-gradient(90deg, var(--gold), transparent)" }} />
+            <span className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}>
+              Venue Management
+            </span>
           </div>
-          <h1 className="mt-0.5 text-3xl font-light" style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}>
+          <h1
+            className="font-light leading-none"
+            style={{ fontFamily: "var(--font-display)", color: "var(--text)", fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "0.04em" }}
+          >
             Manage Halls
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-            Manage the venues and wedding themes shown on the public website.
+          <p className="mt-1.5 text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+            {halls.length} venue{halls.length !== 1 ? "s" : ""} · {themes.length} wedding theme{themes.length !== 1 ? "s" : ""}
           </p>
         </div>
 
         <motion.button
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.04, boxShadow: "0 4px 20px rgba(109,40,217,0.3)" }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => tab === "venues" ? setEditingHall("new") : setEditingTheme("new")}
           className="btn-primary flex shrink-0 items-center gap-2"
         >
-          <Plus size={15} />
+          <Plus size={14} />
           {tab === "venues" ? "Add Venue" : "Add Theme"}
         </motion.button>
-      </div>
+      </motion.div>
 
       {/* Tab bar */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
         className="mb-6 flex gap-1 rounded-sm p-1"
         style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}
       >
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-sm transition-all"
-            style={
-              tab === t.id
-                ? { background: "rgba(109,40,217,0.15)", border: "1px solid var(--border-hover)", color: "var(--text)", fontFamily: "var(--font-body)" }
-                : { color: "var(--text-muted)", fontFamily: "var(--font-body)", border: "1px solid transparent" }
-            }
-          >
-            {t.icon} {t.label}
-            <span
-              className="ml-auto rounded-sm px-1.5 py-0.5 text-xs"
-              style={{ background: "var(--surface-2)", color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+        {TABS.map((t) => {
+          const count = t.id === "venues" ? halls.length : themes.length
+          const isActive = tab === t.id
+          return (
+            <motion.button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative flex flex-1 items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-sm"
+              style={{
+                fontFamily: "var(--font-body)",
+                color: isActive ? "var(--text)" : "var(--text-muted)",
+                border: "1px solid transparent",
+                transition: "color 0.2s",
+              }}
             >
-              {t.id === "venues" ? halls.length : themes.length}
-            </span>
-          </button>
-        ))}
-      </div>
+              {isActive && (
+                <motion.div
+                  layoutId="halls-tab-indicator"
+                  className="absolute inset-0 rounded-sm"
+                  style={{ background: "rgba(109,40,217,0.15)", border: "1px solid var(--border-hover)" }}
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                />
+              )}
+              <span className="relative flex items-center gap-2">
+                {t.icon}
+                {t.label}
+                <span
+                  className="rounded-sm px-1.5 py-0.5 text-[10px]"
+                  style={{
+                    background: isActive ? "rgba(109,40,217,0.2)" : "var(--surface-2)",
+                    color: isActive ? "var(--gold)" : "var(--text-muted)",
+                  }}
+                >
+                  {count}
+                </span>
+              </span>
+            </motion.button>
+          )
+        })}
+      </motion.div>
 
       {/* Tab content */}
       <AnimatePresence mode="wait">
@@ -669,15 +721,23 @@ export default function HallsClient({
             transition={{ duration: 0.2 }}
           >
             {halls.length === 0 && (
-              <div
-                className="flex flex-col items-center justify-center rounded-sm py-20 text-center"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center rounded-sm py-24 text-center mb-6"
                 style={{ border: "1px dashed var(--border)", background: "var(--surface-1)" }}
               >
-                <Building2 size={36} className="mb-3" style={{ color: "var(--text-muted)" }} />
-                <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                  No venues yet. Run the SQL seed or click &ldquo;Add Venue&rdquo; to create the first one.
-                </p>
-              </div>
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm"
+                  style={{ background: "rgba(109,40,217,0.1)", color: "var(--gold)" }}
+                >
+                  <Building2 size={22} strokeWidth={1.5} />
+                </motion.div>
+                <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>No venues yet</p>
+                <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>Run the SQL seed or click &ldquo;Add Venue&rdquo;</p>
+              </motion.div>
             )}
             <motion.div layout className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">
@@ -696,15 +756,23 @@ export default function HallsClient({
             transition={{ duration: 0.2 }}
           >
             {themes.length === 0 && (
-              <div
-                className="flex flex-col items-center justify-center rounded-sm py-20 text-center"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center justify-center rounded-sm py-24 text-center mb-6"
                 style={{ border: "1px dashed var(--border)", background: "var(--surface-1)" }}
               >
-                <Sparkles size={36} className="mb-3" style={{ color: "var(--text-muted)" }} />
-                <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                  No themes yet. Run the SQL seed or click &ldquo;Add Theme&rdquo; to create the first one.
-                </p>
-              </div>
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm"
+                  style={{ background: "rgba(109,40,217,0.1)", color: "var(--gold)" }}
+                >
+                  <Sparkles size={22} strokeWidth={1.5} />
+                </motion.div>
+                <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>No themes yet</p>
+                <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>Run the SQL seed or click &ldquo;Add Theme&rdquo;</p>
+              </motion.div>
             )}
             <motion.div layout className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">

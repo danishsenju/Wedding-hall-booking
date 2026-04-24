@@ -125,34 +125,34 @@ export default function GalleryClient({ initialImages }: Props) {
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+        className="flex items-end justify-between mb-8 flex-wrap gap-4"
+      >
         <div>
-          <div
-            className="text-xs uppercase tracking-[0.25em] mb-1"
-            style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
-          >
-            Admin
+          <div className="mb-1 flex items-center gap-2">
+            <div className="h-px w-6" style={{ background: "linear-gradient(90deg, var(--gold), transparent)" }} />
+            <span className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}>
+              Media Library
+            </span>
           </div>
           <h1
-            className="text-3xl font-light"
-            style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
+            className="font-light leading-none"
+            style={{ fontFamily: "var(--font-display)", color: "var(--text)", fontSize: "clamp(1.8rem, 3vw, 2.8rem)", letterSpacing: "0.04em" }}
           >
             Gallery
           </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-            Manage images shown on the public gallery page.
+          <p className="text-[11px] mt-1.5" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+            {images.length} image{images.length !== 1 ? "s" : ""} · shown on the public gallery page
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-sm text-sm transition-all"
-            style={{
-              background: "var(--surface-1)",
-              border: "1px solid var(--border)",
-              color: "var(--text-muted)",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-sm text-sm transition-all hover:border-[var(--border-hover)]"
+            style={{ background: "var(--surface-1)", border: "1px solid var(--border)", color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
           >
             <ArrowLeft size={14} />
             Back
@@ -160,33 +160,37 @@ export default function GalleryClient({ initialImages }: Props) {
           <Link
             href="/gallery"
             target="_blank"
-            className="flex items-center gap-2 px-4 py-2 rounded-sm text-sm transition-all"
-            style={{
-              background: "rgba(109,40,217,0.15)",
-              border: "1px solid var(--border-hover)",
-              color: "var(--text)",
-              fontFamily: "var(--font-body)",
-            }}
+            className="flex items-center gap-2 px-4 py-2 rounded-sm text-sm"
+            style={{ background: "rgba(109,40,217,0.12)", border: "1px solid var(--border-hover)", color: "var(--text)", fontFamily: "var(--font-body)" }}
           >
             <ExternalLink size={14} />
-            View on Website
+            View Live
           </Link>
         </div>
-      </div>
+      </motion.div>
 
       {/* Add Image Form */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8 rounded-sm p-6"
+        transition={{ delay: 0.1, duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+        className="mb-8 overflow-hidden rounded-sm"
         style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}
       >
-        <h2
-          className="text-base font-medium mb-4"
-          style={{ color: "var(--text)", fontFamily: "var(--font-body)" }}
-        >
-          Add New Image
-        </h2>
+        {/* Upload area top accent */}
+        <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(109,40,217,0.6), transparent)" }} />
+        <div className="p-6">
+        <div className="mb-5 flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-sm" style={{ background: "rgba(109,40,217,0.1)", color: "var(--gold)" }}>
+            <ImagePlus size={13} strokeWidth={1.5} />
+          </div>
+          <h2
+            className="text-sm font-medium tracking-wide"
+            style={{ color: "var(--text)", fontFamily: "var(--font-body)" }}
+          >
+            Upload New Image
+          </h2>
+        </div>
 
         {/* Title input */}
         <div className="mb-4">
@@ -303,54 +307,75 @@ export default function GalleryClient({ initialImages }: Props) {
           </p>
         )}
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02, boxShadow: "0 4px 20px rgba(109,40,217,0.3)" }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleAdd}
           disabled={busy}
           className="flex items-center gap-2 px-5 py-2.5 rounded-sm text-sm font-medium transition-all disabled:opacity-50"
-          style={{ background: "var(--gold)", color: "#EDE9FE", fontFamily: "var(--font-body)" }}
+          style={{ background: "linear-gradient(135deg, var(--gold), var(--gold-hover))", color: "#EDE9FE", fontFamily: "var(--font-body)", border: "none", cursor: busy ? "not-allowed" : "pointer" }}
         >
-          <Upload size={15} />
+          <Upload size={14} />
           {uploading ? "Uploading…" : "Upload Image"}
-        </button>
+        </motion.button>
+        </div>
       </motion.div>
 
       {/* Image Grid */}
       {images.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center rounded-sm py-20"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center rounded-sm py-24 text-center"
           style={{ border: "1px dashed var(--border)", background: "var(--surface-1)" }}
         >
-          <Images size={36} className="mb-3" style={{ color: "var(--gold)" }} />
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm"
+            style={{ background: "rgba(109,40,217,0.1)", color: "var(--gold)" }}
+          >
+            <Images size={22} strokeWidth={1.5} />
+          </motion.div>
           <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-            No gallery images yet. Upload your first image above.
+            No gallery images yet
           </p>
-        </div>
+          <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>
+            Upload your first image above
+          </p>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        >
           <AnimatePresence>
-            {images.map((img) => (
+            {images.map((img, i) => (
               <motion.div
                 key={img.id}
                 layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-                className="relative rounded-sm overflow-hidden group"
+                transition={{ delay: i * 0.05, duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+                className="relative overflow-hidden rounded-sm group"
                 style={{ border: "1px solid var(--border)" }}
+                whileHover={{ borderColor: "rgba(109,40,217,0.4)" }}
               >
                 {/* Image */}
-                <div className="relative h-48">
+                <div className="relative h-52 overflow-hidden">
                   <img
                     src={img.image_url}
                     alt={img.title}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div
                     className="absolute inset-0"
-                    style={{ background: "linear-gradient(to top, rgba(10,11,16,0.9) 0%, transparent 50%)" }}
+                    style={{ background: "linear-gradient(to top, rgba(10,11,16,0.92) 0%, rgba(10,11,16,0.2) 45%, transparent 70%)" }}
                   />
-                  <div className="absolute bottom-0 left-0 right-0 px-3 pb-2 pt-4">
+                  <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
                     <p
                       className="text-sm font-light truncate"
                       style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
@@ -359,24 +384,28 @@ export default function GalleryClient({ initialImages }: Props) {
                     </p>
                   </div>
                   {/* Action buttons */}
-                  <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
+                  <div className="absolute top-2.5 right-2.5 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => startEdit(img)}
-                      className="rounded p-1.5"
-                      style={{ background: "rgba(10,11,16,0.7)", color: "var(--text-muted)" }}
+                      className="flex h-7 w-7 items-center justify-center rounded-sm"
+                      style={{ background: "rgba(10,11,16,0.8)", color: "var(--text-muted)", backdropFilter: "blur(8px)" }}
                       title="Rename"
                     >
-                      <Pencil size={13} />
-                    </button>
-                    <button
+                      <Pencil size={12} />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleDelete(img.id)}
                       disabled={busy}
-                      className="rounded p-1.5"
-                      style={{ background: "rgba(10,11,16,0.7)", color: "#f87171" }}
+                      className="flex h-7 w-7 items-center justify-center rounded-sm"
+                      style={{ background: "rgba(10,11,16,0.8)", color: "#f87171", backdropFilter: "blur(8px)" }}
                       title="Delete"
                     >
-                      <Trash2 size={13} />
-                    </button>
+                      <Trash2 size={12} />
+                    </motion.button>
                   </div>
                 </div>
 
@@ -397,16 +426,9 @@ export default function GalleryClient({ initialImages }: Props) {
                           onChange={(e) => setEditTitle(e.target.value)}
                           placeholder="Title"
                           className="w-full rounded-sm px-2.5 py-1.5 text-xs outline-none"
-                          style={{
-                            background: "var(--surface-1)",
-                            border: "1px solid var(--border)",
-                            color: "var(--text)",
-                            fontFamily: "var(--font-body)",
-                          }}
+                          style={{ background: "var(--surface-1)", border: "1px solid var(--border)", color: "var(--text)", fontFamily: "var(--font-body)" }}
                         />
-                        {editError && (
-                          <p className="text-[11px]" style={{ color: "#f87171" }}>{editError}</p>
-                        )}
+                        {editError && <p className="text-[11px]" style={{ color: "#f87171" }}>{editError}</p>}
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleSaveEdit(img.id)}
@@ -419,12 +441,7 @@ export default function GalleryClient({ initialImages }: Props) {
                           <button
                             onClick={cancelEdit}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-sm text-xs flex-1 justify-center"
-                            style={{
-                              background: "var(--surface-1)",
-                              border: "1px solid var(--border)",
-                              color: "var(--text-muted)",
-                              fontFamily: "var(--font-body)",
-                            }}
+                            style={{ background: "var(--surface-1)", border: "1px solid var(--border)", color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
                           >
                             <X size={11} /> Cancel
                           </button>
@@ -436,7 +453,7 @@ export default function GalleryClient({ initialImages }: Props) {
               </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
     </div>
   );

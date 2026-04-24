@@ -1,4 +1,4 @@
-# Agent Persona — Lumières Project
+# Agent Persona — Laman Troka Project
 
 ## Identity
 

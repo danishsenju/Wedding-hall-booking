@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import type { Package, Vendor, Venue } from "@/types"
 import { BookingSchema, STEP_FIELDS, type BookingFormValues } from "@/lib/validations"
+import ColorBends from "@/components/ui/color-bends"
 import BookingSummary from "./BookingSummary"
 import Step1Details from "./Step1Details"
 import Step2DateTime from "./Step2DateTime"
@@ -132,7 +133,27 @@ export default function BookingFlow({
   const meta = STEP_META[step - 1]
 
   return (
-    <div className="min-h-screen pb-20 pt-28" style={{ background: "var(--base)" }}>
+    <div className="relative min-h-screen pb-20 pt-28">
+      {/* Animated background */}
+      <div className="fixed inset-0 -z-10">
+        <ColorBends
+          colors={["#1a098a"]}
+          rotation={90}
+          speed={0.2}
+          scale={1}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1}
+          noise={0.15}
+          parallax={0.5}
+          iterations={1}
+          intensity={1.5}
+          bandWidth={6}
+          transparent={false}
+        />
+        {/* Darken overlay so card content stays readable */}
+        <div className="absolute inset-0" style={{ background: "rgba(10,11,16,0.65)" }} />
+      </div>
       {/* Hidden registered input so venue_id is included in RHF resolver values */}
       <input type="hidden" {...form.register("venue_id")} />
 
@@ -165,7 +186,7 @@ export default function BookingFlow({
               lineHeight: 1.1,
             }}
           >
-            {venue?.name ?? "Lumières Grand Hall"}
+            {venue?.name ?? "Laman Troka"}
           </h1>
         </motion.div>
 

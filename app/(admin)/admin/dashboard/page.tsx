@@ -5,7 +5,7 @@ import { getAdminStats } from "@/app/actions/admin"
 import DashboardClient from "./DashboardClient"
 
 export const metadata = {
-  title: "Dashboard | Lumières Admin",
+  title: "Dashboard | Laman Troka Admin",
 }
 
 export const dynamic = "force-dynamic"

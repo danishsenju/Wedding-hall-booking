@@ -4,8 +4,8 @@ import GalleryClient from "./GalleryClient";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Gallery — Lumières Grand Hall",
-  description: "Explore our curated gallery of wedding moments and venue setups at Lumières Grand Hall, Kuala Lumpur.",
+  title: "Gallery — Laman Troka",
+  description: "Explore our curated gallery of wedding moments and venue setups at Laman Troka, Kuala Lumpur.",
 };
 
 export default async function GalleryPage() {

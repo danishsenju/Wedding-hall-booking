@@ -1,4 +1,5 @@
 ﻿import Link from "next/link";
+import Image from "next/image";
 
 const FOOTER_LINKS = {
   Venues: [
@@ -47,24 +48,13 @@ export default function Footer() {
           {/* Brand column */}
           <div className="md:col-span-1">
             <div className="mb-4">
-              <span
-                className="text-2xl font-light tracking-wide"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  color: "var(--gold)",
-                }}
-              >
-                Lumières
-              </span>
-              <div
-                className="mt-0.5 text-xs uppercase tracking-[0.2em]"
-                style={{
-                  color: "var(--text-muted)",
-                  fontFamily: "var(--font-body)",
-                }}
-              >
-                Grand Hall
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Laman Troka"
+                width={150}
+                height={44}
+                className="object-contain"
+              />
             </div>
 
             <p
@@ -95,7 +85,7 @@ export default function Footer() {
               </p>
               <p>
                 <a
-                  href="mailto:hello@lumieres.com"
+                  href="mailto:hello@lamantroka.com"
                   className="transition-colors duration-200 hover:text-[var(--gold)]"
                 >
                   danishfarhanzailan392@gmail.com
@@ -150,7 +140,7 @@ export default function Footer() {
               fontFamily: "var(--font-body)",
             }}
           >
-            © {year} Lumières Grand Hall. All rights reserved.
+            © {year} Laman Troka. All rights reserved.
           </p>
 
           <Link

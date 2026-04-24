@@ -2,7 +2,7 @@
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Page Not Found — Lumières Grand Hall",
+  title: "Page Not Found — Laman Troka",
 };
 
 export default function NotFound() {
@@ -39,7 +39,7 @@ export default function NotFound() {
           className="mb-2 text-xs uppercase tracking-[0.28em]"
           style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
         >
-          Lumières Grand Hall
+          Laman Troka
         </div>
 
         <h1

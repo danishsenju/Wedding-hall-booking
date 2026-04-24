@@ -104,7 +104,7 @@ export default function ConfirmationClient({ ref_code }: Props) {
               </h1>
               <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 Thank you for choosing{" "}
-                <span style={{ color: "var(--gold)" }}>Lumières Grand Hall</span>.
+                <span style={{ color: "var(--gold)" }}>Laman Troka</span>.
                 <br />
                 We&apos;ll review your request and be in touch within 24–48 hours.
               </p>

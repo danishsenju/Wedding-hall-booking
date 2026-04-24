@@ -5,9 +5,9 @@ import ServicesShowcase from "@/components/services/ServicesShowcase"
 export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
-  title: "Services — Lumières Grand Hall",
+  title: "Services — Laman Troka",
   description:
-    "Discover our bespoke wedding services — photography, décor, catering and more. Curated exclusively for Lumières Grand Hall celebrations.",
+    "Discover our bespoke wedding services — photography, décor, catering and more. Curated exclusively for Laman Troka celebrations.",
 }
 
 export default async function ServicesPage() {

@@ -137,7 +137,7 @@ export default function BookingDetails({ ref_code }: Props) {
     {
       icon: MapPin,
       label: "Venue",
-      value: booking.venue?.name ?? "Lumières Grand Hall",
+      value: booking.venue?.name ?? "Laman Troka",
     },
   ]
 

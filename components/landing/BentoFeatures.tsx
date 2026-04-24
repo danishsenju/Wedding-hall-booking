@@ -33,7 +33,7 @@ export default function BentoFeatures() {
               className="text-xs uppercase tracking-[0.3em]"
               style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
             >
-              Why Lumières
+              Why Laman Troka
             </span>
             <span
               className="h-px w-10 opacity-40"

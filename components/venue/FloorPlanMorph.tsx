@@ -428,7 +428,7 @@ export default function FloorPlanMorph() {
             </span>
             <span className="h-px flex-1" style={{ background: "var(--border)" }} />
             <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-              Lumières Grand Hall · Level 3
+              Laman Troka · Level 3
             </span>
           </div>
         </div>

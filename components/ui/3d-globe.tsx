@@ -52,6 +52,7 @@ interface Globe3DProps {
   className?: string;
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
+  focusMarker?: GlobeMarker | null;
 }
 
 // ── Constants ─────────────────────────────────────────────────
@@ -334,15 +335,59 @@ interface SceneProps {
   config: Required<Globe3DConfig>;
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
+  focusMarker?: GlobeMarker | null;
 }
 
-function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
+function Scene({ markers, config, onMarkerClick, onMarkerHover, focusMarker }: SceneProps) {
   const { camera } = useThree();
+  const controlsRef = useRef<any>(null);
 
   React.useEffect(() => {
     camera.position.set(0, 0, config.radius * 3.5);
     camera.lookAt(0, 0, 0);
   }, [camera, config.radius]);
+
+  React.useEffect(() => {
+    if (!focusMarker || !controlsRef.current) return;
+
+    const controls = controlsRef.current;
+    const startPos = (camera as THREE.Camera).position.clone();
+    const dir = latLngToVector3(focusMarker.lat, focusMarker.lng, 1).normalize();
+    const endPos = dir.multiplyScalar(Math.max(config.minDistance + 0.3, config.radius * 3.0));
+
+    let rafId: number;
+    let startTime: number | null = null;
+    const duration = 1200;
+
+    const wasAutoRotate = controls.autoRotate;
+    controls.autoRotate = false;
+    controls.enabled = false;
+
+    const animate = (time: number) => {
+      if (startTime === null) startTime = time;
+      const t = Math.min((time - startTime) / duration, 1);
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      (camera as THREE.Camera).position.lerpVectors(startPos, endPos, eased);
+      (camera as THREE.Camera).lookAt(0, 0, 0);
+      controls.update();
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        controls.enabled = true;
+        controls.autoRotate = wasAutoRotate;
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      controls.enabled = true;
+      controls.autoRotate = wasAutoRotate;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusMarker]);
 
   return (
     <>
@@ -372,6 +417,7 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
         />
       )}
       <OrbitControls
+        ref={controlsRef}
         makeDefault
         enablePan={config.enablePan}
         enableZoom={config.enableZoom}
@@ -414,10 +460,10 @@ const defaultConfig: Required<Globe3DConfig> = {
   atmosphereBlur: 2,
   bumpScale: 1,
   autoRotateSpeed: 0.3,
-  enableZoom: false,
+  enableZoom: true,
   enablePan: false,
-  minDistance: 5,
-  maxDistance: 15,
+  minDistance: 5.5,
+  maxDistance: 20,
   initialRotation: { x: 0, y: 0 },
   markerSize: 0.06,
   showWireframe: false,
@@ -433,6 +479,7 @@ export function Globe3D({
   className,
   onMarkerClick,
   onMarkerHover,
+  focusMarker,
 }: Globe3DProps) {
   const mergedConfig = useMemo(() => ({ ...defaultConfig, ...config }), [config]);
 
@@ -455,6 +502,7 @@ export function Globe3D({
             config={mergedConfig}
             onMarkerClick={onMarkerClick}
             onMarkerHover={onMarkerHover}
+            focusMarker={focusMarker}
           />
         </Suspense>
       </Canvas>

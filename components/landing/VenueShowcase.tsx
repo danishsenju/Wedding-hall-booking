@@ -30,12 +30,12 @@ interface VenueData {
 const FALLBACK_VENUES: VenueData[] = [
   {
     name: "Grand Ballroom",
-    subtitle: "The Jewel of Lumières",
+    subtitle: "The Jewel of Laman Troka",
     description:
       "Our crown jewel — an expansive 8,000 sq ft ballroom bathed in golden light, featuring 6.5m ceilings, crystal chandeliers, and a dedicated bridal suite. Seats up to 1,200 guests in absolute grandeur.",
     imageUrl:
       "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80",
-    imageAlt: "Grand Ballroom at Lumières — crystal chandeliers and golden light",
+    imageAlt: "Grand Ballroom at Laman Troka — crystal chandeliers and golden light",
     tag: "Most Popular",
     href: "/venues/grand-ballroom",
     specs: [
@@ -51,7 +51,7 @@ const FALLBACK_VENUES: VenueData[] = [
       "A sculpted tropical garden with a raised ceremony platform, reflecting pool, and panoramic city views at dusk. Perfect for intimate sunset ceremonies and garden parties up to 400 guests.",
     imageUrl:
       "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=80",
-    imageAlt: "Garden Terrace at Lumières — tropical garden ceremony space",
+    imageAlt: "Garden Terrace at Laman Troka — tropical garden ceremony space",
     tag: "Most Romantic",
     href: "/venues/garden-terrace",
     specs: [
@@ -334,7 +334,7 @@ export default function VenueShowcase({
               fontFamily: "var(--font-body)",
             }}
           >
-            Each venue at Lumières is designed with a singular purpose — to
+            Each venue at Laman Troka is designed with a singular purpose — to
             make your wedding day feel like a scene from a dream.
           </p>
         </motion.div>

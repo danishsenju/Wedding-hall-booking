@@ -28,6 +28,73 @@ async function uploadImage(file: File, folder: string): Promise<string | null> {
   }
 }
 
+/* ─── Gallery images field (up to 6 slots) ──────── */
+function GalleryImagesField({
+  images,
+  onChange,
+}: {
+  images: string[];
+  onChange: (imgs: string[]) => void;
+}) {
+  const addSlot = () => {
+    if (images.length < 6) onChange([...images, ""]);
+  };
+  const removeSlot = (i: number) =>
+    onChange(images.filter((_, j) => j !== i));
+  const updateSlot = (i: number, url: string) =>
+    onChange(images.map((x, j) => (j === i ? url : x)));
+
+  return (
+    <div>
+      <label className="label-text">
+        Gallery Images — detail page (up to 6)
+      </label>
+      <div className="space-y-3">
+        {images.map((url, i) => (
+          <div key={i} className="flex items-start gap-2">
+            <div className="flex-1">
+              <ImageField
+                value={url}
+                onChange={(u) => updateSlot(i, u)}
+                folder="themes"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => removeSlot(i)}
+              className="btn-secondary mt-0 shrink-0"
+              style={{ color: "#f87171" }}
+            >
+              <Trash2 size={12} />
+            </button>
+          </div>
+        ))}
+        {images.length < 6 && (
+          <button
+            type="button"
+            onClick={addSlot}
+            className="flex items-center gap-1.5 text-xs transition-colors"
+            style={{
+              color: "var(--text-muted)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            <Plus size={12} /> Add gallery image
+          </button>
+        )}
+        {images.length === 0 && (
+          <p
+            className="text-xs"
+            style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+          >
+            No gallery images yet. Add up to 6 to populate the detail page gallery.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Shared image field ─────────────────────────── */
 function ImageField({
   value,
@@ -234,7 +301,7 @@ function VenueEditRow({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label-text">Subtitle</label>
-                  <input type="text" placeholder="The Jewel of Lumières" value={form.subtitle} onChange={set("subtitle")} className="field" />
+                  <input type="text" placeholder="The Jewel of Laman Troka" value={form.subtitle} onChange={set("subtitle")} className="field" />
                 </div>
                 <div>
                   <label className="label-text">Detail Page URL</label>
@@ -384,7 +451,14 @@ function ThemeEditRow({
     price_from_rm: theme.price_from_rm?.toString() ?? "",
     mood: theme.mood ?? "",
     sort_order: theme.sort_order?.toString() ?? "0",
+    highlight_quote: theme.highlight_quote ?? "",
   });
+  const [galleryImages, setGalleryImages] = useState<string[]>(
+    theme.gallery_images ?? []
+  );
+  const [featuresText, setFeaturesText] = useState(
+    (theme.features ?? []).join("\n")
+  );
   const [saving, setSaving] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState("");
@@ -405,9 +479,24 @@ function ThemeEditRow({
       price_from_rm: form.price_from_rm ? Number(form.price_from_rm) : null,
       mood: form.mood.trim() || undefined,
       sort_order: Number(form.sort_order) || 0,
+      highlight_quote: form.highlight_quote.trim() || null,
+      features: featuresText
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      gallery_images: galleryImages.filter(Boolean),
     });
     setSaving(false);
-    if (!result.success || !result.data) { setError(result.error ?? "Failed"); return; }
+    if (!result.success || !result.data) {
+      if (result.error?.includes("column") && result.error?.includes("does not exist")) {
+        setError(
+          "Detail page fields need a DB migration. Run: ALTER TABLE themes ADD COLUMN highlight_quote text, ADD COLUMN features jsonb DEFAULT '[]', ADD COLUMN gallery_images jsonb DEFAULT '[]';"
+        );
+      } else {
+        setError(result.error ?? "Failed");
+      }
+      return;
+    }
     onSaved(result.data);
     setOpen(false);
   };
@@ -487,6 +576,49 @@ function ThemeEditRow({
                 <input type="number" min={0} value={form.sort_order} onChange={set("sort_order")} className="field" />
               </div>
 
+              {/* ── Detail page fields ── */}
+              <div
+                className="rounded-sm p-4 space-y-4"
+                style={{ background: "rgba(109,40,217,0.04)", border: "1px solid var(--border)" }}
+              >
+                <p
+                  className="text-xs uppercase tracking-[0.22em]"
+                  style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
+                >
+                  Detail Page Fields
+                </p>
+
+                <div>
+                  <label className="label-text">Highlight Quote</label>
+                  <input
+                    type="text"
+                    placeholder="Where every detail tells a story"
+                    value={form.highlight_quote}
+                    onChange={set("highlight_quote")}
+                    className="field"
+                  />
+                </div>
+
+                <div>
+                  <label className="label-text">What&apos;s Included (one item per line)</label>
+                  <textarea
+                    rows={5}
+                    placeholder={"Crystal chandelier setup\nFloral arrangements\nBridal suite access"}
+                    value={featuresText}
+                    onChange={(e) => setFeaturesText(e.target.value)}
+                    className="field resize-none"
+                  />
+                  <p className="mt-1 text-xs" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)", opacity: 0.65 }}>
+                    Each line = one feature item on the detail page.
+                  </p>
+                </div>
+
+                <GalleryImagesField
+                  images={galleryImages}
+                  onChange={setGalleryImages}
+                />
+              </div>
+
               {error && <p className="text-xs" style={{ color: "#f87171" }}>{error}</p>}
               <div className="flex justify-end gap-2">
                 <button type="button" onClick={() => setOpen(false)} className="btn-secondary">Cancel</button>
@@ -504,7 +636,12 @@ function ThemeEditRow({
 
 function AddThemeRow({ onAdded }: { onAdded: (t: Theme) => void }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", tagline: "", description: "", image_url: "", price_from_rm: "", mood: "", sort_order: "0" });
+  const [form, setForm] = useState({
+    name: "", tagline: "", description: "", image_url: "",
+    price_from_rm: "", mood: "", sort_order: "0", highlight_quote: "",
+  });
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [featuresText, setFeaturesText] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -522,12 +659,26 @@ function AddThemeRow({ onAdded }: { onAdded: (t: Theme) => void }) {
       price_from_rm: form.price_from_rm ? Number(form.price_from_rm) : null,
       mood: form.mood.trim() || undefined,
       sort_order: Number(form.sort_order) || 0,
+      highlight_quote: form.highlight_quote.trim() || null,
+      features: featuresText.split("\n").map((s) => s.trim()).filter(Boolean),
+      gallery_images: galleryImages.filter(Boolean),
     });
     setSaving(false);
-    if (!result.success || !result.data) { setError(result.error ?? "Failed"); return; }
+    if (!result.success || !result.data) {
+      if (result.error?.includes("column") && result.error?.includes("does not exist")) {
+        setError(
+          "Detail page fields need a DB migration. Run: ALTER TABLE themes ADD COLUMN highlight_quote text, ADD COLUMN features jsonb DEFAULT '[]', ADD COLUMN gallery_images jsonb DEFAULT '[]';"
+        );
+      } else {
+        setError(result.error ?? "Failed");
+      }
+      return;
+    }
     onAdded(result.data);
     setOpen(false);
-    setForm({ name: "", tagline: "", description: "", image_url: "", price_from_rm: "", mood: "", sort_order: "0" });
+    setForm({ name: "", tagline: "", description: "", image_url: "", price_from_rm: "", mood: "", sort_order: "0", highlight_quote: "" });
+    setGalleryImages([]);
+    setFeaturesText("");
   };
 
   if (!open) {
@@ -559,6 +710,26 @@ function AddThemeRow({ onAdded }: { onAdded: (t: Theme) => void }) {
           <div><label className="label-text">Price (RM)</label><input type="number" value={form.price_from_rm} onChange={set("price_from_rm")} className="field" /></div>
         </div>
         <div><label className="label-text">Description</label><textarea rows={2} value={form.description} onChange={set("description")} className="field resize-none" /></div>
+
+        {/* Detail page fields */}
+        <div
+          className="rounded-sm p-4 space-y-4"
+          style={{ background: "rgba(109,40,217,0.04)", border: "1px solid var(--border)" }}
+        >
+          <p className="text-xs uppercase tracking-[0.22em]" style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}>
+            Detail Page Fields
+          </p>
+          <div>
+            <label className="label-text">Highlight Quote</label>
+            <input type="text" placeholder="Where every detail tells a story" value={form.highlight_quote} onChange={set("highlight_quote")} className="field" />
+          </div>
+          <div>
+            <label className="label-text">What&apos;s Included (one item per line)</label>
+            <textarea rows={4} placeholder={"Crystal chandelier setup\nFloral arrangements\nBridal suite access"} value={featuresText} onChange={(e) => setFeaturesText(e.target.value)} className="field resize-none" />
+          </div>
+          <GalleryImagesField images={galleryImages} onChange={setGalleryImages} />
+        </div>
+
         {error && <p className="text-xs" style={{ color: "#f87171" }}>{error}</p>}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={() => setOpen(false)} className="btn-secondary">Cancel</button>
@@ -601,7 +772,7 @@ export default function ContentClient({
           className="text-xs uppercase tracking-[0.28em]"
           style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
         >
-          Lumières Grand Hall
+          Laman Troka
         </div>
         <h1
           className="mt-0.5 flex items-center gap-3 text-3xl font-light"

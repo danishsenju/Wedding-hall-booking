@@ -697,7 +697,7 @@ export default function PackagesClient({
             className="text-xs uppercase tracking-[0.28em]"
             style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
           >
-            Lumières Grand Hall
+            Laman Troka
           </div>
           <h1
             className="mt-0.5 text-3xl font-light"

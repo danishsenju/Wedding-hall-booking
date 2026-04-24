@@ -4,7 +4,6 @@ import "./globals.css";
 import PageTransition from "@/components/PageTransition";
 import RouteProgress from "@/components/RouteProgress";
 import SilkBackground from "@/components/SilkBackground";
-import SmartSplashCursor from "@/components/SmartSplashCursor";
 
 /* ─── Fonts ─────────────────────────────────────── */
 const cormorant = Cormorant_Garamond({
@@ -25,29 +24,29 @@ const dmSans = DM_Sans({
 /* ─── Metadata ──────────────────────────────────── */
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://lumieresgrandhall.com"
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://lamantroka.com"
   ),
   title: {
-    default: "Lumières Grand Hall — Premium Wedding Venue, Kuala Lumpur",
-    template: "%s | Lumières Grand Hall",
+    default: "Laman Troka — Premium Wedding Venue, Kuala Lumpur",
+    template: "%s | Laman Troka",
   },
   description:
     "Kuala Lumpur's most refined wedding hall. Timeless elegance, bespoke packages, and flawless event coordination for your perfect celebration.",
   keywords: [
     "wedding hall Kuala Lumpur",
     "premium wedding venue KL",
-    "Lumières Grand Hall",
+    "Laman Troka",
     "wedding booking Malaysia",
     "ballroom KL",
     "wedding package Malaysia",
   ],
-  authors: [{ name: "Lumières Grand Hall" }],
-  creator: "Lumières Grand Hall",
+  authors: [{ name: "Laman Troka" }],
+  creator: "Laman Troka",
   openGraph: {
     type: "website",
     locale: "en_MY",
-    siteName: "Lumières Grand Hall",
-    title: "Lumières Grand Hall — Premium Wedding Venue, Kuala Lumpur",
+    siteName: "Laman Troka",
+    title: "Laman Troka — Premium Wedding Venue, Kuala Lumpur",
     description:
       "Timeless elegance for your most memorable day. Book the finest wedding hall in Kuala Lumpur.",
     images: [
@@ -55,13 +54,13 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Lumières Grand Hall — Premium Wedding Venue",
+        alt: "Laman Troka — Premium Wedding Venue",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lumières Grand Hall",
+    title: "Laman Troka",
     description:
       "Kuala Lumpur's most refined wedding hall. Bespoke packages from RM 18,000.",
   },
@@ -104,7 +103,6 @@ export default function RootLayout({
     >
       <body className="antialiased noise-overlay">
         <SilkBackground />
-        <SmartSplashCursor />
         <RouteProgress />
         <div className="relative z-10">
           <PageTransition>{children}</PageTransition>

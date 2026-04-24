@@ -12,7 +12,7 @@ import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 
 /* ─── Flip Words ─────────────────────────────────── */
 const FLIP_WORDS = ["Timeless", "Magical", "Unforgettable", "Breathtaking"];
-const HERO_TITLE = "Lumières Grand Hall";
+const HERO_TITLE = "Laman Troka";
 
 function FlipWords({ words }: { words: string[] }) {
   const [index, setIndex] = useState(0);

@@ -4,7 +4,7 @@ import { getAllHalls } from "@/app/actions/hall";
 import { getAllThemes } from "@/app/actions/theme";
 import HallsClient from "./HallsClient";
 
-export const metadata = { title: "Manage Halls | Lumières Admin" };
+export const metadata = { title: "Manage Halls | Laman Troka Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHallsPage() {

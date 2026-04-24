@@ -407,7 +407,7 @@ export default function ServicesShowcase({ vendors }: { vendors: Vendor[] }) {
               className="text-[10px] uppercase tracking-[0.32em]"
               style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
             >
-              Lumières Grand Hall
+              Laman Troka
             </span>
             <span className="h-px w-12 opacity-30" style={{ background: "var(--gold)" }} />
           </motion.div>
@@ -422,7 +422,7 @@ export default function ServicesShowcase({ vendors }: { vendors: Vendor[] }) {
             style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
           >
             Every detail, thoughtfully chosen. Our curated vendors are available exclusively
-            for Lumières bookings — simply select what you need during reservation.
+            for Laman Troka bookings — simply select what you need during reservation.
           </motion.p>
 
           <motion.div

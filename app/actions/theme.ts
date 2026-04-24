@@ -12,6 +12,9 @@ export interface ThemeInput {
   price_from_rm?: number | null;
   mood?: string;
   sort_order?: number;
+  highlight_quote?: string | null;
+  features?: string[] | null;
+  gallery_images?: string[] | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +29,20 @@ export async function getAllThemes(): Promise<ActionResult<Theme[]>> {
 
   if (error) return { success: false, error: error.message };
   return { success: true, data: (data ?? []) as Theme[] };
+}
+
+export async function getThemeById(id: string): Promise<ActionResult<Theme>> {
+  noStore();
+  if (!id) return { success: false, error: "Theme ID is required." };
+
+  const { data, error } = await sb()
+    .from("themes")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return { success: false, error: error.message };
+  return { success: true, data: data as Theme };
 }
 
 export async function createTheme(input: ThemeInput): Promise<ActionResult<Theme>> {

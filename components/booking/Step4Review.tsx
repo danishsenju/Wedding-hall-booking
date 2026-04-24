@@ -269,7 +269,7 @@ export default function Step4Review({ form, venue, packages, vendors }: Step4Pro
       <ReviewSection title="Date & Time">
         <ReviewRow
           label="Venue"
-          value={venue?.name ?? "Lumières Grand Hall"}
+          value={venue?.name ?? "Laman Troka"}
         />
         <ReviewRow
           label="Date"

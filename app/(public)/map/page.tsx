@@ -3,8 +3,8 @@ import type { Venue } from "@/types";
 import MapClient from "./MapClient";
 
 export const metadata = {
-  title: "Find Us | Lumières Grand Hall",
-  description: "Locate Lumières Grand Hall on the map and get directions.",
+  title: "Find Us | Laman Troka",
+  description: "Locate Laman Troka on the map and get directions.",
 };
 
 export const dynamic = "force-dynamic";

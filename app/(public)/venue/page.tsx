@@ -8,9 +8,9 @@ import VenueHero from "@/components/venue/VenueHero";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Venue Details — Lumières Grand Hall",
+  title: "Venue Details — Laman Troka",
   description:
-    "Explore Lumières Grand Hall: 15,000 sq ft of timeless elegance in KLCC, Kuala Lumpur. Packages from RM 28,000.",
+    "Explore Laman Troka: 15,000 sq ft of timeless elegance in KLCC, Kuala Lumpur. Packages from RM 28,000.",
 };
 
 export default function VenuePage() {

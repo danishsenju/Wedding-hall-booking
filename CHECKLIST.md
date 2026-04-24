@@ -1,4 +1,4 @@
-# Lumières Build Checklist
+# Laman Troka Build Checklist
 
 ## PHASE 1 — Project Setup
 - [x] Next.js 14 initialized with TypeScript

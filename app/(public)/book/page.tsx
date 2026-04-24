@@ -4,9 +4,9 @@ import { getAllVendors } from "@/app/actions/vendor"
 import BookingFlow from "@/components/booking/BookingFlow"
 
 export const metadata: Metadata = {
-  title: "Book Your Date — Lumières Grand Hall",
+  title: "Book Your Date — Laman Troka",
   description:
-    "Reserve your dream wedding at Lumières Grand Hall. Premium packages from RM 18,000 with bespoke add-ons.",
+    "Reserve your dream wedding at Laman Troka. Premium packages from RM 18,000 with bespoke add-ons.",
 }
 
 export const dynamic = "force-dynamic"

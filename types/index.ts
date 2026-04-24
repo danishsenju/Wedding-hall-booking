@@ -196,6 +196,9 @@ export interface Theme {
   mood: string | null;
   sort_order: number;
   created_at: string;
+  highlight_quote: string | null;
+  features: string[] | null;
+  gallery_images: string[] | null;
 }
 
 /** Venue row extended with fields used by VenueShowcase on the landing page */

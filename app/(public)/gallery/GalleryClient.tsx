@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FocusCards } from "@/components/ui/focus-cards";
+import ColorBends from "@/components/ui/color-bends";
 import type { GalleryImage } from "@/types";
 
 interface Props {
@@ -13,15 +14,25 @@ export default function GalleryClient({ images }: Props) {
 
   return (
     <main className="relative min-h-screen" style={{ background: "var(--base)" }}>
-      {/* Background grid */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, rgba(109,40,217,0.06) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }}
-      />
+      {/* ColorBends background */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <ColorBends
+          colors={["#1a098a"]}
+          rotation={90}
+          speed={0.2}
+          scale={1}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1}
+          noise={0.15}
+          parallax={0.5}
+          iterations={1}
+          intensity={1.5}
+          bandWidth={6}
+          transparent={false}
+        />
+        <div className="absolute inset-0" style={{ background: "rgba(10,11,16,0.55)" }} />
+      </div>
 
       {/* Page header */}
       <div className="relative z-10 pt-28 pb-10 text-center">
@@ -46,7 +57,7 @@ export default function GalleryClient({ images }: Props) {
             className="mx-auto mt-3 max-w-sm text-sm"
             style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
           >
-            A glimpse into the elegance and moments crafted at Lumières Grand Hall.
+            A glimpse into the elegance and moments crafted at Laman Troka.
           </p>
         </motion.div>
       </div>

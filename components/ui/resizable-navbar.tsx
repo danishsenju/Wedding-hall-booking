@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -79,7 +80,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
       transition={{ type: "spring", stiffness: 200, damping: 50 }}
       style={{ minWidth: "800px" }}
       className={cn(
-        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full px-6 py-3 lg:flex",
+        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full px-6 py-2 lg:flex",
         visible ? "border border-[rgba(109,40,217,0.2)]" : "",
         className,
       )}
@@ -221,20 +222,16 @@ export const NavbarLogo = () => {
   return (
     <a
       href="/"
-      className="relative z-20 flex items-baseline gap-2 px-2 py-1"
+      className="relative z-20 flex items-center px-2 py-1"
     >
-      <span
-        className="text-2xl font-light tracking-wide"
-        style={{ fontFamily: "var(--font-display)", color: "var(--gold)" }}
-      >
-        Lumières
-      </span>
-      <span
-        className="hidden text-xs uppercase tracking-[0.22em] sm:block"
-        style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-      >
-        Grand Hall
-      </span>
+      <Image
+        src="/logo.png"
+        alt="Laman Troka"
+        width={120}
+        height={28}
+        className="object-contain"
+        priority
+      />
     </a>
   );
 };

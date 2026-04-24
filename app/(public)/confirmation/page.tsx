@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import ConfirmationClient from "./ConfirmationClient"
 
 export const metadata: Metadata = {
-  title: "Booking Confirmed — Lumières Grand Hall",
+  title: "Booking Confirmed — Laman Troka",
   description: "Your wedding booking request has been received. We will be in touch within 24–48 hours.",
 }
 

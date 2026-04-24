@@ -12,7 +12,7 @@ const TAGS = [
   { icon: Clock, label: "8 AM – 12 AM Daily" },
 ];
 
-const TITLE = "Lumières Grand Hall";
+const TITLE = "Laman Troka";
 
 export default function VenueHero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ export default function VenueHero() {
       >
         <Image
           src="https://images.unsplash.com/photo-1531058020387-3be344556be6?w=1200&q=80"
-          alt="Lumières Grand Hall — elegant interior"
+          alt="Laman Troka — elegant interior"
           fill
           priority
           className="object-cover"

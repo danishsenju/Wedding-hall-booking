@@ -104,7 +104,7 @@ function SummaryContent({
           className="text-[11px] uppercase tracking-[0.2em]"
           style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
         >
-          {venue?.name ?? "Lumières Grand Hall"}
+          {venue?.name ?? "Laman Troka"}
         </span>
       </div>
 

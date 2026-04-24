@@ -40,7 +40,7 @@ const DEFAULT_SPOTLIGHT_RADIUS = 300;
 const GOLD_GLOW = "201, 168, 76";
 const MOBILE_BREAKPOINT = 768;
 
-/* ─── Card data (Lumières features) ──────────────── */
+/* ─── Card data (Laman Troka features) ──────────────── */
 // Order matches 4-col react-bits grid: [0][1][2*][2*] / [3*][3*][2*][2*] / [3*][3*][4][5]
 const cardData: BentoCardData[] = [
   {

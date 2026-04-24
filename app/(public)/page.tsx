@@ -11,14 +11,14 @@ import VenueShowcase from "@/components/landing/VenueShowcase";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Lumières Grand Hall — Premium Wedding Venue, Kuala Lumpur",
+  title: "Laman Troka — Premium Wedding Venue, Kuala Lumpur",
   openGraph: {
     images: [
       {
         url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200&q=80",
         width: 1200,
         height: 630,
-        alt: "Lumières Grand Hall — Premium Wedding Venue, Kuala Lumpur",
+        alt: "Laman Troka — Premium Wedding Venue, Kuala Lumpur",
       },
     ],
   },
