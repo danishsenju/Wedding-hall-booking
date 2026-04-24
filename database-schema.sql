@@ -310,3 +310,36 @@ grant all on table vendors to authenticated;
 grant all on table vendors to service_role;
 
 create index if not exists idx_gallery_sort on gallery (sort_order);
+
+-- ─── CONTACT MESSAGES ─────────────────────────────────────────
+create table if not exists contact_messages (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null,
+  email       text not null,
+  phone       text,
+  event_date  date,
+  guests      text,
+  message     text not null,
+  is_read     boolean not null default false,
+  created_at  timestamptz default now()
+);
+
+alter table contact_messages enable row level security;
+
+drop policy if exists "public insert contact_messages" on contact_messages;
+drop policy if exists "admin all contact_messages"     on contact_messages;
+
+-- Anyone can submit a contact message
+create policy "public insert contact_messages"
+  on contact_messages for insert with check (true);
+
+-- Only admins can read / update / delete
+create policy "admin all contact_messages"
+  on contact_messages for all using (auth.role() = 'authenticated');
+
+grant insert on table contact_messages to anon;
+grant all    on table contact_messages to authenticated;
+grant all    on table contact_messages to service_role;
+
+create index if not exists idx_contact_messages_created on contact_messages (created_at desc);
+create index if not exists idx_contact_messages_unread  on contact_messages (is_read) where is_read = false;

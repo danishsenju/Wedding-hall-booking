@@ -184,6 +184,20 @@ export type SupabaseError = {
   code?: string;
 };
 
+/* ─── Contact Message Types ──────────────────────── */
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  event_date: string | null; // ISO date string YYYY-MM-DD
+  guests: string | null;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 /* ─── Content / CMS Types ────────────────────────── */
 
 export interface Theme {

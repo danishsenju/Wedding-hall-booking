@@ -1,6 +1,7 @@
 ﻿"use client";
 import { ArrowRight } from "lucide-react";
 import { useState, useRef, useId, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { NoiseBackground } from "@/components/ui/noise-background";
 
 const THEME_GRADIENT = [
@@ -76,7 +77,7 @@ const Slide = ({
     <div className="[perspective:1200px] [transform-style:preserve-3d]">
       <li
         ref={slideRef}
-        className="flex flex-1 flex-col items-center justify-center relative text-center opacity-100 transition-all duration-300 ease-in-out w-[70vmin] h-[70vmin] mx-[4vmin] z-10"
+        className="flex flex-1 flex-col items-center justify-center relative text-center opacity-100 transition-all duration-300 ease-in-out w-[min(70vmin,520px)] h-[min(70vmin,520px)] mx-[4vmin] z-10"
         onClick={() => handleSlideClick(index)}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -184,12 +185,18 @@ const CarouselControl = ({
   );
 };
 
+interface SlideColor {
+  primary: string;
+  secondary: string;
+}
+
 interface CarouselProps {
   slides: SlideData[];
+  slideColors?: SlideColor[];
   onSlideSelect?: (index: number) => void;
 }
 
-export default function Carousel({ slides, onSlideSelect }: CarouselProps) {
+export default function Carousel({ slides, slideColors, onSlideSelect }: CarouselProps) {
   const [current, setCurrent] = useState(0);
 
   const handlePreviousClick = () => {
@@ -212,9 +219,29 @@ export default function Carousel({ slides, onSlideSelect }: CarouselProps) {
 
   return (
     <div
-      className="relative w-[70vmin] h-[70vmin] mx-auto"
+      className="relative w-[min(70vmin,520px)] h-[min(70vmin,520px)] mx-auto"
       aria-labelledby={`carousel-heading-${id}`}
     >
+      {/* Ambient color glow — fades between slide palette colors */}
+      <AnimatePresence mode="sync">
+        {slideColors && slideColors[current] && (
+          <motion.div
+            key={current}
+            className="absolute pointer-events-none"
+            style={{
+              inset: "-60%",
+              background: `radial-gradient(ellipse 40% 40% at 50% 50%, ${slideColors[current].primary} 0%, ${slideColors[current].secondary} 40%, transparent 65%)`,
+              filter: "blur(72px)",
+              zIndex: 0,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2.2, ease: "easeInOut" }}
+          />
+        )}
+      </AnimatePresence>
+
       <ul
         className="absolute flex mx-[-4vmin] transition-transform duration-1000 ease-in-out"
         style={{

@@ -754,7 +754,6 @@ export default function ThemeDetailClient({
   return (
     <div style={{ background: "var(--base)" }}>
       <ThemeHero theme={theme} />
-      <Breadcrumb name={theme.name} />
       <ThemeStory theme={theme} />
       <ThemeGallery images={theme.gallery_images ?? []} />
       <ThemeFeatures features={theme.features ?? []} />

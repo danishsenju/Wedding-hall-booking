@@ -115,8 +115,10 @@ function VendorFormModal({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onClose}
-            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-white/5"
+            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors"
             style={{ color: "var(--text-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(109,40,217,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
             <X size={15} />
           </motion.button>
@@ -373,7 +375,7 @@ export default function VendorsClient({ initialVendors }: { initialVendors: Vend
   }
 
   return (
-    <>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {/* Page header */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
@@ -585,6 +587,6 @@ export default function VendorsClient({ initialVendors }: { initialVendors: Vend
         }
         .btn-secondary:hover { border-color: var(--border-hover); color: var(--text); }
       `}</style>
-    </>
+    </div>
   )
 }

@@ -106,13 +106,17 @@ function PackageFormModal({
           >
             {isEdit ? "Edit Package" : "Add New Package"}
           </h2>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onClose}
-            className="rounded-sm p-1.5 transition-colors hover:bg-white/5"
+            className="flex h-7 w-7 items-center justify-center rounded-sm transition-colors"
             style={{ color: "var(--text-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(109,40,217,0.08)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
-            <X size={16} />
-          </button>
+            <X size={15} />
+          </motion.button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
@@ -224,13 +228,16 @@ function PackageCard({
   venueName,
   onEdit,
   onDelete,
+  delay,
 }: {
   pkg: PkgType
   venueName: string
   onEdit: (p: PkgType) => void
   onDelete: (id: string) => void
+  delay: number
 }) {
   const [confirming, setConfirming] = useState(false)
+  const [hovered, setHovered] = useState(false)
 
   return (
     <motion.div
@@ -238,106 +245,152 @@ function PackageCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="rounded-sm p-5"
-      style={{ background: "var(--surface-1)", border: "1px solid var(--border)" }}
+      transition={{ delay, duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+      className="relative"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      {/* Header */}
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
-          <div
-            className="mb-0.5 text-xs uppercase tracking-[0.18em]"
-            style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
-          >
-            {venueName}
-          </div>
-          <h3
-            className="text-xl font-light"
-            style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
-          >
-            {pkg.name}
-          </h3>
-        </div>
-        <div
-          className="shrink-0 rounded-sm px-3 py-1 text-sm font-medium"
+      <div
+        className="relative overflow-hidden rounded-sm p-5"
+        style={{
+          background: "var(--surface-1)",
+          border: `1px solid ${hovered ? "rgba(109,40,217,0.35)" : "var(--border)"}`,
+          boxShadow: hovered ? "0 8px 32px rgba(109,40,217,0.12)" : "none",
+          transition: "border-color 0.25s, box-shadow 0.25s",
+        }}
+      >
+        {/* Top accent line */}
+        <motion.div
+          className="absolute inset-x-0 top-0 h-px"
+          animate={{ scaleX: hovered ? 1 : 0 }}
+          initial={{ scaleX: 0 }}
+          transition={{ duration: 0.35 }}
           style={{
-            background: "rgba(109,40,217,0.1)",
-            border: "1px solid var(--border-hover)",
-            color: "var(--text)",
-            fontFamily: "var(--font-body)",
+            background: "linear-gradient(90deg, transparent, var(--gold), transparent)",
+            transformOrigin: "center",
           }}
-        >
-          RM {pkg.price_rm.toLocaleString()}
+        />
+
+        {/* Radial spotlight */}
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.25 }}
+          style={{ background: "radial-gradient(circle at 50% 0%, rgba(109,40,217,0.1), transparent 70%)" }}
+        />
+
+        <div className="relative z-10">
+          {/* Header */}
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <div
+                className="mb-0.5 text-xs uppercase tracking-[0.18em]"
+                style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
+              >
+                {venueName}
+              </div>
+              <h3
+                className="text-xl font-light"
+                style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
+              >
+                {pkg.name}
+              </h3>
+            </div>
+            <div
+              className="shrink-0 rounded-sm px-3 py-1 text-sm font-medium"
+              style={{
+                background: "rgba(109,40,217,0.1)",
+                border: "1px solid var(--border-hover)",
+                color: "var(--text)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              RM {pkg.price_rm.toLocaleString()}
+            </div>
+          </div>
+
+          {/* Chips */}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {pkg.capacity_max != null && (
+              <span
+                className="rounded-sm px-2 py-0.5 text-xs"
+                style={{
+                  background: "var(--surface-2)",
+                  color: "var(--text-muted)",
+                  fontFamily: "var(--font-body)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                Up to {pkg.capacity_max} guests
+              </span>
+            )}
+            {pkg.duration_hours != null && (
+              <span
+                className="rounded-sm px-2 py-0.5 text-xs"
+                style={{
+                  background: "var(--surface-2)",
+                  color: "var(--text-muted)",
+                  fontFamily: "var(--font-body)",
+                  border: "1px solid var(--border)",
+                }}
+              >
+                {pkg.duration_hours}h
+              </span>
+            )}
+          </div>
+
+          <div className="h-px" style={{ background: "var(--border)" }} />
+
+          {/* Actions */}
+          <div className="mt-3">
+            {confirming ? (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2"
+              >
+                <p className="flex-1 text-xs" style={{ color: "#f87171", fontFamily: "var(--font-body)" }}>
+                  Delete this package?
+                </p>
+                <button className="btn-secondary text-xs" onClick={() => setConfirming(false)}>
+                  No
+                </button>
+                <button
+                  className="flex items-center gap-1 rounded-sm px-3 py-1.5 text-xs"
+                  style={{
+                    background: "rgba(239,68,68,0.1)",
+                    border: "1px solid rgba(239,68,68,0.3)",
+                    color: "#f87171",
+                  }}
+                  onClick={() => onDelete(pkg.id)}
+                >
+                  <Trash2 size={12} /> Delete
+                </button>
+              </motion.div>
+            ) : (
+              <div className="flex gap-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="btn-secondary flex flex-1 items-center justify-center gap-1.5"
+                  onClick={() => onEdit(pkg)}
+                >
+                  <Pencil size={13} /> Edit
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="btn-secondary flex items-center gap-1.5 px-3"
+                  onClick={() => setConfirming(true)}
+                  style={{ color: "#f87171" }}
+                >
+                  <Trash2 size={13} />
+                </motion.button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Chips */}
-      <div className="mb-4 flex flex-wrap gap-2">
-        {pkg.capacity_max != null && (
-          <span
-            className="rounded-sm px-2 py-0.5 text-xs"
-            style={{
-              background: "var(--surface-2)",
-              color: "var(--text-muted)",
-              fontFamily: "var(--font-body)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            Up to {pkg.capacity_max} guests
-          </span>
-        )}
-        {pkg.duration_hours != null && (
-          <span
-            className="rounded-sm px-2 py-0.5 text-xs"
-            style={{
-              background: "var(--surface-2)",
-              color: "var(--text-muted)",
-              fontFamily: "var(--font-body)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            {pkg.duration_hours}h
-          </span>
-        )}
-      </div>
-
-      {/* Actions */}
-      {confirming ? (
-        <div className="flex items-center gap-2">
-          <p className="flex-1 text-xs" style={{ color: "#f87171" }}>
-            Delete this package?
-          </p>
-          <button className="btn-secondary text-xs" onClick={() => setConfirming(false)}>
-            Cancel
-          </button>
-          <button
-            className="flex items-center gap-1 rounded-sm px-3 py-1.5 text-xs"
-            style={{
-              background: "rgba(239,68,68,0.1)",
-              border: "1px solid rgba(239,68,68,0.3)",
-              color: "#f87171",
-            }}
-            onClick={() => onDelete(pkg.id)}
-          >
-            <Trash2 size={12} /> Delete
-          </button>
-        </div>
-      ) : (
-        <div className="flex gap-2">
-          <button
-            className="btn-secondary flex flex-1 items-center justify-center gap-1.5"
-            onClick={() => onEdit(pkg)}
-          >
-            <Pencil size={13} /> Edit
-          </button>
-          <button
-            className="btn-secondary flex items-center gap-1.5"
-            onClick={() => setConfirming(true)}
-            style={{ color: "#f87171" }}
-          >
-            <Trash2 size={13} />
-          </button>
-        </div>
-      )}
     </motion.div>
   )
 }
@@ -689,71 +742,105 @@ export default function PackagesClient({
   }
 
   return (
-    <>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       {/* Page header */}
-      <div className="mb-8 flex items-start justify-between gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
+        className="mb-8 flex items-end justify-between gap-4"
+      >
         <div>
-          <div
-            className="text-xs uppercase tracking-[0.28em]"
-            style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
-          >
-            Laman Troka
+          <div className="mb-1 flex items-center gap-2">
+            <div
+              className="h-px w-6"
+              style={{ background: "linear-gradient(90deg, var(--gold), transparent)" }}
+            />
+            <span
+              className="text-[10px] uppercase tracking-[0.3em]"
+              style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
+            >
+              Laman Troka
+            </span>
           </div>
           <h1
-            className="mt-0.5 text-3xl font-light"
-            style={{ fontFamily: "var(--font-display)", color: "var(--text)" }}
+            className="font-light leading-none"
+            style={{
+              fontFamily: "var(--font-display)",
+              color: "var(--text)",
+              fontSize: "clamp(1.8rem, 3vw, 2.8rem)",
+              letterSpacing: "0.04em",
+            }}
           >
             Packages
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-            Manage the booking packages displayed on the reservation page.
+          <p className="mt-1.5 text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+            {packages.length} package{packages.length !== 1 ? "s" : ""} across {venues.length} venue{venues.length !== 1 ? "s" : ""}
           </p>
         </div>
 
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.04, boxShadow: "0 4px 20px rgba(109,40,217,0.3)" }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setEditing("new")}
           className="btn-primary flex shrink-0 items-center gap-2"
         >
-          <Plus size={15} />
+          <Plus size={14} />
           Add Package
         </motion.button>
-      </div>
-
-      {/* Empty state */}
-      {packages.length === 0 && (
-        <div
-          className="flex flex-col items-center justify-center rounded-sm py-20 text-center"
-          style={{ border: "1px dashed var(--border)", background: "var(--surface-1)" }}
-        >
-          <Package size={36} className="mb-3" style={{ color: "var(--text-muted)" }} />
-          <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-            No packages yet. Click &ldquo;Add Package&rdquo; to create the first one.
-          </p>
-          <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>
-            Packages you add here will appear on the booking form.
-          </p>
-        </div>
-      )}
-
-      {/* Grid */}
-      <motion.div layout className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {packages.map((pkg) => (
-            <PackageCard
-              key={pkg.id}
-              pkg={pkg}
-              venueName={venueMap[pkg.venue_id] ?? "Unknown venue"}
-              onEdit={setEditing}
-              onDelete={handleDelete}
-            />
-          ))}
-        </AnimatePresence>
       </motion.div>
 
-      {/* Bundle Calculator */}
-      <BundleCalculator packages={packages} vendors={initialVendors} venueMap={venueMap} />
+      {/* Empty state */}
+      <AnimatePresence mode="wait">
+        {packages.length === 0 && (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center rounded-sm py-24 text-center"
+            style={{ border: "1px dashed var(--border)", background: "var(--surface-1)" }}
+          >
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm"
+              style={{ background: "rgba(109,40,217,0.1)", color: "var(--gold)" }}
+            >
+              <Package size={22} strokeWidth={1.5} />
+            </motion.div>
+            <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+              No packages yet
+            </p>
+            <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>
+              Click &ldquo;Add Package&rdquo; to get started
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Grid */}
+      {packages.length > 0 && (
+        <motion.div layout className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence mode="popLayout">
+            {packages.map((pkg, i) => (
+              <PackageCard
+                key={pkg.id}
+                pkg={pkg}
+                venueName={venueMap[pkg.venue_id] ?? "Unknown venue"}
+                onEdit={setEditing}
+                onDelete={handleDelete}
+                delay={i * 0.07}
+              />
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
+
+      {/* Bundle Calculator — only shown when packages exist */}
+      {packages.length > 0 && (
+        <BundleCalculator packages={packages} vendors={initialVendors} venueMap={venueMap} />
+      )}
 
       {/* Modal */}
       <AnimatePresence>
@@ -832,6 +919,6 @@ export default function PackagesClient({
           color: var(--text);
         }
       `}</style>
-    </>
+    </div>
   )
 }

@@ -30,6 +30,42 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          event_date: string | null
+          guests: string | null
+          message: string
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          event_date?: string | null
+          guests?: string | null
+          message: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          event_date?: string | null
+          guests?: string | null
+          message?: string
+          is_read?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       blocked_dates: {
         Row: {
           id: string

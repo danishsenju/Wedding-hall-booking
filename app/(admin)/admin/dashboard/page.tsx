@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { getBookings } from "@/lib/queries"
 import { getAdminStats } from "@/app/actions/admin"
+import { getContactMessages } from "@/app/actions/contact"
 import DashboardClient from "./DashboardClient"
 
 export const metadata = {
@@ -14,9 +15,10 @@ export default async function AdminDashboardPage() {
   const token = cookies().get("admin-token")?.value
   if (!token) redirect("/admin/login")
 
-  const [bookings, statsResult] = await Promise.all([
+  const [bookings, statsResult, messagesResult] = await Promise.all([
     getBookings(),
     getAdminStats(),
+    getContactMessages(),
   ])
 
   const stats = statsResult.data ?? {
@@ -28,7 +30,13 @@ export default async function AdminDashboardPage() {
     thisMonthBookings: 0,
   }
 
+  const messages = messagesResult.data ?? []
+
   return (
-    <DashboardClient initialBookings={bookings} initialStats={stats} />
+    <DashboardClient
+      initialBookings={bookings}
+      initialStats={stats}
+      initialMessages={messages}
+    />
   )
 }

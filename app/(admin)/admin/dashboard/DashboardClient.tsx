@@ -5,9 +5,10 @@ import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
 import { Download, Bell, Zap } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 
-import type { BookingWithDetails, BookingStatus } from "@/types"
+import type { BookingWithDetails, BookingStatus, ContactMessage } from "@/types"
 import type { AdminStats } from "@/app/actions/admin"
 import { updateBookingStatus } from "@/app/actions/booking"
+import { exportExcel } from "@/lib/exportExcel"
 import { ToastProvider, useToast } from "@/components/admin/ToastProvider"
 import StatsRow from "@/components/admin/StatsRow"
 import FilterBar from "@/components/admin/FilterBar"
@@ -16,6 +17,7 @@ import BookingExpandable from "@/components/admin/BookingExpandable"
 import BookingModal from "@/components/admin/BookingModal"
 import TrendChart from "@/components/admin/TrendChart"
 import ActivityLog, { logActivity } from "@/components/admin/ActivityLog"
+import MessagesPanel from "@/components/admin/MessagesPanel"
 
 /* ─── Dot-grid Background ──────────────────────────── */
 function DotGrid() {
@@ -139,64 +141,17 @@ function RevenueCard({ revenue, thisMonth }: { revenue: number; thisMonth: numbe
   )
 }
 
-/* ─── Export CSV ───────────────────────────────────── */
-function exportCSV(bookings: BookingWithDetails[]) {
-  const headers = [
-    "Ref",
-    "Bride",
-    "Groom",
-    "Email",
-    "Phone",
-    "Event Date",
-    "Time Slot",
-    "Package",
-    "Guests",
-    "Total (RM)",
-    "Deposit (RM)",
-    "Status",
-    "Created At",
-  ]
-
-  const rows = bookings.map((b) => [
-    b.ref,
-    b.bride_name,
-    b.groom_name,
-    b.email,
-    b.phone,
-    b.event_date,
-    b.time_slot,
-    b.package?.name ?? "",
-    b.guest_count,
-    b.total_rm ?? 0,
-    b.deposit_rm ?? 0,
-    b.status,
-    new Date(b.created_at).toLocaleDateString("en-MY"),
-  ])
-
-  const csv = [headers, ...rows]
-    .map((row) =>
-      row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-    )
-    .join("\n")
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = `lamantroka-bookings-${new Date().toISOString().split("T")[0]}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
-}
-
 /* ─── Inner Dashboard ──────────────────────────────── */
 type FilterValue = BookingStatus | "all"
 
 function Dashboard({
   initialBookings,
   initialStats: _initialStats,
+  initialMessages,
 }: {
   initialBookings: BookingWithDetails[]
   initialStats: AdminStats
+  initialMessages: ContactMessage[]
 }) {
   const { toast } = useToast()
 
@@ -209,6 +164,8 @@ function Dashboard({
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null)
   const [activityRefresh, setActivityRefresh] = useState(0)
   const [newBadge, setNewBadge] = useState(0)
+  const [messages, setMessages] = useState<ContactMessage[]>(initialMessages)
+  const [newMessageBadge, setNewMessageBadge] = useState(0)
 
   /* ── Filtered bookings ── */
   const filtered = useMemo(() => {
@@ -281,6 +238,30 @@ function Dashboard({
     return () => { client.removeChannel(channel) }
   }, [toast])
 
+  /* ── Contact messages realtime ── */
+  useEffect(() => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (!supabaseUrl || !supabaseKey) return
+
+    const client = createClient(supabaseUrl, supabaseKey)
+    const channel = client
+      .channel("admin-messages")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "contact_messages" },
+        (payload) => {
+          const msg = payload.new as ContactMessage
+          setMessages((prev) => [msg, ...prev])
+          setNewMessageBadge((n) => n + 1)
+          toast(`New enquiry from ${msg.name}`, "info")
+        }
+      )
+      .subscribe()
+
+    return () => { client.removeChannel(channel) }
+  }, [toast])
+
   /* ── Tab title notification ── */
   useEffect(() => {
     if (newBadge > 0) {
@@ -345,6 +326,13 @@ function Dashboard({
     [handleAction]
   )
 
+  const handleMessageRead = useCallback((id: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, is_read: true } : m))
+    )
+    setNewMessageBadge((n) => Math.max(0, n - 1))
+  }, [])
+
   return (
     <div className="relative min-h-screen" style={{ background: "var(--base)" }}>
       <DotGrid />
@@ -355,7 +343,7 @@ function Dashboard({
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8 flex items-end justify-between gap-4"
+          className="mb-8 flex flex-wrap items-end justify-between gap-4"
         >
           <div>
             <div className="mb-1.5 flex items-center gap-2">
@@ -394,6 +382,30 @@ function Dashboard({
           </div>
 
           <div className="flex items-center gap-2">
+            {newMessageBadge > 0 && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                className="flex items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-xs"
+                style={{
+                  background: "rgba(109,40,217,0.12)",
+                  border: "1px solid rgba(109,40,217,0.4)",
+                  color: "var(--gold)",
+                  fontFamily: "var(--font-body)",
+                  boxShadow: "0 0 10px rgba(109,40,217,0.18)",
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 0.6, repeat: 3 }}
+                >
+                  <Bell size={12} strokeWidth={2} />
+                </motion.div>
+                {newMessageBadge} enquir{newMessageBadge !== 1 ? "ies" : "y"}
+              </motion.div>
+            )}
+
             {newBadge > 0 && (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
@@ -421,7 +433,7 @@ function Dashboard({
             <motion.button
               whileHover={{ scale: 1.03, borderColor: "rgba(109,40,217,0.45)" }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => exportCSV(filtered)}
+              onClick={() => exportExcel(filtered)}
               className="flex items-center gap-1.5 rounded-sm px-3 py-2 text-xs tracking-wide"
               style={{
                 border: "1px solid var(--border)",
@@ -431,7 +443,7 @@ function Dashboard({
               }}
             >
               <Download size={13} strokeWidth={1.5} />
-              Export CSV
+              Export Excel
             </motion.button>
 
             {liveStats.pending > 0 && (
@@ -493,7 +505,7 @@ function Dashboard({
           <div className="w-full space-y-4 lg:w-64 xl:w-72">
             <TrendChart bookings={bookings} />
             <ActivityLog refreshToken={activityRefresh} />
-
+            <MessagesPanel messages={messages} onMessageRead={handleMessageRead} />
             <RevenueCard revenue={liveStats.totalRevenue} thisMonth={liveStats.thisMonthBookings} />
           </div>
         </div>
@@ -515,15 +527,18 @@ function Dashboard({
 export default function DashboardClient({
   initialBookings,
   initialStats,
+  initialMessages,
 }: {
   initialBookings: BookingWithDetails[]
   initialStats: AdminStats
+  initialMessages: ContactMessage[]
 }) {
   return (
     <ToastProvider>
       <Dashboard
         initialBookings={initialBookings}
         initialStats={initialStats}
+        initialMessages={initialMessages}
       />
     </ToastProvider>
   )

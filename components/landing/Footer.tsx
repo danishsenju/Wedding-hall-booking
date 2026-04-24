@@ -16,7 +16,6 @@ const FOOTER_LINKS = {
   Company: [
     { label: "About Us", href: "/about" },
     { label: "Gallery", href: "/gallery" },
-    { label: "Testimonials", href: "/testimonials" },
     { label: "Contact", href: "/contact" },
   ],
 } as const;
@@ -85,7 +84,7 @@ export default function Footer() {
               </p>
               <p>
                 <a
-                  href="mailto:hello@lamantroka.com"
+                  href="mailto:danishfarhanzailan392@gmail.com"
                   className="transition-colors duration-200 hover:text-[var(--gold)]"
                 >
                   danishfarhanzailan392@gmail.com

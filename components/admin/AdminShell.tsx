@@ -320,7 +320,9 @@ export default function AdminShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : true
+  )
 
   if (pathname === "/admin/login") return <>{children}</>
 
@@ -333,7 +335,7 @@ export default function AdminShell({
 
       {/* Main content */}
       <main
-        className="flex-1 overflow-y-auto"
+        className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
         style={{ background: "var(--base)" }}
       >
         {children}

@@ -15,6 +15,19 @@ interface Theme {
   mood: string;
 }
 
+const THEME_COLORS = [
+  // Garden Romance — violet hanging lights, amber-gold sculptural trees
+  { primary: "rgba(139, 92, 246, 0.65)", secondary: "rgba(251, 146, 60, 0.35)" },
+  // Grand Ballroom — warm gold chandeliers, ivory florals
+  { primary: "rgba(234, 179, 8, 0.55)", secondary: "rgba(254, 240, 138, 0.28)" },
+  // Rustic Elegance — warm amber candlelight, botanical greens
+  { primary: "rgba(194, 120, 35, 0.58)", secondary: "rgba(134, 172, 82, 0.28)" },
+  // Modern Luxe — cool indigo-steel, silver accents
+  { primary: "rgba(79, 70, 229, 0.5)", secondary: "rgba(148, 163, 184, 0.3)" },
+  // Royal Heritage — deep crimson, regal gold
+  { primary: "rgba(190, 18, 60, 0.55)", secondary: "rgba(202, 138, 4, 0.38)" },
+];
+
 const THEMES: Theme[] = [
   {
     id: "garden",
@@ -151,9 +164,10 @@ export default function ThemeCarousel({
         </motion.div>
 
         {/* 3D Carousel — button navigates to detail page */}
-        <div className="relative w-full overflow-hidden pb-20">
+        <div className="relative w-full pb-20">
           <Carousel
             slides={slideData}
+            slideColors={themes.map((_, i) => THEME_COLORS[i % THEME_COLORS.length])}
             onSlideSelect={(index) => router.push(`/themes/${themes[index].id}`)}
           />
         </div>
