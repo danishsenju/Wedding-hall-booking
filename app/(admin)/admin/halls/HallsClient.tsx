@@ -10,13 +10,14 @@ import Image from "next/image";
 import type { Venue, Theme } from "@/types";
 import { createHall, updateHall, deleteHall } from "@/app/actions/hall";
 import { createTheme, updateTheme, deleteTheme } from "@/app/actions/theme";
-import { supabase } from "@/lib/supabase";
+import { createBrowserClient } from "@/lib/supabase";
 
 type Tab = "venues" | "themes";
 type VenueExtended = Venue;
 
 /* ─── Image upload ───────────────────────────────── */
 async function uploadImage(file: File, folder: string): Promise<string | null> {
+  const supabase = createBrowserClient();
   const ext = file.name.split(".").pop();
   const path = `${folder}/${Date.now()}.${ext}`;
   const { error } = await supabase.storage
