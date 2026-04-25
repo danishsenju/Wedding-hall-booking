@@ -130,6 +130,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
 export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
   return (
     <motion.div
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       animate={{
         backdropFilter: visible ? "blur(16px)" : "none",
         WebkitBackdropFilter: visible ? "blur(16px)" : "none",
@@ -138,7 +139,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         paddingLeft: visible ? "16px" : "0px",
         borderRadius: visible ? "12px" : "0px",
         y: visible ? 8 : 0,
-      }}
+      } as any}
       transition={{ type: "spring", stiffness: 200, damping: 50 }}
       className={cn(
         "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between px-0 py-3 lg:hidden",
