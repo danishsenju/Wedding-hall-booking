@@ -2,9 +2,10 @@
 'use client';
 
 import React, { forwardRef, useMemo, useRef, useLayoutEffect } from 'react';
-import { Canvas, useFrame, useThree, RootState } from '@react-three/fiber';
-import { Color, Mesh, ShaderMaterial } from 'three';
-import { IUniform } from 'three';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import type { RootState } from '@react-three/fiber';
+import { Color } from 'three';
+import type { Mesh, ShaderMaterial, IUniform } from 'three';
 
 type NormalizedRGB = [number, number, number];
 

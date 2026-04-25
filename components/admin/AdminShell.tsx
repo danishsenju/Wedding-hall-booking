@@ -7,7 +7,6 @@ import {
   Briefcase,
   Building2,
   ChevronLeft,
-  ChevronRight,
   FileEdit,
   Images,
   LayoutGrid,

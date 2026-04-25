@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
 import {
-  AtSign, Camera, Check, Flower2, Link2, Loader2,
+  Camera, Check, Flower2, Link2, Loader2,
   Pencil, Plus, Trash2, UtensilsCrossed, X,
 } from "lucide-react"
 import type { Vendor, VendorCategory } from "@/types"

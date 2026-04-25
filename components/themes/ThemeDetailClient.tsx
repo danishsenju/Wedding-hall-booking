@@ -4,7 +4,6 @@ import {
   motion,
   useScroll,
   useTransform,
-  AnimatePresence,
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +15,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { Theme } from "@/types";
 
 /* ─── Hero ─────────────────────────────────────────── */
@@ -717,28 +716,6 @@ function RelatedThemes({ themes }: { themes: Theme[] }) {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ─── Breadcrumb nav ────────────────────────────────── */
-
-function Breadcrumb({ name }: { name: string }) {
-  return (
-    <div
-      className="border-b px-6 py-3"
-      style={{
-        background: "var(--surface-1)",
-        borderColor: "var(--border)",
-      }}
-    >
-      <div className="mx-auto flex max-w-6xl items-center gap-2 text-xs" style={{ fontFamily: "var(--font-body)" }}>
-        <Link href="/" style={{ color: "var(--text-muted)" }} className="hover:text-[var(--text)] transition-colors">Home</Link>
-        <span style={{ color: "var(--border-hover)" }}>/</span>
-        <Link href="/#themes" style={{ color: "var(--text-muted)" }} className="hover:text-[var(--text)] transition-colors">Themes</Link>
-        <span style={{ color: "var(--border-hover)" }}>/</span>
-        <span style={{ color: "var(--text)" }}>{name}</span>
-      </div>
-    </div>
   );
 }
 

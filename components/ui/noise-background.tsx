@@ -8,8 +8,8 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
-  MotionValue,
 } from "framer-motion";
+import type { MotionValue } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 function GradientLayer({
