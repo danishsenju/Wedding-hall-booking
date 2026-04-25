@@ -8,15 +8,13 @@ interface GalleryStripProps {
   images: string[];
 }
 
-export default function GalleryStrip({ images }: GalleryStripProps) {
+function GalleryStripInner({ images }: { images: string[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
   const x = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-
-  if (images.length === 0) return null;
 
   return (
     <section
@@ -69,4 +67,9 @@ export default function GalleryStrip({ images }: GalleryStripProps) {
       </motion.div>
     </section>
   );
+}
+
+export default function GalleryStrip({ images }: GalleryStripProps) {
+  if (images.length === 0) return null;
+  return <GalleryStripInner images={images} />;
 }

@@ -3,7 +3,6 @@ import React, {
   useRef,
   useMemo,
   useState,
-  useCallback,
   Suspense,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -86,8 +85,6 @@ interface MarkerProps {
 function Marker({ marker, radius, defaultSize, onClick, onHover }: MarkerProps) {
   const [hovered, setHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const groupRef = useRef<THREE.Group>(null);
-  const imageGroupRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
 
   const surfacePosition = useMemo(
@@ -96,35 +93,11 @@ function Marker({ marker, radius, defaultSize, onClick, onHover }: MarkerProps) 
   );
 
   const topPosition = useMemo(
-    () => latLngToVector3(marker.lat, marker.lng, radius * 1.18),
+    () => latLngToVector3(marker.lat, marker.lng, radius * 1.12),
     [marker.lat, marker.lng, radius],
   );
 
   const lineHeight = topPosition.distanceTo(surfacePosition);
-
-  useFrame(() => {
-    if (!imageGroupRef.current) return;
-    const worldPos = new THREE.Vector3();
-    imageGroupRef.current.getWorldPosition(worldPos);
-    const markerDirection = worldPos.clone().normalize();
-    const cameraDirection = camera.position.clone().normalize();
-    const dot = markerDirection.dot(cameraDirection);
-    setIsVisible(dot > 0.1);
-  });
-
-  const handlePointerEnter = useCallback(() => {
-    setHovered(true);
-    onHover?.(marker);
-  }, [marker, onHover]);
-
-  const handlePointerLeave = useCallback(() => {
-    setHovered(false);
-    onHover?.(null);
-  }, [onHover]);
-
-  const handleClick = useCallback(() => {
-    onClick?.(marker);
-  }, [marker, onClick]);
 
   const { lineCenter, lineQuaternion } = useMemo(() => {
     const center = surfacePosition.clone().lerp(topPosition, 0.5);
@@ -134,10 +107,16 @@ function Marker({ marker, radius, defaultSize, onClick, onHover }: MarkerProps) 
     return { lineCenter: center, lineQuaternion: quaternion };
   }, [surfacePosition, topPosition]);
 
+  useFrame(() => {
+    const markerDirection = topPosition.clone().normalize();
+    const cameraDirection = camera.position.clone().normalize();
+    setIsVisible(markerDirection.dot(cameraDirection) > 0.1);
+  });
+
   void defaultSize;
 
   return (
-    <group ref={groupRef} visible={isVisible}>
+    <group visible={isVisible}>
       {/* Stem line */}
       <mesh position={lineCenter} quaternion={lineQuaternion}>
         <cylinderGeometry args={[0.003, 0.003, lineHeight, 8]} />
@@ -154,63 +133,63 @@ function Marker({ marker, radius, defaultSize, onClick, onHover }: MarkerProps) 
         <meshBasicMaterial color={hovered ? "#C4B5FD" : "#6D28D9"} />
       </mesh>
 
-      {/* Marker head */}
-      <group ref={imageGroupRef} position={topPosition}>
-        <Html
-          transform
-          center
-          sprite
-          distanceFactor={10}
-          style={{
-            pointerEvents: isVisible ? "auto" : "none",
-            opacity: isVisible ? 1 : 0,
-            transition: "opacity 0.15s ease-out",
-          }}
-        >
+      {/* Marker head — pure 3D sphere, always pixel-perfect aligned with the stem */}
+      <mesh
+        position={topPosition}
+        onClick={(e) => { e.stopPropagation(); onClick?.(marker); }}
+        onPointerEnter={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+          onHover?.(marker);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerLeave={() => {
+          setHovered(false);
+          onHover?.(null);
+          document.body.style.cursor = "default";
+        }}
+      >
+        <sphereGeometry args={[0.055, 16, 16]} />
+        <meshBasicMaterial color={hovered ? "#C4B5FD" : "#A78BFA"} />
+      </mesh>
+
+      {/* Glow halo on hover */}
+      {hovered && (
+        <mesh position={topPosition}>
+          <sphereGeometry args={[0.08, 16, 16]} />
+          <meshBasicMaterial color="#7C3AED" transparent opacity={0.25} />
+        </mesh>
+      )}
+
+      {/* Label tooltip on hover */}
+      {marker.label && hovered && (
+        <Html center distanceFactor={10} position={topPosition}>
           <div
-            className={cn(
-              "cursor-pointer overflow-hidden rounded-full shadow-lg transition-transform duration-200",
-              hovered && "scale-125 shadow-xl",
-            )}
+            className="pointer-events-none whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium"
             style={{
-              width: marker.src ? "8px" : "12px",
-              height: marker.src ? "8px" : "12px",
-              background: hovered
-                ? "radial-gradient(circle, #C4B5FD 0%, #7C3AED 100%)"
-                : "radial-gradient(circle, #A78BFA 0%, #6D28D9 100%)",
-              boxShadow: hovered
-                ? "0 0 8px 3px rgba(124,58,237,0.7)"
-                : "0 0 4px 2px rgba(109,40,217,0.4)",
+              transform: "translateY(-140%)",
+              background: "rgba(20,18,38,0.95)",
+              color: "#EDE9FE",
+              border: "1px solid rgba(109,40,217,0.4)",
+              fontFamily: "var(--font-body)",
             }}
-            onMouseEnter={handlePointerEnter}
-            onMouseLeave={handlePointerLeave}
-            onClick={handleClick}
           >
-            {marker.src && (
-              <img
-                src={marker.src}
-                alt={marker.label ?? "Marker"}
-                className="h-full w-full object-cover"
-                draggable={false}
-              />
-            )}
+            {marker.label}
           </div>
-          {marker.label && hovered && (
-            <div
-              className="pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium"
-              style={{
-                bottom: "calc(100% + 4px)",
-                background: "rgba(20,18,38,0.95)",
-                color: "#EDE9FE",
-                border: "1px solid rgba(109,40,217,0.4)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              {marker.label}
-            </div>
-          )}
         </Html>
-      </group>
+      )}
+
+      {marker.src && (
+        <Html center distanceFactor={10} position={topPosition}>
+          <img
+            src={marker.src}
+            alt={marker.label ?? "Marker"}
+            className="rounded-full object-cover"
+            style={{ width: 24, height: 24, pointerEvents: "none" }}
+            draggable={false}
+          />
+        </Html>
+      )}
     </group>
   );
 }
@@ -462,7 +441,7 @@ const defaultConfig: Required<Globe3DConfig> = {
   autoRotateSpeed: 0.3,
   enableZoom: true,
   enablePan: false,
-  minDistance: 5.5,
+  minDistance: 2.8,
   maxDistance: 20,
   initialRotation: { x: 0, y: 0 },
   markerSize: 0.06,

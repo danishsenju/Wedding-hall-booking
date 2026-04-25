@@ -160,11 +160,7 @@ export default function MapClient({ venues }: MapClientProps) {
                 </span>
               </motion.div>
 
-              {/*
-                Circle container: clips the Three.js canvas to a circle so the globe
-                always appears as a full sphere — no rectangular corners at any zoom level.
-                minDistance in Globe3D (5.5) ensures the sphere never overflows this circle.
-              */}
+              {/* Circle container: clips the Three.js canvas to a circle */}
               <div
                 className="overflow-hidden rounded-full"
                 style={{ width: "min(90vw, 520px)", aspectRatio: "1 / 1" }}
@@ -180,7 +176,7 @@ export default function MapClient({ venues }: MapClientProps) {
                     autoRotateSpeed: 0.25,
                     showAtmosphere: true,
                     enableZoom: true,
-                    minDistance: 5.5,
+                    minDistance: 2.8,
                     maxDistance: 18,
                   }}
                   className="h-full w-full"

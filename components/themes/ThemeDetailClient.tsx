@@ -15,15 +15,17 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { Theme } from "@/types";
 
 /* ─── Hero ─────────────────────────────────────────── */
 
 function ThemeHero({ theme }: { theme: Theme }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: mounted ? ref : undefined,
     offset: ["start start", "end start"],
   });
 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { gsap } from "gsap";
@@ -9,11 +9,14 @@ import {
   Crown,
   Sparkles,
   Users,
+  type LucideProps,
 } from "lucide-react";
 
 /* ─── Types ───────────────────────────────────────── */
+type IconComponent = React.FC<LucideProps>;
+
 export interface BentoCardData {
-  icon: React.ReactNode;
+  Icon: IconComponent;
   title: string;
   description: string;
   label: string;
@@ -37,28 +40,25 @@ export interface MagicBentoProps {
 /* ─── Constants ───────────────────────────────────── */
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const GOLD_GLOW = "201, 168, 76";
+const PURPLE_GLOW = "109, 40, 217";
 const MOBILE_BREAKPOINT = 768;
 
-/* ─── Card data (Laman Troka features) ──────────────── */
-// Order matches 4-col react-bits grid: [0][1][2*][2*] / [3*][3*][2*][2*] / [3*][3*][4][5]
+/* ─── Card data ──────────────────────────────────── */
 const cardData: BentoCardData[] = [
   {
-    icon: <Users size={20} strokeWidth={1.4} />,
+    Icon: Users,
     title: "Expert Coordination",
-    description:
-      "A dedicated wedding coordinator from day one through the final toast.",
+    description: "A dedicated wedding coordinator from day one through the final toast.",
     label: "Concierge",
   },
   {
-    icon: <ChefHat size={20} strokeWidth={1.4} />,
+    Icon: ChefHat,
     title: "Gourmet Catering",
-    description:
-      "Bespoke menus by Michelin-trained chefs. Western, Asian, and fusion stations.",
+    description: "Bespoke menus by Michelin-trained chefs. Western, Asian, and fusion stations.",
     label: "Cuisine",
   },
   {
-    icon: <Crown size={20} strokeWidth={1.4} />,
+    Icon: Crown,
     title: "Exclusive Venue",
     description:
       "Your wedding is the only event we host on your date. Every detail, every moment — yours alone. No shared lobbies, no competing celebrations.",
@@ -66,21 +66,21 @@ const cardData: BentoCardData[] = [
     hasPattern: true,
   },
   {
-    icon: <Camera size={20} strokeWidth={1.4} />,
+    Icon: Camera,
     title: "Photography Studio",
     description:
       "In-house studio with award-winning photographers and cinematic videographers.",
     label: "Memories",
   },
   {
-    icon: <Sparkles size={20} strokeWidth={1.4} />,
+    Icon: Sparkles,
     title: "Luxury Décor",
     description:
       "From minimalist to maximalist — our design team transforms vision into breathtaking reality.",
     label: "Design",
   },
   {
-    icon: <CalendarCheck size={20} strokeWidth={1.4} />,
+    Icon: CalendarCheck,
     title: "Smart Booking",
     description:
       "Real-time availability, instant confirmation, and a seamless digital experience.",
@@ -119,14 +119,8 @@ const updateCardGlow = (
   radius: number
 ) => {
   const rect = card.getBoundingClientRect();
-  card.style.setProperty(
-    "--glow-x",
-    `${((mx - rect.left) / rect.width) * 100}%`
-  );
-  card.style.setProperty(
-    "--glow-y",
-    `${((my - rect.top) / rect.height) * 100}%`
-  );
+  card.style.setProperty("--glow-x", `${((mx - rect.left) / rect.width) * 100}%`);
+  card.style.setProperty("--glow-y", `${((my - rect.top) / rect.height) * 100}%`);
   card.style.setProperty("--glow-intensity", glow.toString());
   card.style.setProperty("--glow-radius", `${radius}px`);
 };
@@ -148,7 +142,7 @@ const ParticleCard: React.FC<{
   style,
   disableAnimations = false,
   particleCount = DEFAULT_PARTICLE_COUNT,
-  glowColor = GOLD_GLOW,
+  glowColor = PURPLE_GLOW,
   enableTilt = false,
   clickEffect = false,
   enableMagnetism = false,
@@ -165,11 +159,7 @@ const ParticleCard: React.FC<{
     if (particlesInitialized.current || !cardRef.current) return;
     const { width, height } = cardRef.current.getBoundingClientRect();
     memoizedParticles.current = Array.from({ length: particleCount }, () =>
-      createParticleElement(
-        Math.random() * width,
-        Math.random() * height,
-        glowColor
-      )
+      createParticleElement(Math.random() * width, Math.random() * height, glowColor)
     );
     particlesInitialized.current = true;
   }, [particleCount, glowColor]);
@@ -248,12 +238,7 @@ const ParticleCard: React.FC<{
       isHoveredRef.current = false;
       clearParticles();
       if (enableTilt)
-        gsap.to(el, {
-          rotateX: 0,
-          rotateY: 0,
-          duration: 0.3,
-          ease: "power2.out",
-        });
+        gsap.to(el, { rotateX: 0, rotateY: 0, duration: 0.3, ease: "power2.out" });
       if (enableMagnetism)
         gsap.to(el, { x: 0, y: 0, duration: 0.3, ease: "power2.out" });
     };
@@ -330,15 +315,7 @@ const ParticleCard: React.FC<{
       el.removeEventListener("click", onClick);
       clearParticles();
     };
-  }, [
-    animateParticles,
-    clearParticles,
-    disableAnimations,
-    enableTilt,
-    enableMagnetism,
-    clickEffect,
-    glowColor,
-  ]);
+  }, [animateParticles, clearParticles, disableAnimations, enableTilt, enableMagnetism, clickEffect, glowColor]);
 
   return (
     <div
@@ -363,7 +340,7 @@ const GlobalSpotlight: React.FC<{
   disableAnimations = false,
   enabled = true,
   spotlightRadius = DEFAULT_SPOTLIGHT_RADIUS,
-  glowColor = GOLD_GLOW,
+  glowColor = PURPLE_GLOW,
 }) => {
   const spotRef = useRef<HTMLDivElement | null>(null);
 
@@ -470,7 +447,7 @@ const GlobalSpotlight: React.FC<{
   return null;
 };
 
-/* ─── Mobile detection hook ───────────────────────── */
+/* ─── Mobile detection ────────────────────────────── */
 function useMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -482,6 +459,21 @@ function useMobile() {
   return isMobile;
 }
 
+/* ─── Card style helpers ──────────────────────────── */
+const getCardBackground = (idx: number): string => {
+  if (idx === 2)
+    return "linear-gradient(145deg, #2E1F62 0%, #1E1445 40%, #100C1E 100%)";
+  if (idx === 3)
+    return "linear-gradient(155deg, #1B1531 0%, #130F20 55%, #0D0A18 100%)";
+  return "linear-gradient(145deg, #1C1530 0%, #110D1E 100%)";
+};
+
+const getCardBorder = (idx: number): string => {
+  if (idx === 2) return "rgba(109, 40, 217, 0.38)";
+  if (idx === 3) return "rgba(109, 40, 217, 0.22)";
+  return "rgba(109, 40, 217, 0.14)";
+};
+
 /* ─── MagicBento ──────────────────────────────────── */
 const MagicBento: React.FC<MagicBentoProps> = ({
   textAutoHide = true,
@@ -492,7 +484,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   spotlightRadius = DEFAULT_SPOTLIGHT_RADIUS,
   particleCount = DEFAULT_PARTICLE_COUNT,
   enableTilt = false,
-  glowColor = GOLD_GLOW,
+  glowColor = PURPLE_GLOW,
   clickEffect = true,
   enableMagnetism = false,
 }) => {
@@ -500,40 +492,34 @@ const MagicBento: React.FC<MagicBentoProps> = ({
   const isMobile = useMobile();
   const noAnim = disableAnimations || isMobile;
 
-  const cardBase = `mb-card flex flex-col justify-between relative aspect-[4/3] min-h-[200px] w-full max-w-full p-5 rounded-[20px] border border-solid font-light overflow-hidden transition-colors duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.15)] cursor-default${enableBorderGlow ? " mb-glow" : ""}`;
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("mb-visible"); observer.disconnect(); } },
+      { threshold: 0.1, rootMargin: "-60px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
-  const cardStyle: React.CSSProperties = {
-    backgroundColor: "#120F17",
-    borderColor: "#2F293A",
-    color: "#ffffff",
-    "--glow-x": "50%",
-    "--glow-y": "50%",
-    "--glow-intensity": "0",
-    "--glow-radius": "200px",
-  } as React.CSSProperties;
+  const cardBase = `mb-card flex flex-col justify-between relative w-full p-6 rounded-[22px] border border-solid overflow-hidden cursor-default${enableBorderGlow ? " mb-glow" : ""}`;
 
   return (
     <>
       <style suppressHydrationWarning>{`
         .mb-section {
           --glow-color: ${glowColor};
-          --border-color: #2F293A;
-          --background-dark: #120F17;
-          --white: hsl(0, 0%, 100%);
-          --purple-primary: rgba(${glowColor}, 1);
-          --purple-glow: rgba(${glowColor}, 0.2);
-          --purple-border: rgba(${glowColor}, 0.8);
-          font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem);
         }
 
-        /* Responsive grid layout */
+        /* Grid layout */
         .mb-grid {
           grid-template-columns: repeat(2, 1fr);
           width: 100%;
           box-sizing: border-box;
         }
 
-        /* Mobile/tablet: reorder cards — Concierge, Cuisine | Memories (full) | Signature (full) | Design, Planning */
+        /* Mobile card ordering */
         .mb-grid .mb-item:nth-child(1) { order: 1; }
         .mb-grid .mb-item:nth-child(2) { order: 2; }
         .mb-grid .mb-item:nth-child(3) { order: 4; grid-column: span 2; }
@@ -541,16 +527,10 @@ const MagicBento: React.FC<MagicBentoProps> = ({
         .mb-grid .mb-item:nth-child(5) { order: 5; }
         .mb-grid .mb-item:nth-child(6) { order: 6; }
 
-        /* Remove aspect-ratio on mobile to prevent width overflow */
         @media (max-width: 1023px) {
-          .mb-card {
-            aspect-ratio: unset;
-            min-height: 150px;
-          }
+          .mb-card { aspect-ratio: unset; min-height: 160px; }
           .mb-grid .mb-item:nth-child(3) .mb-card,
-          .mb-grid .mb-item:nth-child(4) .mb-card {
-            min-height: 200px;
-          }
+          .mb-grid .mb-item:nth-child(4) .mb-card { min-height: 220px; }
         }
 
         @media (min-width: 1024px) {
@@ -561,25 +541,70 @@ const MagicBento: React.FC<MagicBentoProps> = ({
           .mb-grid .mb-item:nth-child(4) { order: initial; grid-column: 1 / span 2; grid-row: 2 / span 2; }
           .mb-grid .mb-item:nth-child(5) { order: initial; }
           .mb-grid .mb-item:nth-child(6) { order: initial; grid-column: 4; grid-row: 3; }
+
+          /* Small cards get consistent aspect ratio */
+          .mb-grid .mb-item:nth-child(1) .mb-card,
+          .mb-grid .mb-item:nth-child(2) .mb-card,
+          .mb-grid .mb-item:nth-child(5) .mb-card,
+          .mb-grid .mb-item:nth-child(6) .mb-card {
+            aspect-ratio: 4/3;
+          }
+
+          /* Spanning cards fill their grid area */
+          .mb-grid .mb-item:nth-child(3) .mb-card,
+          .mb-grid .mb-item:nth-child(4) .mb-card {
+            height: 100%;
+            aspect-ratio: unset;
+          }
         }
 
-        /* Border glow via pseudo-element */
+        /* Card transitions */
+        .mb-card {
+          transition:
+            transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.38s ease;
+        }
+
+        .mb-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(${glowColor}, 0.42) !important;
+          box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.55),
+            0 0 40px rgba(${glowColor}, 0.12);
+        }
+
+        .mb-card-hero:hover {
+          box-shadow:
+            0 28px 80px rgba(0, 0, 0, 0.65),
+            0 0 70px rgba(${glowColor}, 0.28) !important;
+        }
+
+        /* Hero ambient pulse */
+        @keyframes hero-ambience {
+          0%, 100% { opacity: 0.35; transform: translateX(-50%) scale(1); }
+          50%       { opacity: 0.60; transform: translateX(-50%) scale(1.08); }
+        }
+        .mb-hero-ambient {
+          animation: hero-ambience 6s ease-in-out infinite;
+        }
+
+        /* Border glow overlay */
         .mb-glow {
           --glow-x: 50%;
           --glow-y: 50%;
           --glow-intensity: 0;
-          --glow-radius: 200px;
+          --glow-radius: 240px;
         }
-
         .mb-glow::after {
           content: '';
           position: absolute;
           inset: 0;
-          padding: 6px;
+          padding: 1px;
           background: radial-gradient(
             var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-            rgba(${glowColor}, calc(var(--glow-intensity) * 0.8)) 0%,
-            rgba(${glowColor}, calc(var(--glow-intensity) * 0.4)) 30%,
+            rgba(${glowColor}, calc(var(--glow-intensity) * 0.9)) 0%,
+            rgba(${glowColor}, calc(var(--glow-intensity) * 0.45)) 30%,
             transparent 60%
           );
           border-radius: inherit;
@@ -590,13 +615,26 @@ const MagicBento: React.FC<MagicBentoProps> = ({
           pointer-events: none;
           z-index: 1;
         }
-
         .mb-glow:hover::after { opacity: 1; }
 
-        .mb-glow:hover {
-          box-shadow: 0 4px 20px rgba(46, 24, 78, 0.4), 0 0 30px rgba(${glowColor}, 0.2);
+        /* Staggered entrance */
+        @keyframes mb-enter {
+          from { opacity: 0; transform: translateY(26px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
+        .mb-item {
+          opacity: 0;
+          animation: mb-enter 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          animation-play-state: paused;
+        }
+        .mb-section.mb-visible .mb-item:nth-child(1) { animation-delay: 0ms;   animation-play-state: running; }
+        .mb-section.mb-visible .mb-item:nth-child(2) { animation-delay: 80ms;  animation-play-state: running; }
+        .mb-section.mb-visible .mb-item:nth-child(3) { animation-delay: 160ms; animation-play-state: running; }
+        .mb-section.mb-visible .mb-item:nth-child(4) { animation-delay: 240ms; animation-play-state: running; }
+        .mb-section.mb-visible .mb-item:nth-child(5) { animation-delay: 320ms; animation-play-state: running; }
+        .mb-section.mb-visible .mb-item:nth-child(6) { animation-delay: 400ms; animation-play-state: running; }
 
+        /* Particle halo */
         .mb-particle::before {
           content: '';
           position: absolute;
@@ -604,6 +642,14 @@ const MagicBento: React.FC<MagicBentoProps> = ({
           background: rgba(${glowColor}, 0.2);
           border-radius: 50%;
           z-index: -1;
+        }
+
+        /* Divider between header and content */
+        .mb-card-divider {
+          height: 1px;
+          background: linear-gradient(to right, rgba(${glowColor}, 0.25), transparent);
+          margin: 0 0 auto 0;
+          flex-shrink: 0;
         }
       `}</style>
 
@@ -619,17 +665,37 @@ const MagicBento: React.FC<MagicBentoProps> = ({
 
       <div
         ref={gridRef}
-        className="mb-section grid mb-grid gap-2 p-3 w-full max-w-[54rem] select-none relative mx-auto"
+        className="mb-section grid mb-grid gap-3 w-full max-w-[62rem] select-none relative mx-auto"
       >
         {cardData.map((card, idx) => {
+          const isHero = idx === 2;
+          const isLarge = idx === 3;
+
+          const cardStyle: React.CSSProperties = {
+            background: getCardBackground(idx),
+            borderColor: getCardBorder(idx),
+            color: "#EDE9FE",
+            "--glow-x": "50%",
+            "--glow-y": "50%",
+            "--glow-intensity": "0",
+            "--glow-radius": isHero ? "380px" : "240px",
+          } as React.CSSProperties;
+
+          const iconSize = isHero ? 22 : 18;
+          const titleSize = isHero
+            ? "clamp(1.55rem, 2.8vw, 2.15rem)"
+            : isLarge
+              ? "clamp(1.1rem, 1.5vw, 1.25rem)"
+              : "1rem";
+
           const inner = (
             <>
-              {/* Diamond pattern on hero card */}
+              {/* Hero: diamond trellis pattern */}
               {card.hasPattern && (
                 <div
-                  className="pointer-events-none absolute inset-0 rounded-[20px]"
+                  className="pointer-events-none absolute inset-0 rounded-[22px]"
                   style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L20 0 L40 20 L20 40 Z' fill='none' stroke='%236D28D9' stroke-width='0.5' stroke-opacity='0.18'/%3E%3C/svg%3E")`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L20 0 L40 20 L20 40 Z' fill='none' stroke='%236D28D9' stroke-width='0.7' stroke-opacity='0.22'/%3E%3C/svg%3E")`,
                     backgroundRepeat: "repeat",
                     backgroundSize: "40px 40px",
                     zIndex: 0,
@@ -638,44 +704,89 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                 />
               )}
 
-              {/* Header: label (left) + icon (right) */}
-              <div className="card__header flex justify-between gap-3 relative" style={{ color: "#ffffff" }}>
+              {/* Hero: ambient top radial glow */}
+              {isHero && (
+                <div
+                  className="mb-hero-ambient pointer-events-none absolute -top-8 left-1/2 w-4/5 h-56 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at center top, rgba(109,40,217,0.28) 0%, rgba(124,58,237,0.1) 40%, transparent 70%)",
+                    zIndex: 0,
+                  }}
+                  aria-hidden
+                />
+              )}
+
+              {/* Large photo card: bottom fade vignette */}
+              {isLarge && (
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-b-[22px]"
+                  style={{
+                    background:
+                      "linear-gradient(to top, rgba(10, 7, 20, 0.6) 0%, transparent 100%)",
+                    zIndex: 0,
+                  }}
+                  aria-hidden
+                />
+              )}
+
+              {/* Card header: label + icon */}
+              <div className="flex items-center justify-between gap-3 relative z-10">
                 <span
-                  className="card__label text-base"
-                  style={{ color: "var(--gold)", fontFamily: "var(--font-body)", fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase" }}
+                  style={{
+                    color: "rgba(196, 181, 253, 0.75)",
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.63rem",
+                    letterSpacing: "0.3em",
+                    textTransform: "uppercase",
+                  }}
                 >
                   {card.label}
                 </span>
                 <div
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0"
+                  className="inline-flex items-center justify-center rounded-xl flex-shrink-0"
                   style={{
-                    background: "rgba(109,40,217,0.12)",
-                    border: "1px solid rgba(109,40,217,0.25)",
-                    color: "var(--gold)",
+                    width: isHero ? "42px" : "34px",
+                    height: isHero ? "42px" : "34px",
+                    background: isHero
+                      ? "linear-gradient(135deg, rgba(109,40,217,0.28), rgba(124,58,237,0.14))"
+                      : "rgba(109, 40, 217, 0.1)",
+                    border: `1px solid ${isHero ? "rgba(109,40,217,0.45)" : "rgba(109,40,217,0.22)"}`,
+                    color: isHero ? "rgba(196, 181, 253, 0.9)" : "rgba(167, 139, 250, 0.8)",
+                    boxShadow: isHero
+                      ? "0 0 18px rgba(109,40,217,0.22), inset 0 1px 0 rgba(255,255,255,0.06)"
+                      : "none",
                   }}
                 >
-                  {card.icon}
+                  <card.Icon size={iconSize} strokeWidth={1.3} />
                 </div>
               </div>
 
-              {/* Content: title + description at bottom */}
-              <div className="card__content flex flex-col relative" style={{ color: "#ffffff" }}>
+              {/* Thin divider */}
+              <div className="mb-card-divider relative z-10" />
+
+              {/* Card content: title + description */}
+              <div className="flex flex-col gap-2 relative z-10">
                 <h3
-                  className={`card__title font-normal m-0 mb-1 ${textAutoHide ? "line-clamp-1" : ""}`}
+                  className={`m-0 leading-tight ${!isHero && textAutoHide ? "line-clamp-1" : ""}`}
                   style={{
                     fontFamily: "var(--font-display)",
-                    color: "#ffffff",
-                    fontSize: "1rem",
+                    color: "#EDE9FE",
+                    fontSize: titleSize,
+                    fontWeight: 300,
+                    fontStyle: isHero ? "italic" : "normal",
+                    letterSpacing: isHero ? "-0.015em" : "0",
                   }}
                 >
                   {card.title}
                 </h3>
                 <p
-                  className={`card__description text-xs leading-5 ${textAutoHide ? "line-clamp-2" : ""}`}
+                  className={`m-0 leading-relaxed ${!isHero && !isLarge && textAutoHide ? "line-clamp-2" : ""}`}
                   style={{
-                    color: "rgba(255,255,255,0.7)",
+                    color: "rgba(196, 181, 253, 0.55)",
                     fontFamily: "var(--font-body)",
-                    opacity: 0.9,
+                    fontSize: isHero ? "0.84rem" : "0.74rem",
+                    lineHeight: 1.65,
                   }}
                 >
                   {card.description}
@@ -684,11 +795,13 @@ const MagicBento: React.FC<MagicBentoProps> = ({
             </>
           );
 
+          const cardClassName = `${cardBase}${isHero ? " mb-card-hero" : ""}`;
+
           return (
             <div key={idx} className="mb-item">
               {enableStars ? (
                 <ParticleCard
-                  className={cardBase}
+                  className={cardClassName}
                   style={cardStyle}
                   disableAnimations={noAnim}
                   particleCount={particleCount}
@@ -700,7 +813,7 @@ const MagicBento: React.FC<MagicBentoProps> = ({
                   {inner}
                 </ParticleCard>
               ) : (
-                <div className={cardBase} style={cardStyle}>
+                <div className={cardClassName} style={cardStyle}>
                   {inner}
                 </div>
               )}
