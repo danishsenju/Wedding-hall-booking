@@ -11,6 +11,7 @@ export interface HallInput {
   tag?: string;
   href?: string;
   hero_image_url?: string;
+  gallery_images?: string[] | null;
   capacity_min?: number | null;
   capacity_max?: number | null;
   size_sqft?: number | null;

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown, Gem, MapPin } from "lucide-react"
 import { useState } from "react"
-import type { Package, Vendor, Venue } from "@/types"
+import type { Package, Theme, Vendor, Venue } from "@/types"
 import { calculateDeposit, calculateVendorPrice, formatEventDate, formatRM, vendorUnitLabel } from "@/lib/utils"
 import type { BookingFormValues } from "@/lib/validations"
 
@@ -20,6 +20,7 @@ interface BookingSummaryProps {
   venue: Venue | null
   packages: Package[]
   vendors: Vendor[]
+  themes: Theme[]
   values: Partial<BookingFormValues>
 }
 
@@ -62,12 +63,18 @@ function SummaryContent({
   venue,
   packages,
   vendors,
+  themes,
   values,
 }: BookingSummaryProps) {
   const pkg = packages.find((p) => p.id === values.package_id)
   const selectedAddons = (values.selected_addons ?? [])
     .map((id) => vendors.find((v) => v.id === id))
     .filter(Boolean) as Vendor[]
+
+  const selectedThemeId = (values.selected_themes ?? [])[0]
+  const selectedTheme = selectedThemeId
+    ? themes.find((t) => t.id === selectedThemeId) ?? null
+    : null
 
   const guestCount = parseInt(values.guest_count ?? "0", 10) || 0
   const durationHours = pkg?.duration_hours ?? 0
@@ -77,7 +84,8 @@ function SummaryContent({
     (sum, v) => sum + calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours),
     0
   )
-  const totalPrice = packagePrice + addonsTotal
+  const themePrice = selectedTheme?.price_from_rm ?? 0
+  const totalPrice = packagePrice + addonsTotal + themePrice
   const deposit = calculateDeposit(totalPrice)
 
   const coupleNames =
@@ -144,6 +152,14 @@ function SummaryContent({
             )
           })}
         </>
+      )}
+
+      {/* Decor theme */}
+      {selectedTheme && (
+        <Row
+          label="+ Décor"
+          value={`${selectedTheme.name}${selectedTheme.price_from_rm != null ? ` · ${formatRM(selectedTheme.price_from_rm)}` : ""}`}
+        />
       )}
 
       <Divider />
@@ -218,7 +234,11 @@ function MobileAccordion(props: BookingSummaryProps) {
     .map((id) => props.vendors.find((v) => v.id === id))
     .filter(Boolean)
     .reduce((sum, v) => sum + calculateVendorPrice(v!.category, v!.price_rm, guestCount, durationHours), 0)
-  const total = (pkg?.price_rm ?? 0) + addonsTotal
+  const selectedThemeId = (props.values.selected_themes ?? [])[0]
+  const themePrice = selectedThemeId
+    ? (props.themes.find((t) => t.id === selectedThemeId)?.price_from_rm ?? 0)
+    : 0
+  const total = (pkg?.price_rm ?? 0) + addonsTotal + themePrice
 
   return (
     <div

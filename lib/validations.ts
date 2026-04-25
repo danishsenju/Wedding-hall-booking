@@ -43,6 +43,7 @@ export const Step2Schema = z.object({
 // hasn't been visited yet (unregistered fields can be undefined in the resolver)
 export const Step3Schema = z.object({
   selected_addons: z.array(z.string()).optional(),
+  selected_themes: z.array(z.string()).optional(),
 })
 
 /* ─── Full Booking Schema (combined) ─────────────── */
@@ -54,7 +55,8 @@ export const BookingSchema = z.object({
   ...Step1Schema.shape,
   event_date: Step2Schema.shape.event_date.optional(),
   time_slot: Step2Schema.shape.time_slot.optional(),
-  ...Step3Schema.shape,
+  selected_addons: z.array(z.string()).optional(),
+  selected_themes: z.array(z.string()).optional(),
 })
 
 export type Step1FormData = z.infer<typeof Step1Schema>

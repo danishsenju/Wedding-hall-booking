@@ -1,14 +1,11 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
+import { Sparkles } from "lucide-react";
+import { getAllHalls } from "@/app/actions/hall";
+import type { Venue } from "@/types";
 
-const FOOTER_LINKS = {
-  Venues: [
-    { label: "Grand Ballroom", href: "/venues/grand-ballroom" },
-    { label: "Garden Terrace", href: "/venues/garden-terrace" },
-    { label: "Rustic Chapel", href: "/venues/rustic-chapel" },
-  ],
+const STATIC_LINKS = {
   Services: [
-    { label: "Wedding Packages", href: "/packages" },
     { label: "Catering", href: "/services/catering" },
     { label: "Photography", href: "/services/photography" },
     { label: "Décor & Florals", href: "/services/decor" },
@@ -20,7 +17,98 @@ const FOOTER_LINKS = {
   ],
 } as const;
 
-export default function Footer() {
+function VenueLinks({ venues }: { venues: Venue[] }) {
+  return (
+    <ul className="flex flex-col gap-2.5">
+      {venues.map((venue) => (
+        <li key={venue.id}>
+          <Link
+            href={venue.href ?? "/venue"}
+            className="transition-colors duration-200 hover:text-[var(--gold)]"
+            style={{
+              color: "var(--text-muted)",
+              fontFamily: "var(--font-display)",
+              fontSize: "1rem",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {venue.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function VenuesEmptyState() {
+  return (
+    <div
+      className="flex flex-col gap-3 rounded-sm px-4 py-5"
+      style={{
+        background: "var(--surface-2)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <Sparkles
+          size={13}
+          strokeWidth={1.5}
+          style={{ color: "var(--gold)", flexShrink: 0 }}
+          aria-hidden="true"
+        />
+        <span
+          className="text-sm italic leading-snug"
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "var(--text)",
+            letterSpacing: "0.03em",
+          }}
+        >
+          Curated venues coming soon
+        </span>
+      </div>
+
+      <div
+        className="h-px w-full opacity-40"
+        style={{
+          background: "linear-gradient(90deg, var(--gold), transparent)",
+        }}
+        aria-hidden="true"
+      />
+
+      <p
+        className="text-xs leading-relaxed"
+        style={{
+          color: "var(--text-muted)",
+          fontFamily: "var(--font-body)",
+        }}
+      >
+        Our spaces are being prepared for your celebration. Contact us to
+        arrange a private viewing.
+      </p>
+
+      <Link
+        href="/contact"
+        className="mt-1 inline-flex items-center gap-1.5 text-xs transition-colors duration-200 hover:text-[var(--gold-hover)]"
+        style={{
+          color: "var(--gold)",
+          fontFamily: "var(--font-body)",
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+        }}
+      >
+        Enquire now{" "}
+        <span aria-hidden="true" style={{ fontSize: "10px" }}>
+          →
+        </span>
+      </Link>
+    </div>
+  );
+}
+
+export default async function Footer() {
+  const hallsResult = await getAllHalls();
+  const venues = hallsResult.success ? (hallsResult.data ?? []) : [];
   const year = new Date().getFullYear();
 
   return (
@@ -57,10 +145,13 @@ export default function Footer() {
             </div>
 
             <p
-              className="mb-5 text-sm leading-relaxed"
+              className="mb-5 leading-relaxed"
               style={{
                 color: "var(--text-muted)",
-                fontFamily: "var(--font-body)",
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontSize: "1.05rem",
+                letterSpacing: "0.01em",
               }}
             >
               Kuala Lumpur&apos;s most refined wedding destination. Where timeless
@@ -69,7 +160,7 @@ export default function Footer() {
 
             <address
               className="not-italic text-sm"
-              style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+              style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)", letterSpacing: "0.02em" }}
             >
               <p>Level 5, The Grand Tower</p>
               <p>Jalan Bukit Bintang</p>
@@ -93,38 +184,63 @@ export default function Footer() {
             </address>
           </div>
 
-          {/* Link columns */}
-          {(Object.entries(FOOTER_LINKS) as [string, readonly { label: string; href: string }[]][]).map(
-            ([category, links]) => (
-              <div key={category}>
-                <h4
-                  className="mb-4 text-xs uppercase tracking-[0.22em]"
-                  style={{
-                    color: "var(--gold)",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {category}
-                </h4>
-                <ul className="flex flex-col gap-2.5">
-                  {links.map(({ label, href }) => (
-                    <li key={label}>
-                      <Link
-                        href={href}
-                        className="text-sm transition-colors duration-200 hover:text-[var(--gold)]"
-                        style={{
-                          color: "var(--text-muted)",
-                          fontFamily: "var(--font-body)",
-                        }}
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          )}
+          {/* Venues column — dynamic */}
+          <div>
+            <h4
+              className="mb-4 text-xs uppercase tracking-[0.28em]"
+              style={{
+                color: "var(--gold)",
+                fontFamily: "var(--font-display)",
+                letterSpacing: "0.28em",
+              }}
+            >
+              Venues
+            </h4>
+            {venues.length > 0 ? (
+              <VenueLinks venues={venues} />
+            ) : (
+              <VenuesEmptyState />
+            )}
+          </div>
+
+          {/* Services & Company columns — static */}
+          {(
+            Object.entries(STATIC_LINKS) as [
+              string,
+              readonly { label: string; href: string }[],
+            ][]
+          ).map(([category, links]) => (
+            <div key={category}>
+              <h4
+                className="mb-4 text-xs uppercase tracking-[0.28em]"
+                style={{
+                  color: "var(--gold)",
+                  fontFamily: "var(--font-display)",
+                  letterSpacing: "0.28em",
+                }}
+              >
+                {category}
+              </h4>
+              <ul className="flex flex-col gap-2.5">
+                {links.map(({ label, href }) => (
+                  <li key={label}>
+                    <Link
+                      href={href}
+                      className="transition-colors duration-200 hover:text-[var(--gold)]"
+                      style={{
+                        color: "var(--text-muted)",
+                        fontFamily: "var(--font-display)",
+                        fontSize: "1rem",
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom bar */}
@@ -133,10 +249,12 @@ export default function Footer() {
           style={{ borderColor: "var(--border)" }}
         >
           <p
-            className="text-xs"
             style={{
               color: "var(--text-muted)",
-              fontFamily: "var(--font-body)",
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontSize: "0.85rem",
+              letterSpacing: "0.04em",
             }}
           >
             © {year} Laman Troka. All rights reserved.
@@ -144,10 +262,12 @@ export default function Footer() {
 
           <Link
             href="/admin"
-            className="text-xs transition-colors duration-200 hover:text-[var(--gold)]"
+            className="transition-colors duration-200 hover:text-[var(--gold)]"
             style={{
               color: "var(--gold-dim)",
-              fontFamily: "var(--font-body)",
+              fontFamily: "var(--font-display)",
+              fontSize: "0.85rem",
+              letterSpacing: "0.08em",
             }}
           >
             Admin Portal →

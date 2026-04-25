@@ -5,7 +5,7 @@ import { Camera, Check, ChevronDown, Flower2, Info, Sparkles, Star, UtensilsCros
 import { useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import type { UseFormReturn } from "react-hook-form"
-import type { Package, Vendor, VendorCategory } from "@/types"
+import type { Package, Theme, Vendor, VendorCategory } from "@/types"
 import { calculateVendorPrice, formatRM, vendorUnitLabel } from "@/lib/utils"
 import type { BookingFormValues } from "@/lib/validations"
 
@@ -321,6 +321,217 @@ function AddonCardMobile({
   )
 }
 
+/* ─── Theme Card ─────────────────────────────────── */
+function ThemeCard({
+  theme,
+  selected,
+  onToggle,
+}: {
+  theme: Theme
+  selected: boolean
+  onToggle: () => void
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onToggle}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.97 }}
+      className="relative flex flex-col overflow-hidden rounded-sm text-left"
+      style={{
+        border: `1px solid ${selected ? "var(--gold)" : "var(--border)"}`,
+        background: selected ? "rgba(109,40,217,0.06)" : "var(--surface-1)",
+        transition: "border-color 0.2s ease, background 0.2s ease",
+      }}
+      aria-pressed={selected}
+    >
+      {/* Image */}
+      <div
+        className="relative h-20 w-full overflow-hidden"
+        style={{ background: "var(--surface-2)" }}
+      >
+        {theme.image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={theme.image_url}
+            alt={theme.name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <Sparkles size={18} style={{ color: "var(--text-muted)" }} />
+          </div>
+        )}
+
+        {/* Selected overlay */}
+        <AnimatePresence>
+          {selected && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-start justify-end p-1.5"
+              style={{ background: "rgba(109,40,217,0.18)" }}
+            >
+              <div
+                className="flex h-5 w-5 items-center justify-center rounded-full"
+                style={{ background: "var(--gold)" }}
+              >
+                <Check size={10} color="#06141B" strokeWidth={2.5} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Info */}
+      <div className="p-2">
+        <div
+          className="text-xs font-medium leading-snug"
+          style={{
+            color: selected ? "var(--gold)" : "var(--text)",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          {theme.name}
+        </div>
+        {theme.price_from_rm != null && (
+          <div
+            className="mt-0.5 text-[10px]"
+            style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+          >
+            from RM {theme.price_from_rm.toLocaleString()}
+          </div>
+        )}
+      </div>
+    </motion.button>
+  )
+}
+
+/* ─── Decor Fairy Card ───────────────────────────── */
+function DecorFairyCard({
+  vendor,
+  themes,
+  selectedThemeIds,
+  onThemeToggle,
+  isOpen,
+  onToggle,
+}: {
+  vendor: Vendor
+  themes: Theme[]
+  selectedThemeIds: string[]
+  onThemeToggle: (id: string) => void
+  isOpen: boolean
+  onToggle: () => void
+}) {
+  const selectedCount = themes.filter((t) => selectedThemeIds.includes(t.id)).length
+  const hasSelection = selectedCount > 0
+
+  return (
+    <div
+      className="overflow-hidden rounded-sm"
+      style={{
+        border: `1px solid ${hasSelection ? "var(--gold)" : isOpen ? "rgba(109,40,217,0.35)" : "var(--border)"}`,
+        background: hasSelection ? "rgba(109,40,217,0.04)" : "var(--surface-1)",
+        transition: "border-color 0.2s ease, background 0.2s ease",
+      }}
+    >
+      {/* Header */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3"
+        aria-expanded={isOpen}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm"
+            style={{
+              background: hasSelection ? "rgba(109,40,217,0.18)" : "rgba(109,40,217,0.07)",
+              transition: "background 0.2s ease",
+            }}
+          >
+            <Flower2
+              size={16}
+              style={{
+                color: hasSelection ? "var(--gold)" : "var(--text-muted)",
+                transition: "color 0.2s ease",
+              }}
+            />
+          </div>
+
+          <div className="min-w-0">
+            <div
+              className="text-sm font-medium"
+              style={{
+                color: hasSelection ? "var(--gold)" : "var(--text)",
+                fontFamily: "var(--font-body)",
+              }}
+            >
+              {vendor.name}
+            </div>
+            <div
+              className="text-[10px]"
+              style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+            >
+              {hasSelection
+                ? `${themes.find((t) => selectedThemeIds.includes(t.id))?.name ?? "Theme selected"}`
+                : "Décor & Florals — choose your theme"}
+            </div>
+          </div>
+        </div>
+
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.22 }}>
+          <ChevronDown size={14} style={{ color: "var(--text-muted)" }} />
+        </motion.div>
+      </button>
+
+      {/* Theme picker */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.33, 1, 0.68, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="px-4 pb-4" style={{ borderTop: "1px solid var(--border)" }}>
+              {themes.length === 0 ? (
+                <p
+                  className="mt-4 text-center text-xs"
+                  style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+                >
+                  No themes available at this time.
+                </p>
+              ) : (
+                <>
+                  <p
+                    className="mt-3 mb-3 text-xs"
+                    style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+                  >
+                    Select the theme(s) you&apos;d like for your décor.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {themes.map((theme) => (
+                      <ThemeCard
+                        key={theme.id}
+                        theme={theme}
+                        selected={selectedThemeIds.includes(theme.id)}
+                        onToggle={() => onThemeToggle(theme.id)}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 /* ─── Pricing hint banner ────────────────────────── */
 function PricingHintBanner({ hasGuests, hasDuration }: { hasGuests: boolean; hasDuration: boolean }) {
   const needsGuests = !hasGuests
@@ -353,18 +564,25 @@ interface Step3Props {
   form: UseFormReturn<BookingFormValues>
   vendors: Vendor[]
   packages: Package[]
+  themes: Theme[]
 }
 
-export default function Step3Addons({ form, vendors, packages }: Step3Props) {
+export default function Step3Addons({ form, vendors, packages, themes }: Step3Props) {
   const { watch, setValue } = form
   const selectedIds = watch("selected_addons") ?? []
+  const selectedThemeIds = watch("selected_themes") ?? []
   const guestCountRaw = watch("guest_count")
   const packageId = watch("package_id")
   const [openMobileId, setOpenMobileId] = useState<string | null>(null)
+  const [openDecorId, setOpenDecorId] = useState<string | null>(null)
 
   const guestCount = parseInt(guestCountRaw ?? "0", 10) || 0
   const selectedPackage = packages.find((p) => p.id === packageId)
   const durationHours = selectedPackage?.duration_hours ?? 0
+
+  /* Separate decor vendors from regular vendors */
+  const decorVendors = vendors.filter((v) => v.category === "decor")
+  const regularVendors = vendors.filter((v) => v.category !== "decor")
 
   const toggleAddon = (id: string) => {
     const next = selectedIds.includes(id)
@@ -373,15 +591,23 @@ export default function Step3Addons({ form, vendors, packages }: Step3Props) {
     setValue("selected_addons", next, { shouldValidate: false })
   }
 
-  const selectedVendors = vendors.filter((v) => selectedIds.includes(v.id))
+  /* Single-select: clicking the same theme deselects it; clicking another replaces */
+  const toggleTheme = (id: string) => {
+    const isSelected = selectedThemeIds.includes(id)
+    setValue("selected_themes", isSelected ? [] : [id], { shouldValidate: false })
+  }
+
+  const selectedVendors = regularVendors.filter((v) => selectedIds.includes(v.id))
 
   const vendorsTotal = selectedVendors.reduce(
     (sum, v) => sum + calculateVendorPrice(v.category, v.price_rm, guestCount, durationHours),
     0
   )
 
-  const hasCatering = vendors.some((v) => v.category === "catering")
-  const hasPhotography = vendors.some((v) => v.category === "photography")
+  const hasCatering = regularVendors.some((v) => v.category === "catering")
+  const hasPhotography = regularVendors.some((v) => v.category === "photography")
+
+  const hasAnySelection = selectedIds.length > 0 || selectedThemeIds.length > 0
 
   return (
     <div className="space-y-4">
@@ -411,44 +637,63 @@ export default function Step3Addons({ form, vendors, packages }: Step3Props) {
           <p style={{ fontFamily: "var(--font-body)" }}>No services available at this time.</p>
         </div>
       ) : (
-        <>
-          {/* ── Desktop grid ── */}
-          <div className="hidden sm:grid sm:grid-cols-2 sm:gap-3">
-            {vendors.map((vendor) => (
-              <AddonCardDesktop
-                key={vendor.id}
-                addon={vendor}
-                selected={selectedIds.includes(vendor.id)}
-                onToggle={() => toggleAddon(vendor.id)}
-                guestCount={guestCount}
-                durationHours={durationHours}
-              />
-            ))}
-          </div>
+        <div className="space-y-3">
+          {/* ── Regular vendors — Desktop grid ── */}
+          {regularVendors.length > 0 && (
+            <>
+              <div className="hidden sm:grid sm:grid-cols-2 sm:gap-3">
+                {regularVendors.map((vendor) => (
+                  <AddonCardDesktop
+                    key={vendor.id}
+                    addon={vendor}
+                    selected={selectedIds.includes(vendor.id)}
+                    onToggle={() => toggleAddon(vendor.id)}
+                    guestCount={guestCount}
+                    durationHours={durationHours}
+                  />
+                ))}
+              </div>
 
-          {/* ── Mobile stack ── */}
-          <div className="flex flex-col gap-2 sm:hidden">
-            {vendors.map((vendor) => (
-              <AddonCardMobile
-                key={vendor.id}
-                addon={vendor}
-                selected={selectedIds.includes(vendor.id)}
-                onToggle={() => toggleAddon(vendor.id)}
-                open={openMobileId === vendor.id}
-                onOpenToggle={() =>
-                  setOpenMobileId((prev) => (prev === vendor.id ? null : vendor.id))
-                }
-                guestCount={guestCount}
-                durationHours={durationHours}
-              />
-            ))}
-          </div>
-        </>
+              {/* ── Regular vendors — Mobile stack ── */}
+              <div className="flex flex-col gap-2 sm:hidden">
+                {regularVendors.map((vendor) => (
+                  <AddonCardMobile
+                    key={vendor.id}
+                    addon={vendor}
+                    selected={selectedIds.includes(vendor.id)}
+                    onToggle={() => toggleAddon(vendor.id)}
+                    open={openMobileId === vendor.id}
+                    onOpenToggle={() =>
+                      setOpenMobileId((prev) => (prev === vendor.id ? null : vendor.id))
+                    }
+                    guestCount={guestCount}
+                    durationHours={durationHours}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ── Decor Fairy — full-width on both breakpoints ── */}
+          {decorVendors.map((vendor) => (
+            <DecorFairyCard
+              key={vendor.id}
+              vendor={vendor}
+              themes={themes}
+              selectedThemeIds={selectedThemeIds}
+              onThemeToggle={toggleTheme}
+              isOpen={openDecorId === vendor.id}
+              onToggle={() =>
+                setOpenDecorId((prev) => (prev === vendor.id ? null : vendor.id))
+              }
+            />
+          ))}
+        </div>
       )}
 
-      {/* ── Running total ── */}
+      {/* ── Running total (regular vendors only) ── */}
       <AnimatePresence>
-        {selectedIds.length > 0 && (
+        {hasAnySelection && (
           <motion.div
             initial={{ opacity: 0, y: 8, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
@@ -477,32 +722,50 @@ export default function Step3Addons({ form, vendors, packages }: Step3Props) {
                 )
               })}
 
-              <div className="h-px" style={{ background: "var(--border)" }} />
+              {/* Selected theme summary */}
+              {selectedThemeIds.length > 0 && (() => {
+                const t = themes.find((th) => selectedThemeIds.includes(th.id))
+                if (!t) return null
+                return (
+                  <div className="flex items-center justify-between text-xs" style={{ fontFamily: "var(--font-body)" }}>
+                    <span style={{ color: "var(--text-muted)" }}>Décor · {t.name}</span>
+                    <span style={{ color: "var(--text)" }}>
+                      {t.price_from_rm != null ? formatRM(t.price_from_rm) : "quoted"}
+                    </span>
+                  </div>
+                )
+              })()}
 
-              {/* Total */}
-              <div className="flex items-center justify-between">
-                <span
-                  className="text-xs uppercase tracking-wider"
-                  style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-                >
-                  Services subtotal ({selectedIds.length})
-                </span>
-                <motion.span
-                  key={vendorsTotal}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "var(--gold)",
-                    fontSize: "1.15rem",
-                    fontWeight: 300,
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {formatRM(vendorsTotal)}
-                </motion.span>
-              </div>
+              {selectedVendors.length > 0 && (
+                <>
+                  <div className="h-px" style={{ background: "var(--border)" }} />
+
+                  {/* Total */}
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="text-xs uppercase tracking-wider"
+                      style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+                    >
+                      Services subtotal ({selectedIds.length})
+                    </span>
+                    <motion.span
+                      key={vendorsTotal}
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: "var(--gold)",
+                        fontSize: "1.15rem",
+                        fontWeight: 300,
+                        letterSpacing: "0.02em",
+                      }}
+                    >
+                      {formatRM(vendorsTotal)}
+                    </motion.span>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}

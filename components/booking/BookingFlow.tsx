@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import type { Package, Vendor, Venue } from "@/types"
+import type { Package, Theme, Vendor, Venue } from "@/types"
 import { BookingSchema, STEP_FIELDS, type BookingFormValues } from "@/lib/validations"
 import ColorBends from "@/components/ui/color-bends"
 import BookingSummary from "./BookingSummary"
@@ -58,6 +58,7 @@ interface BookingFlowProps {
   packages: Package[]
   vendors: Vendor[]
   blockedDates: string[]
+  themes: Theme[]
 }
 
 export default function BookingFlow({
@@ -65,6 +66,7 @@ export default function BookingFlow({
   packages,
   vendors,
   blockedDates,
+  themes,
 }: BookingFlowProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [slideDir, setSlideDir] = useState<1 | -1>(1)
@@ -85,6 +87,7 @@ export default function BookingFlow({
       event_date: "",
       time_slot: "",
       selected_addons: [],
+      selected_themes: [],
     },
     mode: "onTouched",
   })
@@ -211,6 +214,7 @@ export default function BookingFlow({
                 venue={venue}
                 packages={packages}
                 vendors={vendors}
+                themes={themes}
                 values={formValues}
               />
             </div>
@@ -274,7 +278,7 @@ export default function BookingFlow({
                   >
                     {step === 1 && <Step1Details form={form} packages={packages} />}
                     {step === 2 && <Step2DateTime form={form} blockedDates={blockedDates} />}
-                    {step === 3 && <Step3Addons form={form} vendors={vendors} packages={packages} />}
+                    {step === 3 && <Step3Addons form={form} vendors={vendors} packages={packages} themes={themes} />}
                     {step === 4 && (
                       <Step4Review
                         form={form}
@@ -357,6 +361,7 @@ export default function BookingFlow({
               venue={venue}
               packages={packages}
               vendors={vendors}
+              themes={themes}
               values={formValues}
             />
           </div>

@@ -5,13 +5,14 @@ import { Copy, Download, Home, MessageCircle, Share2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import type { BookingWithDetails } from "@/types"
+import { generateBookingSummaryHTML } from "@/lib/booking-summary-html"
 
 interface Props {
   booking: BookingWithDetails | null
   ref_code: string
 }
 
-const WHATSAPP_NUMBER = "60123456789"
+const WHATSAPP_NUMBER = "60192774203"
 
 function buildWhatsAppMessage(booking: BookingWithDetails | null, ref: string): string {
   if (!booking) return `Hi, I'd like to enquire about my booking reference: ${ref}`
@@ -55,7 +56,21 @@ export default function ActionButtons({ booking, ref_code }: Props) {
   }
 
   function handleDownload() {
-    showToast("PDF download coming soon")
+    if (!booking) {
+      showToast("Booking details not loaded yet")
+      return
+    }
+    const logoUrl = `${window.location.origin}/laman-troke-logo.png`
+    const html = generateBookingSummaryHTML(booking, logoUrl)
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const win = window.open(url, "_blank", "width=900,height=700,noopener")
+    if (win) {
+      win.addEventListener("afterprint", () => URL.revokeObjectURL(url))
+    } else {
+      URL.revokeObjectURL(url)
+      showToast("Please allow pop-ups to download the summary")
+    }
   }
 
   async function handleCopyLink() {
@@ -128,9 +143,9 @@ export default function ActionButtons({ booking, ref_code }: Props) {
         whileTap={{ scale: 0.97 }}
         className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all"
         style={{
-          background: "transparent",
-          border: "1px solid var(--border)",
-          color: "var(--text-muted)",
+          background: "var(--surface-2)",
+          border: "1px solid var(--border-hover)",
+          color: "var(--text)",
         }}
       >
         <Download size={15} />

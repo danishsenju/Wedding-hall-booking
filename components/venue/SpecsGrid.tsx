@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { motion } from "framer-motion";
 import {
@@ -10,46 +10,69 @@ import {
   Users,
 } from "lucide-react";
 
-const SPECS = [
-  {
-    icon: Users,
-    label: "Capacity",
-    value: "100–1,000",
-    unit: "Guests",
-  },
-  {
-    icon: Maximize2,
-    label: "Total Area",
-    value: "15,000",
-    unit: "sq ft",
-  },
-  {
-    icon: ArrowUpDown,
-    label: "Ceiling Height",
-    value: "9.5",
-    unit: "Metres",
-  },
-  {
-    icon: Car,
-    label: "Parking Bays",
-    value: "400",
-    unit: "Covered",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "KLCC",
-    unit: "City Centre",
-  },
-  {
-    icon: Clock,
-    label: "Operating Hours",
-    value: "8 AM",
-    unit: "to 12 AM",
-  },
-];
+interface SpecsGridProps {
+  capacityMin?: number | null;
+  capacityMax?: number | null;
+  sizeSqft?: number | null;
+  ceilingHeight?: number | null;
+  parkingBays?: number | null;
+  location?: string | null;
+}
 
-export default function SpecsGrid() {
+export default function SpecsGrid({
+  capacityMin,
+  capacityMax,
+  sizeSqft,
+  ceilingHeight,
+  parkingBays,
+  location,
+}: SpecsGridProps = {}) {
+  const capacityValue =
+    capacityMin && capacityMax
+      ? `${capacityMin.toLocaleString()}–${capacityMax.toLocaleString()}`
+      : capacityMax
+        ? `Up to ${capacityMax.toLocaleString()}`
+        : "100–1,000";
+
+  const SPECS = [
+    {
+      icon: Users,
+      label: "Capacity",
+      value: capacityValue,
+      unit: "Guests",
+    },
+    {
+      icon: Maximize2,
+      label: "Total Area",
+      value: sizeSqft ? sizeSqft.toLocaleString() : "—",
+      unit: "sq ft",
+    },
+    {
+      icon: ArrowUpDown,
+      label: "Ceiling Height",
+      value: ceilingHeight ? String(ceilingHeight) : "—",
+      unit: "Metres",
+    },
+    {
+      icon: Car,
+      label: "Parking Bays",
+      value: parkingBays ? parkingBays.toLocaleString() : "—",
+      unit: "Covered",
+    },
+    {
+      icon: MapPin,
+      label: "Location",
+      value: location ?? "—",
+      unit: "Malaysia",
+    },
+    {
+      icon: Clock,
+      label: "Operating Hours",
+      value: "8 AM",
+      unit: "to 12 AM",
+    },
+  ];
+
   return (
     <section>
       <motion.div

@@ -1,9 +1,10 @@
-﻿"use client"
+"use client"
 
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
+import { getBookedSlotsForDate } from "@/app/actions/booking"
 import type { BookingFormValues } from "@/lib/validations"
 
 /* ─── Constants ──────────────────────────────────── */
@@ -14,12 +15,12 @@ const MONTHS = [
 ]
 
 const TIME_SLOTS = [
-  { id: "morning", label: "Morning", time: "10:00 AM – 2:00 PM", booked: false },
-  { id: "midday", label: "Mid-Day", time: "12:00 PM – 4:00 PM", booked: false },
-  { id: "afternoon", label: "Afternoon", time: "2:00 PM – 6:00 PM", booked: true },
-  { id: "afternoon-eve", label: "Afternoon-Eve", time: "4:00 PM – 9:00 PM", booked: false },
-  { id: "evening", label: "Evening", time: "6:00 PM – 11:00 PM", booked: false },
-  { id: "full-day", label: "Full Day", time: "10:00 AM – 11:00 PM", booked: false },
+  { id: "morning", label: "Morning", time: "10:00 AM – 2:00 PM" },
+  { id: "midday", label: "Mid-Day", time: "12:00 PM – 4:00 PM" },
+  { id: "afternoon", label: "Afternoon", time: "2:00 PM – 6:00 PM" },
+  { id: "afternoon-eve", label: "Afternoon-Eve", time: "4:00 PM – 9:00 PM" },
+  { id: "evening", label: "Evening", time: "6:00 PM – 11:00 PM" },
+  { id: "full-day", label: "Full Day", time: "10:00 AM – 11:00 PM" },
 ] as const
 
 /* ─── Utils ──────────────────────────────────────── */
@@ -273,16 +274,18 @@ function TimeSlotGrid({
   selected,
   onSelect,
   disabled,
+  bookedSlotIds,
 }: {
   selected: string
   onSelect: (id: string) => void
   disabled: boolean
+  bookedSlotIds: string[]
 }) {
   return (
     <div className="grid grid-cols-3 gap-2">
       {TIME_SLOTS.map((slot) => {
         const isSelected = selected === slot.id
-        const isBooked = slot.booked
+        const isBooked = bookedSlotIds.includes(slot.id)
 
         return (
           <motion.button
@@ -379,6 +382,19 @@ export default function Step2DateTime({ form, blockedDates }: Step2Props) {
 
   const eventDate = watch("event_date")
   const timeSlot = watch("time_slot")
+
+  const [bookedSlotIds, setBookedSlotIds] = useState<string[]>([])
+
+  /* Fetch booked slots whenever the selected date changes */
+  useEffect(() => {
+    if (!eventDate) {
+      setBookedSlotIds([])
+      return
+    }
+    getBookedSlotsForDate(eventDate).then((result) => {
+      if (result.success) setBookedSlotIds(result.data ?? [])
+    })
+  }, [eventDate])
 
   const nextAvailable = useMemo(
     () => getNextAvailableDate(blockedDates),
@@ -516,6 +532,7 @@ export default function Step2DateTime({ form, blockedDates }: Step2Props) {
           selected={timeSlot ?? ""}
           onSelect={(id) => setValue("time_slot", id, { shouldValidate: true })}
           disabled={!eventDate}
+          bookedSlotIds={bookedSlotIds}
         />
 
         {!eventDate && (

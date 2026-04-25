@@ -169,6 +169,7 @@ const EMPTY_HALL = {
   name: "", subtitle: "", description: "", tag: "", href: "",
   hero_image_url: "", capacity_min: "", capacity_max: "",
   size_sqft: "", ceiling_height_m: "", parking_bays: "",
+  gallery_images: [] as string[],
 };
 
 function HallFormModal({
@@ -188,6 +189,7 @@ function HallFormModal({
           tag: hall.tag ?? "",
           href: hall.href ?? "",
           hero_image_url: hall.hero_image_url ?? "",
+          gallery_images: hall.gallery_images ?? [],
           capacity_min: hall.capacity_min?.toString() ?? "",
           capacity_max: hall.capacity_max?.toString() ?? "",
           size_sqft: hall.size_sqft?.toString() ?? "",
@@ -214,6 +216,9 @@ function HallFormModal({
       tag: form.tag.trim() || undefined,
       href: form.href.trim() || undefined,
       hero_image_url: form.hero_image_url.trim() || undefined,
+      gallery_images: form.gallery_images.filter(Boolean).length > 0
+        ? form.gallery_images.filter(Boolean)
+        : null,
       capacity_min: form.capacity_min ? Number(form.capacity_min) : null,
       capacity_max: form.capacity_max ? Number(form.capacity_max) : null,
       size_sqft: form.size_sqft ? Number(form.size_sqft) : null,
@@ -260,6 +265,35 @@ function HallFormModal({
             onChange={(url) => setForm((f) => ({ ...f, hero_image_url: url }))}
             folder="halls"
           />
+
+          {/* Gallery images — up to 3 (total 4 incl. hero) */}
+          <div>
+            <label className="label-text">Gallery Images (up to 3)</label>
+            <div className="space-y-4">
+              {[0, 1, 2].map((i) => {
+                const url = form.gallery_images[i] ?? "";
+                return (
+                  <div key={i}>
+                    <p
+                      className="mb-1 text-[10px] uppercase tracking-[0.15em]"
+                      style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+                    >
+                      Image {i + 2} of 4
+                    </p>
+                    <ImageInput
+                      value={url}
+                      onChange={(val) => {
+                        const next = [...form.gallery_images];
+                        next[i] = val;
+                        setForm((f) => ({ ...f, gallery_images: next }));
+                      }}
+                      folder="halls"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div><label className="label-text">Venue Name *</label><input type="text" required placeholder="Grand Ballroom" value={form.name} onChange={set("name")} className="field" /></div>

@@ -16,7 +16,7 @@ const items = [
   },
   {
     icon: Phone,
-    label: "+60 12-345 6789",
+    label: "+60 19-277 4203",
     sub: "Mon–Sat 9am–6pm",
   },
 ]

@@ -21,6 +21,7 @@ export interface Venue {
   latitude: number | null;
   longitude: number | null;
   hero_image_url: string | null;
+  gallery_images: string[] | null;
   created_at: string;
 }
 

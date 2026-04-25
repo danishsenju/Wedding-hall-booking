@@ -300,6 +300,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           hero_image_url: string | null
+          gallery_images: string[] | null
           created_at: string
         }
         Insert: {
@@ -318,6 +319,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           hero_image_url?: string | null
+          gallery_images?: string[] | null
           created_at?: string
         }
         Update: {
@@ -336,6 +338,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           hero_image_url?: string | null
+          gallery_images?: string[] | null
           created_at?: string
         }
         Relationships: []

@@ -1,8 +1,26 @@
 "use server"
 
+import { unstable_noStore as noStore } from "next/cache"
 import { z } from "zod"
 import { createServerClient } from "@/lib/supabase-server"
 import type { ActionResult } from "@/types"
+
+/* ─── Booked Slots for a Date ────────────────────── */
+
+export async function getBookedSlotsForDate(date: string): Promise<ActionResult<string[]>> {
+  noStore()
+  if (!date) return { success: true, data: [] }
+
+  const supabase = createServerClient()
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("time_slot")
+    .eq("event_date", date)
+    .in("status", ["pending", "approved"])
+
+  if (error) return { success: false, error: error.message }
+  return { success: true, data: (data ?? []).map((b: { time_slot: string }) => b.time_slot) }
+}
 
 /* ─── Validation Schema ──────────────────────────── */
 
