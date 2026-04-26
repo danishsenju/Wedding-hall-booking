@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createServerClient } from "@/lib/supabase-server";
 import type { ActionResult, Venue } from "@/types";
 
@@ -44,5 +45,7 @@ export async function updateVenueLocation(
     .single();
 
   if (error) return { success: false, error: error.message };
+
+  revalidatePath("/map");
   return { success: true, data: data as Venue };
 }

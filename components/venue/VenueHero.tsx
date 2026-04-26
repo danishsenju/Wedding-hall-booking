@@ -37,6 +37,7 @@ export default function VenueHero({
   // Without this, a client-side navigation from a scrolled page carries over the
   // old scroll position, making scrollYProgress > 0 on mount → contentOpacity = 0.
   useEffect(() => {
+    window.scrollTo(0, 0);
     const id = requestAnimationFrame(() => setScrollReady(true));
     return () => cancelAnimationFrame(id);
   }, []);

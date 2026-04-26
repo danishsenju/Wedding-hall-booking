@@ -26,25 +26,28 @@ import { formatRM } from "@/lib/utils"
 /* ─── Category config ────────────────────────────── */
 const CATEGORY_CONFIG: Record<
   VendorCategory,
-  { Icon: LucideIcon; label: string; desc: string; gradient: string }
+  { Icon: LucideIcon; label: string; desc: string; gradient: string; image: string }
 > = {
   photography: {
     Icon: Camera,
     label: "Photography",
     desc: "Artisan storytelling through every frame of your journey",
     gradient: "from-violet-900/40 to-purple-950/20",
+    image: "/images/Photography.jpg",
   },
   decor: {
     Icon: Flower2,
     label: "Décor & Florals",
     desc: "Lush arrangements and atmospheric design that transforms spaces",
     gradient: "from-purple-900/40 to-indigo-950/20",
+    image: "/images/D%C3%A9cor%20%26%20Florals.jpg",
   },
   catering: {
     Icon: UtensilsCrossed,
     label: "Catering",
     desc: "Curated menus crafted by our in-house culinary team",
     gradient: "from-indigo-900/40 to-violet-950/20",
+    image: "/images/Catering.jpg",
   },
 }
 
@@ -97,18 +100,39 @@ function FeaturedCard({
       transition={{ duration: 0.65, delay: index * 0.12, ease: [0.33, 1, 0.68, 1] }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative overflow-hidden rounded-sm bg-gradient-to-br ${cfg.gradient} p-8 cursor-default`}
+      className="relative overflow-hidden rounded-sm p-8 cursor-default"
       style={{
         border: `1px solid ${hovered ? "rgba(109,40,217,0.5)" : "rgba(109,40,217,0.15)"}`,
         transition: "border-color 0.3s ease",
+        minHeight: "220px",
       }}
     >
-      {/* Background orb */}
+      {/* Background image */}
       <motion.div
-        className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full"
-        animate={{ opacity: hovered ? 0.2 : 0.06, scale: hovered ? 1.2 : 1 }}
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `url(${cfg.image})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        animate={{ scale: hovered ? 1.06 : 1 }}
+        transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+      />
+
+      {/* Dark overlay — darkens more on hover to keep text sharp */}
+      <motion.div
+        className="pointer-events-none absolute inset-0"
+        animate={{ opacity: hovered ? 0.55 : 0.72 }}
         transition={{ duration: 0.4 }}
-        style={{ background: "var(--gold)", filter: "blur(30px)" }}
+        style={{ background: "linear-gradient(135deg, rgba(10,11,16,0.88) 0%, rgba(20,18,38,0.82) 100%)" }}
+      />
+
+      {/* Purple tint overlay */}
+      <motion.div
+        className="pointer-events-none absolute inset-0"
+        animate={{ opacity: hovered ? 0.25 : 0.12 }}
+        transition={{ duration: 0.4 }}
+        style={{ background: "linear-gradient(135deg, rgba(109,40,217,0.4) 0%, rgba(43,27,82,0.3) 100%)" }}
       />
 
       {/* Animated border shimmer */}
@@ -119,7 +143,7 @@ function FeaturedCard({
             animate={{ scaleX: 1, opacity: 1 }}
             exit={{ scaleX: 0, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="absolute bottom-0 left-0 right-0 h-px origin-left"
+            className="absolute bottom-0 left-0 right-0 h-px origin-left z-20"
             style={{
               background:
                 "linear-gradient(90deg, transparent, rgba(109,40,217,0.6), transparent)",
@@ -128,33 +152,41 @@ function FeaturedCard({
         )}
       </AnimatePresence>
 
-      {/* Icon */}
-      <motion.div
-        animate={{ scale: hovered ? 1.08 : 1, rotate: hovered ? 3 : 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm"
-        style={{ background: "rgba(109,40,217,0.12)", border: "1px solid rgba(109,40,217,0.2)" }}
-      >
-        <cfg.Icon size={24} style={{ color: "var(--gold)" }} />
-      </motion.div>
+      {/* Content — sits above overlays */}
+      <div className="relative z-10">
+        {/* Icon */}
+        <motion.div
+          animate={{ scale: hovered ? 1.08 : 1, rotate: hovered ? 3 : 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm"
+          style={{ background: "rgba(109,40,217,0.18)", border: "1px solid rgba(109,40,217,0.3)" }}
+        >
+          <cfg.Icon size={24} style={{ color: "var(--gold)" }} />
+        </motion.div>
 
-      <h3
-        className="mb-2 font-light"
-        style={{
-          fontFamily: "var(--font-display)",
-          color: "var(--text)",
-          fontSize: "1.5rem",
-          letterSpacing: "0.04em",
-        }}
-      >
-        {cfg.label}
-      </h3>
-      <p
-        className="text-sm leading-relaxed"
-        style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
-      >
-        {cfg.desc}
-      </p>
+        <h3
+          className="mb-2 font-light"
+          style={{
+            fontFamily: "var(--font-display)",
+            color: "var(--text)",
+            fontSize: "1.5rem",
+            letterSpacing: "0.04em",
+            textShadow: "0 2px 8px rgba(0,0,0,0.6)",
+          }}
+        >
+          {cfg.label}
+        </h3>
+        <p
+          className="text-sm leading-relaxed"
+          style={{
+            color: "var(--text-muted)",
+            fontFamily: "var(--font-body)",
+            textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+          }}
+        >
+          {cfg.desc}
+        </p>
+      </div>
     </motion.div>
   )
 }
