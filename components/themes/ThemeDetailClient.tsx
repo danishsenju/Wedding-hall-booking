@@ -22,10 +22,13 @@ import type { Theme } from "@/types";
 
 function ThemeHero({ theme }: { theme: Theme }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [scrollReady, setScrollReady] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setScrollReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const { scrollYProgress } = useScroll({
-    target: mounted ? ref : undefined,
+    target: scrollReady ? ref : undefined,
     offset: ["start start", "end start"],
   });
 
@@ -110,7 +113,7 @@ function ThemeHero({ theme }: { theme: Theme }) {
       {/* Hero content */}
       <motion.div
         className="relative z-10 mx-auto max-w-4xl px-6 text-center"
-        style={{ y: contentY, opacity: contentOpacity }}
+        style={{ y: contentY, opacity: scrollReady ? contentOpacity : 1 }}
       >
         {/* Mood pills */}
         {moodTags.length > 0 && (

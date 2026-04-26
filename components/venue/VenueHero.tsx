@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Clock, MapPin, Star, Users } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=1200&q=80";
@@ -24,6 +24,7 @@ export default function VenueHero({
   capacityMax,
 }: VenueHeroProps = {}) {
   const ref = useRef<HTMLDivElement>(null);
+  const [scrollReady, setScrollReady] = useState(false);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -31,6 +32,14 @@ export default function VenueHero({
   const photoY = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const contentY = useTransform(scrollYProgress, [0, 0.6], ["0%", "12%"]);
+
+  // Delay applying scroll-based opacity until the page scroll has settled at 0.
+  // Without this, a client-side navigation from a scrolled page carries over the
+  // old scroll position, making scrollYProgress > 0 on mount → contentOpacity = 0.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setScrollReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const tags = [
     { icon: MapPin, label: location ?? "Kuala Lumpur" },
@@ -85,7 +94,7 @@ export default function VenueHero({
 
       {/* Content */}
       <motion.div
-        style={{ opacity: contentOpacity, y: contentY }}
+        style={{ opacity: scrollReady ? contentOpacity : 1, y: contentY }}
         className="relative z-10 w-full px-6 pb-16 md:pb-20"
       >
         <div className="mx-auto max-w-6xl">
