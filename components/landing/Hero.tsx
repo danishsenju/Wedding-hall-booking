@@ -151,11 +151,14 @@ function MagnetButton({ href, children, variant = "primary" }: MagnetButtonProps
         x,
         y,
         ["--glass-bg" as string]: isPrimary
-          ? "rgba(109,40,217,0.22)"
+          ? "rgba(88,28,186,0.72)"
           : "rgba(255,255,255,0.07)",
         ["--glass-highlight" as string]: isPrimary
-          ? "rgba(109,40,217,0.55)"
+          ? "rgba(168,85,247,0.6)"
           : "rgba(255,255,255,0.18)",
+        border: isPrimary
+          ? "1px solid rgba(168,85,247,0.55)"
+          : "1px solid rgba(255,255,255,0.12)",
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -168,7 +171,7 @@ function MagnetButton({ href, children, variant = "primary" }: MagnetButtonProps
       <div ref={specularRef} className="glass-specular" />
       <div
         className="glass-content"
-        style={{ color: isPrimary ? "var(--gold)" : "var(--text)" }}
+        style={{ color: isPrimary ? "var(--text)" : "var(--text-muted)" }}
       >
         {children}
       </div>
@@ -231,8 +234,8 @@ export default function Hero() {
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
       {/* ── Silk WebGL background ── */}
-      <div className="absolute inset-0 z-0 opacity-40" aria-hidden="true">
-        <Silk speed={3} scale={1.2} color="#1a0a2e" noiseIntensity={1.2} rotation={0} />
+      <div className="absolute inset-0 z-0 opacity-[0.55]" aria-hidden="true">
+        <Silk speed={2} scale={1.2} color="#A855F7" noiseIntensity={1.2} rotation={0} />
       </div>
 
       {/* ── SVG Glass Distortion Filter ── */}
