@@ -5,8 +5,7 @@ import { Clock, MapPin, Star, Users } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=1200&q=80";
+const FALLBACK_IMAGE = "";
 
 interface VenueHeroProps {
   name?: string;
@@ -25,22 +24,24 @@ export default function VenueHero({
 }: VenueHeroProps = {}) {
   const ref = useRef<HTMLDivElement>(null);
   const [scrollReady, setScrollReady] = useState(false);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const photoY = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const contentY = useTransform(scrollYProgress, [0, 0.6], ["0%", "12%"]);
 
-  // Delay applying scroll-based opacity until the page scroll has settled at 0.
-  // Without this, a client-side navigation from a scrolled page carries over the
-  // old scroll position, making scrollYProgress > 0 on mount → contentOpacity = 0.
   useEffect(() => {
     window.scrollTo(0, 0);
     const id = requestAnimationFrame(() => setScrollReady(true));
     return () => cancelAnimationFrame(id);
   }, []);
+
+  // Only attach the element target after scroll has settled (same pattern as ThemeHero).
+  // Without this, mounting while the previous page was scrolled down causes scrollYProgress >> 0,
+  // which pushes contentY to its max and clips content behind the section's overflow-hidden.
+  const { scrollYProgress } = useScroll({
+    target: scrollReady ? ref : undefined,
+    offset: ["start start", "end start"],
+  });
+
+  const photoY = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 0.6], ["0%", "12%"]);
 
   const tags = [
     { icon: MapPin, label: location ?? "Kuala Lumpur" },
@@ -65,14 +66,18 @@ export default function VenueHero({
         className="absolute inset-0 z-0"
         style={{ y: photoY, scale: 1.12 }}
       >
-        <Image
-          src={heroImageUrl || FALLBACK_IMAGE}
-          alt={`${name} — elegant interior`}
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
+        {heroImageUrl ? (
+          <Image
+            src={heroImageUrl}
+            alt={`${name} — elegant interior`}
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        ) : (
+          <div className="h-full w-full" style={{ background: "var(--surface-1)" }} />
+        )}
       </motion.div>
 
       {/* Multi-layer dark gradient */}
@@ -95,7 +100,10 @@ export default function VenueHero({
 
       {/* Content */}
       <motion.div
-        style={{ opacity: scrollReady ? contentOpacity : 1, y: contentY }}
+        style={{
+          opacity: scrollReady ? contentOpacity : 1,
+          y: scrollReady ? contentY : "0%",
+        }}
         className="relative z-10 w-full px-6 pb-16 md:pb-20"
       >
         <div className="mx-auto max-w-6xl">
@@ -103,7 +111,7 @@ export default function VenueHero({
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.45, delay: 0.05 }}
             className="mb-5 flex items-center gap-3"
           >
             <span
@@ -134,8 +142,8 @@ export default function VenueHero({
                 initial={{ opacity: 0, y: 44, rotateX: -55 }}
                 animate={{ opacity: 1, y: 0, rotateX: 0 }}
                 transition={{
-                  duration: 0.55,
-                  delay: 0.35 + i * 0.028,
+                  duration: 0.45,
+                  delay: 0.1 + i * 0.018,
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 style={{
@@ -152,7 +160,7 @@ export default function VenueHero({
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.1 }}
+            transition={{ duration: 0.45, delay: 0.35 }}
             className="mb-7 max-w-[44ch] text-base leading-relaxed"
             style={{ color: "var(--text-muted)" }}
           >
@@ -163,7 +171,7 @@ export default function VenueHero({
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.3 }}
+            transition={{ duration: 0.45, delay: 0.48 }}
             className="flex flex-wrap gap-2.5"
           >
             {tags.map(({ icon: Icon, label }) => (

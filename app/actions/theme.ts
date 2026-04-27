@@ -1,6 +1,6 @@
 "use server";
 
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { createServerClient } from "@/lib/supabase-server";
 import type { ActionResult, Theme } from "@/types";
 
@@ -32,7 +32,6 @@ export async function getAllThemes(): Promise<ActionResult<Theme[]>> {
 }
 
 export async function getThemeById(id: string): Promise<ActionResult<Theme>> {
-  noStore();
   if (!id) return { success: false, error: "Theme ID is required." };
 
   const { data, error } = await sb()
@@ -55,6 +54,8 @@ export async function createTheme(input: ThemeInput): Promise<ActionResult<Theme
     .single();
 
   if (error) return { success: false, error: error.message };
+  revalidatePath("/themes/[id]", "page");
+  revalidatePath("/");
   return { success: true, data: data as Theme };
 }
 
@@ -72,6 +73,8 @@ export async function updateTheme(
     .single();
 
   if (error) return { success: false, error: error.message };
+  revalidatePath("/themes/[id]", "page");
+  revalidatePath("/");
   return { success: true, data: data as Theme };
 }
 
@@ -80,5 +83,7 @@ export async function deleteTheme(id: string): Promise<ActionResult> {
 
   const { error } = await sb().from("themes").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
+  revalidatePath("/themes/[id]", "page");
+  revalidatePath("/");
   return { success: true };
 }

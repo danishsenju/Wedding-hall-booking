@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect, type ComponentType } from 'react';
+import { usePathname } from 'next/navigation';
 import type { SilkProps } from './Silk';
 
 export default function SilkBackground() {
+  const pathname = usePathname();
   const [silk, setSilk] = useState<{ Component: ComponentType<SilkProps> } | null>(null);
   const [tabVisible, setTabVisible] = useState(true);
 
@@ -27,6 +29,7 @@ export default function SilkBackground() {
         inset: 0,
         zIndex: 0,
         pointerEvents: 'none',
+        display: pathname === '/' ? 'block' : 'none',
       }}
     >
       <Silk speed={1.5} scale={1.2} color="#4C1D95" noiseIntensity={1.0} rotation={0} />

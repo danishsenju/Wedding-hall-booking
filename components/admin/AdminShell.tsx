@@ -7,7 +7,6 @@ import {
   Briefcase,
   Building2,
   ChevronLeft,
-  FileEdit,
   Images,
   LayoutGrid,
   LogOut,
@@ -21,7 +20,6 @@ import Image from "next/image"
 const NAV = [
   { label: "Dashboard",       href: "/admin/dashboard", Icon: LayoutGrid },
   { label: "Manage Halls",    href: "/admin/halls",     Icon: Building2 },
-  { label: "Content Editor",  href: "/admin/content",   Icon: FileEdit },
   { label: "Venue Locations", href: "/admin/venues",    Icon: MapPin },
   { label: "Gallery",         href: "/admin/gallery",   Icon: Images },
   { label: "Vendors",         href: "/admin/vendors",   Icon: Briefcase },

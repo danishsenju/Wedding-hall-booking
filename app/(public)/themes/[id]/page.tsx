@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import { getThemeById, getAllThemes } from "@/app/actions/theme";
 import ThemeDetailClient from "@/components/themes/ThemeDetailClient";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({
   params,
 }: {

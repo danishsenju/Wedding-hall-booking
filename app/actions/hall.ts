@@ -1,6 +1,6 @@
 "use server";
 
-import { unstable_noStore as noStore } from "next/cache";
+import { unstable_noStore as noStore, revalidatePath } from "next/cache";
 import { createServerClient } from "@/lib/supabase-server";
 import type { ActionResult, Venue } from "@/types";
 
@@ -10,6 +10,7 @@ export interface HallInput {
   description?: string;
   tag?: string;
   href?: string;
+  location?: string;
   hero_image_url?: string;
   gallery_images?: string[] | null;
   capacity_min?: number | null;
@@ -33,6 +34,19 @@ export async function getAllHalls(): Promise<ActionResult<Venue[]>> {
   return { success: true, data: (data ?? []) as Venue[] };
 }
 
+export async function getHallById(id: string): Promise<ActionResult<Venue>> {
+  if (!id) return { success: false, error: "Hall ID is required." };
+
+  const { data, error } = await sb()
+    .from("venues")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return { success: false, error: error.message };
+  return { success: true, data: data as Venue };
+}
+
 export async function createHall(input: HallInput): Promise<ActionResult<Venue>> {
   if (!input.name?.trim()) return { success: false, error: "Hall name is required." };
 
@@ -43,6 +57,8 @@ export async function createHall(input: HallInput): Promise<ActionResult<Venue>>
     .single();
 
   if (error) return { success: false, error: error.message };
+  revalidatePath("/venues/[slug]", "page");
+  revalidatePath("/");
   return { success: true, data: data as Venue };
 }
 
@@ -60,6 +76,8 @@ export async function updateHall(
     .single();
 
   if (error) return { success: false, error: error.message };
+  revalidatePath("/venues/[slug]", "page");
+  revalidatePath("/");
   return { success: true, data: data as Venue };
 }
 
@@ -68,5 +86,7 @@ export async function deleteHall(id: string): Promise<ActionResult> {
 
   const { error } = await sb().from("venues").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
+  revalidatePath("/venues/[slug]", "page");
+  revalidatePath("/");
   return { success: true };
 }

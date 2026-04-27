@@ -74,7 +74,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         backdropFilter: visible ? "blur(16px)" : "none",
         boxShadow: visible ? "0 1px 0 rgba(109,40,217,0.15)" : "none",
         width: visible ? "90%" : "100%",
-        background: visible ? "rgba(10,11,16,0.85)" : "transparent",
+        background: visible ? "rgba(10,11,16,0.85)" : "rgba(10,11,16,0)",
         y: visible ? 8 : 0,
       }}
       transition={{ type: "spring", stiffness: 200, damping: 50 }}

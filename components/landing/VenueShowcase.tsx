@@ -70,7 +70,7 @@ function dbVenuesToVenueData(items: VenueShowcaseItem[]): VenueData[] {
     imageUrl: v.hero_image_url ?? "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80",
     imageAlt: v.name,
     tag: v.tag ?? "",
-    href: v.href ?? "#",
+    href: `/venues/${v.id}`,
     specs: [
       { icon: Users, label: "Capacity", value: v.capacity_min && v.capacity_max ? `${v.capacity_min} – ${v.capacity_max}` : "—" },
       { icon: Maximize2, label: "Floor Area", value: v.size_sqft ? `${v.size_sqft.toLocaleString()} sq ft` : "—" },

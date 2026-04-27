@@ -10,14 +10,14 @@ interface PageTransitionProps {
 
 const variants: Variants = {
   initial: {
-    opacity: 0,
-    y: 12,
+    opacity: 1,
+    y: 8,
   },
   enter: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.35,
+      duration: 0.25,
       ease: "easeOut",
     },
   },
@@ -25,7 +25,7 @@ const variants: Variants = {
     opacity: 0,
     y: -8,
     transition: {
-      duration: 0.2,
+      duration: 0.15,
       ease: "easeIn",
     },
   },

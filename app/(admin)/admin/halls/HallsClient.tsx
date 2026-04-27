@@ -28,7 +28,7 @@ async function uploadImage(file: File, folder: string): Promise<string | null> {
   return data.publicUrl;
 }
 
-/* ─── Shared image input (URL or file upload) ────── */
+/* ─── Shared image input (file upload only) ─────── */
 function ImageInput({
   value,
   onChange,
@@ -38,7 +38,6 @@ function ImageInput({
   onChange: (url: string) => void;
   folder: string;
 }) {
-  const [mode, setMode] = useState<"url" | "file">("url");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -63,8 +62,7 @@ function ImageInput({
     <div>
       <label className="label-text">Image</label>
 
-      {/* Preview */}
-      {value && (
+      {value ? (
         <div className="relative mb-2 h-36 w-full overflow-hidden rounded-sm">
           <Image src={value} alt="Preview" fill className="object-cover" />
           <button
@@ -76,40 +74,8 @@ function ImageInput({
             <X size={12} />
           </button>
         </div>
-      )}
-
-      {/* Mode toggle */}
-      <div
-        className="mb-2 flex gap-1 rounded-sm p-0.5"
-        style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
-      >
-        {(["url", "file"] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            onClick={() => { setMode(m); setError(""); }}
-            className="flex-1 rounded-sm py-1.5 text-xs transition-all"
-            style={
-              mode === m
-                ? { background: "rgba(109,40,217,0.2)", color: "var(--text)", fontFamily: "var(--font-body)", border: "1px solid var(--border-hover)" }
-                : { color: "var(--text-muted)", fontFamily: "var(--font-body)", border: "1px solid transparent" }
-            }
-          >
-            {m === "url" ? "Paste Link" : "Upload File"}
-          </button>
-        ))}
-      </div>
-
-      {mode === "url" ? (
-        <input
-          type="url"
-          placeholder="https://images.unsplash.com/..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="field"
-        />
       ) : (
-        <div>
+        <>
           <input
             ref={fileRef}
             type="file"
@@ -132,10 +98,10 @@ function ImageInput({
             {uploading ? (
               <><Loader2 size={14} className="animate-spin" /> Uploading…</>
             ) : (
-              <><ImageIcon size={14} /> Click to choose an image file</>
+              <><ImageIcon size={14} /> Click to upload an image</>
             )}
           </button>
-        </div>
+        </>
       )}
 
       {error && (
@@ -167,11 +133,15 @@ function Chip({ label }: { label: string }) {
 ═══════════════════════════════════════════════════ */
 
 const EMPTY_HALL = {
-  name: "", subtitle: "", description: "", tag: "", href: "",
+  name: "", subtitle: "", description: "", tag: "", href: "", location: "",
   hero_image_url: "", capacity_min: "", capacity_max: "",
   size_sqft: "", ceiling_height_m: "", parking_bays: "",
   gallery_images: [] as string[],
 };
+
+function toSlug(name: string) {
+  return `/venues/${name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+}
 
 function HallFormModal({
   hall, onClose, onSave,
@@ -189,6 +159,7 @@ function HallFormModal({
           description: hall.description ?? "",
           tag: hall.tag ?? "",
           href: hall.href ?? "",
+          location: hall.location ?? "",
           hero_image_url: hall.hero_image_url ?? "",
           gallery_images: hall.gallery_images ?? [],
           capacity_min: hall.capacity_min?.toString() ?? "",
@@ -216,6 +187,7 @@ function HallFormModal({
       description: form.description.trim() || undefined,
       tag: form.tag.trim() || undefined,
       href: form.href.trim() || undefined,
+      location: form.location.trim() || undefined,
       hero_image_url: form.hero_image_url.trim() || undefined,
       gallery_images: form.gallery_images.filter(Boolean).length > 0
         ? form.gallery_images.filter(Boolean)
@@ -297,12 +269,29 @@ function HallFormModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="label-text">Venue Name *</label><input type="text" required placeholder="Grand Ballroom" value={form.name} onChange={set("name")} className="field" /></div>
+            <div>
+              <label className="label-text">Venue Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="Grand Ballroom"
+                value={form.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setForm((f) => ({
+                    ...f,
+                    name,
+                    href: !f.href || f.href === toSlug(f.name) ? toSlug(name) : f.href,
+                  }));
+                }}
+                className="field"
+              />
+            </div>
             <div><label className="label-text">Badge / Tag</label><input type="text" placeholder="Most Popular" value={form.tag} onChange={set("tag")} className="field" /></div>
           </div>
+          <div><label className="label-text">Subtitle</label><input type="text" placeholder="The Jewel of Laman Troka" value={form.subtitle} onChange={set("subtitle")} className="field" /></div>
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="label-text">Subtitle</label><input type="text" placeholder="The Jewel of Laman Troka" value={form.subtitle} onChange={set("subtitle")} className="field" /></div>
-            <div><label className="label-text">Detail Page URL</label><input type="text" placeholder="/venues/grand-ballroom" value={form.href} onChange={set("href")} className="field" /></div>
+            <div><label className="label-text">Location</label><input type="text" placeholder="KLCC, Kuala Lumpur" value={form.location} onChange={set("location")} className="field" /></div>
           </div>
           <div><label className="label-text">Description</label><textarea rows={3} placeholder="Describe the venue..." value={form.description} onChange={set("description")} className="field resize-none" /></div>
 
@@ -771,7 +760,7 @@ export default function HallsClient({
                   <Building2 size={22} strokeWidth={1.5} />
                 </motion.div>
                 <p className="text-sm" style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>No venues yet</p>
-                <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>Run the SQL seed or click &ldquo;Add Venue&rdquo;</p>
+                <p className="mt-1 text-xs" style={{ color: "var(--gold)", opacity: 0.7, fontFamily: "var(--font-body)" }}>Click &ldquo;Add Venue&rdquo; to get started</p>
               </motion.div>
             )}
             <motion.div layout className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

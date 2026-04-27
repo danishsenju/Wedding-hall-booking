@@ -6,9 +6,9 @@ import type { Venue } from "@/types";
 
 const STATIC_LINKS = {
   Services: [
-    { label: "Catering", href: "/services/catering" },
-    { label: "Photography", href: "/services/photography" },
-    { label: "Décor & Florals", href: "/services/decor" },
+    { label: "Catering", href: "/services" },
+    { label: "Photography", href: "/services" },
+    { label: "Décor & Florals", href: "/services" },
   ],
   Company: [
     { label: "About Us", href: "/about" },
@@ -23,7 +23,7 @@ function VenueLinks({ venues }: { venues: Venue[] }) {
       {venues.map((venue) => (
         <li key={venue.id}>
           <Link
-            href={venue.href ?? "/venue"}
+            href={`/venues/${venue.id}`}
             className="transition-colors duration-200 hover:text-[var(--gold)]"
             style={{
               color: "var(--text-muted)",

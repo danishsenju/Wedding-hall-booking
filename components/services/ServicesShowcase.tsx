@@ -22,6 +22,7 @@ import { useRef, useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import type { Vendor, VendorCategory } from "@/types"
 import { formatRM } from "@/lib/utils"
+import ColorBends from "@/components/ui/color-bends"
 
 /* ─── Category config ────────────────────────────── */
 const CATEGORY_CONFIG: Record<
@@ -423,8 +424,28 @@ export default function ServicesShowcase({ vendors }: { vendors: Vendor[] }) {
     : (Object.keys(CATEGORY_CONFIG) as VendorCategory[])
 
   return (
-    <div className="min-h-screen pb-24 pt-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen pb-24 pt-28">
+      {/* ColorBends background — matches gallery page */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <ColorBends
+          colors={["#1a098a"]}
+          rotation={90}
+          speed={0.2}
+          scale={1}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1}
+          noise={0.15}
+          parallax={0.5}
+          iterations={1}
+          intensity={1.5}
+          bandWidth={6}
+          transparent={false}
+        />
+        <div className="absolute inset-0" style={{ background: "rgba(10,11,16,0.55)" }} />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ── Hero header ── */}
         <div className="mb-20 text-center">

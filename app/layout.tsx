@@ -4,6 +4,7 @@ import "./globals.css";
 import PageTransition from "@/components/PageTransition";
 import RouteProgress from "@/components/RouteProgress";
 import SilkBackground from "@/components/SilkBackground";
+import DemoAdminButton from "@/components/DemoAdminButton";
 
 /* ─── Fonts ─────────────────────────────────────── */
 const cormorant = Cormorant_Garamond({
@@ -109,6 +110,7 @@ export default function RootLayout({
         <div className="relative z-10">
           <PageTransition>{children}</PageTransition>
         </div>
+        <DemoAdminButton />
       </body>
     </html>
   );
