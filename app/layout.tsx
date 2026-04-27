@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
-import PageTransition from "@/components/PageTransition";
 import RouteProgress from "@/components/RouteProgress";
-import SilkBackground from "@/components/SilkBackground";
 import DemoAdminButton from "@/components/DemoAdminButton";
 
 /* ─── Fonts ─────────────────────────────────────── */
@@ -105,10 +103,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased noise-overlay">
-        <SilkBackground />
-        <RouteProgress />
+<RouteProgress />
         <div className="relative z-10">
-          <PageTransition>{children}</PageTransition>
+          {children}
         </div>
         <DemoAdminButton />
       </body>
