@@ -7,8 +7,11 @@ import {
   useSpring,
 } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+
+const Silk = dynamic(() => import("@/components/Silk"), { ssr: false });
 
 /* ─── Flip Words ─────────────────────────────────── */
 const FLIP_WORDS = ["Timeless", "Magical", "Unforgettable", "Breathtaking"];
@@ -227,6 +230,11 @@ export default function Hero() {
       id="hero"
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
     >
+      {/* ── Silk WebGL background ── */}
+      <div className="absolute inset-0 z-0 opacity-40" aria-hidden="true">
+        <Silk speed={3} scale={1.2} color="#1a0a2e" noiseIntensity={1.2} rotation={0} />
+      </div>
+
       {/* ── SVG Glass Distortion Filter ── */}
       <svg style={{ display: "none" }} aria-hidden="true">
         <defs>
