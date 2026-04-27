@@ -1,10 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Cinzel, Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import RouteProgress from "@/components/RouteProgress";
 import DemoAdminButton from "@/components/DemoAdminButton";
 
 /* ─── Fonts ─────────────────────────────────────── */
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-cinzel",
+  display: "swap",
+});
+
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -99,7 +106,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${dmSans.variable}`}
+      className={`${cinzel.variable} ${cormorant.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased noise-overlay">

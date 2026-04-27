@@ -19,6 +19,7 @@
 
   /* Font stacks */
   --font-display: var(--font-cormorant), "Cormorant Garamond", "Garamond", Georgia, serif;
+  --font-title: var(--font-cinzel), "Cinzel", Georgia, serif;
   --font-body: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
 }
 

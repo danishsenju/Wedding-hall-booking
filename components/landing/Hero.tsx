@@ -42,7 +42,7 @@ function FlipWords({ words }: { words: string[] }) {
           animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
           exit={{ y: -36, opacity: 0, filter: "blur(4px)" }}
           transition={{ duration: 0.45, ease: [0.33, 1, 0.68, 1] }}
-          style={{ color: "var(--gold)" }}
+          style={{ color: "var(--text)" }}
         >
           {words[index]}
         </motion.span>
@@ -328,8 +328,8 @@ export default function Hero() {
             style={{ background: "var(--gold)" }}
           />
           <span
-            className="text-xs uppercase tracking-[0.32em]"
-            style={{ color: "var(--gold)", fontFamily: "var(--font-body)" }}
+            className="text-[0.65rem] uppercase tracking-[0.45em]"
+            style={{ color: "var(--gold)", fontFamily: "var(--font-body)", fontWeight: 300 }}
           >
             Kuala Lumpur · Est. 2009
           </span>
@@ -341,13 +341,16 @@ export default function Hero() {
 
         {/* Main title (typewriter) */}
         <h1
-          className="mb-3 font-light"
+          className="mb-3"
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--font-title)",
             color: "var(--text)",
-            fontSize: "clamp(2.8rem, 8vw, 6.5rem)",
-            lineHeight: 1.06,
-            letterSpacing: "0.03em",
+            fontSize: "clamp(3.2rem, 9vw, 7.5rem)",
+            lineHeight: 1.0,
+            letterSpacing: "0.12em",
+            fontWeight: 400,
+            textTransform: "uppercase",
+            fontFeatureSettings: '"liga" 1, "calt" 1, "dlig" 1',
           }}
         >
           {isVisible("typing") ? (
@@ -370,9 +373,11 @@ export default function Hero() {
           style={{
             fontFamily: "var(--font-display)",
             fontStyle: "italic",
-            fontSize: "clamp(1.3rem, 3vw, 2rem)",
+            fontSize: "clamp(1.5rem, 3.5vw, 2.4rem)",
             color: "var(--text-muted)",
             fontWeight: 300,
+            letterSpacing: "0.04em",
+            lineHeight: 1.3,
           }}
         >
           <span>Where</span>
@@ -386,8 +391,8 @@ export default function Hero() {
           animate={{ opacity: isVisible("subline") ? 1 : 0, y: 0 }}
           onAnimationComplete={onSublineAnimDone}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mx-auto mb-10 max-w-lg text-base leading-relaxed"
-          style={{ color: "var(--text-muted)", fontFamily: "var(--font-body)" }}
+          className="mx-auto mb-10 max-w-lg text-[1.05rem] leading-loose"
+          style={{ color: "var(--text-muted)", fontFamily: "var(--font-display)", fontWeight: 300, letterSpacing: "0.025em" }}
         >
           Kuala Lumpur&apos;s most refined wedding destination. Three iconic venues,
           bespoke packages from{" "}
