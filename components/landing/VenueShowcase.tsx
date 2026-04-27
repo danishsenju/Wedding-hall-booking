@@ -141,9 +141,9 @@ function VenueCard({ venue, index }: { venue: VenueData; index: number }) {
         <div
           className="absolute left-4 top-4 rounded-sm px-3 py-1 text-xs uppercase tracking-[0.16em]"
           style={{
-            background: "rgba(201,168,76,0.1)",
-            border: "1px solid var(--border-hover)",
-            color: "var(--gold)",
+            background: "rgba(109,40,217,0.35)",
+            border: "1px solid rgba(196,181,253,0.5)",
+            color: "var(--rose)",
             fontFamily: "var(--font-body)",
             backdropFilter: "blur(8px)",
           }}

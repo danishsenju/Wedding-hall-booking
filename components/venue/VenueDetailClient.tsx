@@ -110,9 +110,9 @@ function VenueHero({ venue }: { venue: Venue }) {
               transition={{ duration: 0.6, delay: 0.05 }}
               className="mb-4 inline-block rounded-sm px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
               style={{
-                background: "rgba(109,40,217,0.15)",
-                border: "1px solid var(--border-hover)",
-                color: "var(--gold)",
+                background: "rgba(109,40,217,0.25)",
+                border: "1px solid rgba(196,181,253,0.5)",
+                color: "var(--rose)",
               }}
             >
               {venue.tag}
